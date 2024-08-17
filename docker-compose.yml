@@ -1,0 +1,205 @@
+version: '3.8'
+
+services:
+    wolfott-mysql:
+        image: mariadb:10.5
+        environment:
+            - MYSQL_DATABASE=${DATABASE_NAME}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+            - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+        ports:
+            - "3306:3306"
+        volumes:
+            - wolfott-db-volume:/var/lib/mysql
+            - ./.configs/${SQL_INIT_FILE}:/docker-entrypoint-initdb.d/${SQL_INIT_FILE}
+        networks:
+            - wolfott-network
+
+    wolfott-config-server:
+        build: ./config-server
+#        extends:
+#            file: ./config-server/compose.yaml
+#            service: wolfott-config-server
+        depends_on:
+            - wolfott-discovery-server
+        networks:
+            - wolfott-network
+        environment:
+            - CONFIG_SERVER_GIT_URI=${CONFIG_SERVER_GIT_URI}
+
+    wolfott-discovery-server:
+        build: ./discovery-server
+#        extends:
+#            file: ./discovery-server/compose.yaml
+#            service: wolfott-discovery-server
+        ports:
+            - "8761:8761"
+        networks:
+            - wolfott-network
+
+    wolfott-auth-service:
+        build: ./auth-service
+#        extends:
+#            file: ./auth-service/compose.yaml
+#            service: wolfott-auth-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-device-service:
+        build: ./device-service
+#        extends:
+#            file: ./device-service/compose.yaml
+#            service: wolfott-device-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-gateway-service:
+        build: ./gateway-service
+#        extends:
+#            file: ./gateway-service/compose.yaml
+#            service: wolfott-gateway-service
+        ports:
+            - "${GATEWAY_PORT}:8080"
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+        networks:
+            - wolfott-network
+        environment:
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+
+    wolfott-line-service:
+        build: ./line-service
+#        extends:
+#            file: ./line-service/compose.yaml
+#            service: wolfott-line-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-notification-service:
+        build: ./notification-service
+#        extends:
+#            file: ./notification-service/compose.yaml
+#            service: wolfott-notification-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-server-service:
+        build: ./server-service
+#        extends:
+#            file: ./server-service/compose.yaml
+#            service: wolfott-server-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-stream-service:
+        build: ./stream-service
+#        extends:
+#            file: ./stream-service/compose.yaml
+#            service: wolfott-stream-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-ticketing-service:
+        build: ./ticketing-service
+#        extends:
+#            file: ./ticketing-service/compose.yaml
+#            service: wolfott-ticketing-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+    wolfott-user-service:
+        build: ./user-service
+#        extends:
+#            file: ./user-service/compose.yaml
+#            service: wolfott-user-service
+        environment:
+            - SPRING_DATASOURCE_URL=${DATABASE_URL}
+            - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
+            - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
+            - EUREKA_SERVER_URL=http://wolfott-discovery-server:8761/eureka
+            - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+        depends_on:
+            - wolfott-config-server
+            - wolfott-discovery-server
+            - wolfott-mysql
+        networks:
+            - wolfott-network
+
+networks:
+    wolfott-network:
+        driver: bridge
+
+volumes:
+    wolfott-db-volume:

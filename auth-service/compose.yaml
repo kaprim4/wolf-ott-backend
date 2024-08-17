@@ -1,0 +1,16 @@
+services:
+  wolfott-auth-service:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./auth-service:/app  # Mount the auth-service directory
+    command: mvn spring-boot:run -X
+    environment:
+      - SPRING_APPLICATION_NAME=auth-service
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true

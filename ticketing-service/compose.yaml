@@ -1,0 +1,15 @@
+services:
+  wolfott-ticketing-service:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./ticketing-service:/app  # Mount the ticketing-service directory
+    command: mvn spring-boot:run
+    environment:
+      - SPRING_APPLICATION_NAME=ticketing-service
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true

@@ -1,0 +1,16 @@
+services:
+  wolfott-stream-service:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./stream-service:/app  # Mount the stream-service directory
+    command: mvn spring-boot:run
+    environment:
+      - SPRING_APPLICATION_NAME=stream-service
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true

@@ -1,0 +1,16 @@
+services:
+  wolfott-device-service:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./device-service:/app  # Mount the device-service directory
+    command: mvn spring-boot:run
+    environment:
+      - SPRING_APPLICATION_NAME=device-service
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true

@@ -1,0 +1,8 @@
+server:
+    port: 8761
+
+spring:
+    application:
+        name: discovery-server
+    config:
+        import: optional:configserver:http://localhost:9000

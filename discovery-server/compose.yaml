@@ -1,0 +1,16 @@
+services:
+  wolfott-discovery-server:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./discovery-server:/app  # Mount the discovery-server directory
+    command: mvn spring-boot:run
+    environment:
+      - SPRING_APPLICATION_NAME=discovery-server
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true

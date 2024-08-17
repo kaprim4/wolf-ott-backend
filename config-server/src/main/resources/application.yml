@@ -1,0 +1,28 @@
+server:
+    port: 9000
+
+spring:
+    application:
+        name: config-server
+    cloud:
+        config:
+            server:
+                git:
+                    uri: file:///Users/hafribilal/Development/Spring/wolf-ott-be/.configs
+                    default-label: main
+        discovery:
+            enabled: true
+
+application:
+    param:
+        a: 29
+
+eureka:
+    instance:
+        prefer-ip-address: true
+        hostname: localhost
+    client:
+        serviceUrl:
+            defaultZone: http://localhost:8761/eureka
+        register-with-eureka: true
+        fetch-registry: true
