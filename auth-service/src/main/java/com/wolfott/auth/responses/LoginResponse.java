@@ -1,4 +1,13 @@
 package com.wolfott.auth.responses;
 
-public record LoginResponse(String accessToken, String refreshToken) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.Date;
+
+public record LoginResponse(@JsonProperty("access_token") String accessToken,
+                            @JsonProperty("refresh_token") String refreshToken,
+                            @JsonProperty("refresh_expires_in") Long expires,
+                            @JsonProperty("token_type") String tokenType,
+                            @JsonProperty("session_state") String sessionState,
+                            @JsonProperty("scope") String scope) {
 }

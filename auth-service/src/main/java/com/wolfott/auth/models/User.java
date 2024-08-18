@@ -34,8 +34,8 @@ public class User {
 //    @Column(name = "last_login", columnDefinition = )
 //    private Date lastLogin;
 
-    @Column(name = "member_group_id")
-    private Long memberGroupId;
+//    @Column(name = "member_group_id")
+//    private Long memberGroupId;
 
     @Column(name = "credits")
     private Float credits;
@@ -72,6 +72,10 @@ public class User {
 
     @Column(name = "api_key")
     private String apiKey;
+
+    @ManyToOne
+    @JoinColumn(name = "member_group_id")
+    private UserGroup group;
 
 
     @Column(name = "last_login") // Prevent automatic DDL changes
