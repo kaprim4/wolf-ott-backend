@@ -8,10 +8,9 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 
-@Entity
 @Data
-@EqualsAndHashCode
-@Table(name = "lines")
+@Entity
+@Table(name = "`lines`")
 public class Line {
 
     @Id
