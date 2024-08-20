@@ -4,5 +4,33 @@ server:
 spring:
     application:
         name: discovery-server
-    config:
-        import: optional:configserver:http://config-server:9000
+
+management:
+    zipkin:
+        tracing:
+            endpoint: http://zipkin:9411/api/v2/spans
+    tracing:
+        sampling:
+            probability: 1.0
+    endpoints:
+        web:
+            exposure:
+                include: prometheus
+
+eureka:
+    instance:
+        hostname: ${HOSTNAME}
+    client:
+        register-with-eureka: false
+        fetch-registry: false
+        service-url:
+            defaultZone: ${EUREKA_SERVER_ADDRESS}
+    server:
+        enable-self-preservation: true
+
+logging:
+    level:
+        org.springframework.security: DEBUG
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
