@@ -8,7 +8,7 @@ spring:
         config:
             server:
                 git:
-                    uri: https://github.com/kaprim4/wolf-ott-config-server.git
+                    uri: https://github.com/kaprim4/wolf-ott-config-server
                     default-label: bilal
         discovery:
             enabled: true
