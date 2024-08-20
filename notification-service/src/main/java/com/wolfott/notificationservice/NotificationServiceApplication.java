@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.kafka.annotation.KafkaListener;
 
 import java.util.Objects;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @SpringBootApplication
 @Slf4j
 @RequiredArgsConstructor
-
+@EnableDiscoveryClient
 public class NotificationServiceApplication {
 
     private final ObservationRegistry observationRegistry;

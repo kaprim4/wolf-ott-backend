@@ -42,3 +42,4 @@ mongo-data
 /grafana/
 /.configs/
 argo-cd
+/configs/
