@@ -1,0 +1,5 @@
+spring:
+    application:
+        name: epg-service
+    config:
+        import: optional:configserver:http://config-server:9000

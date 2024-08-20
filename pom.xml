@@ -21,6 +21,7 @@
         <module>config-server</module>
         <module>discovery-server</module>
         <module>notification-service</module>
+        <module>gateway-service</module>
 
         <module>auth-service</module>
         <module>user-service</module>
@@ -31,7 +32,6 @@
         <module>line-service</module>
         <module>ticketing-service</module>
 
-        <module>gateway-service</module>
     </modules>
 
     <properties>
@@ -39,7 +39,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
-        <docker.image.prefix>172.24.114.25:32000</docker.image.prefix>
+        <docker.image.prefix>alismak</docker.image.prefix>
     </properties>
 
     <dependencyManagement>

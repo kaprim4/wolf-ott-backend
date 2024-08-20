@@ -1,0 +1,28 @@
+server:
+    port: 9000
+
+spring:
+    application:
+        name: config-server
+    cloud:
+        config:
+            server:
+                git:
+                    uri: https://github.com/kaprim4/wolf-ott-config-server
+                    default-label: main
+        discovery:
+            enabled: true
+
+application:
+    param:
+        a: 29
+
+eureka:
+    instance:
+        prefer-ip-address: true
+        hostname: eureka
+    client:
+        serviceUrl:
+            defaultZone: http://eureka:8761/eureka
+        register-with-eureka: true
+        fetch-registry: true

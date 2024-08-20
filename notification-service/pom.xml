@@ -9,9 +9,9 @@
         <version>1.0.0</version>
     </parent>
 
+    <version>1.0.0</version>
     <artifactId>notification-service</artifactId>
     <description>Wolf-OTT Notification Service</description>
-    <version>1.0.0</version>
 
     <dependencies>
         <dependency>
@@ -85,13 +85,12 @@
         <repository>
             <id>maven-releases</id>
             <name>maven-releases</name>
-            <url>http://172.24.114.27:8081/repository/maven-releases/</url>
+            <url>http://212.237.231.147:8081/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>maven-snapshots</id>
             <name>maven-snapshots</name>
-            <url>http://172.24.114.27:8081/repository/maven-snapshots/</url>
+            <url>http://212.237.231.147:8081/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
-
 </project>
