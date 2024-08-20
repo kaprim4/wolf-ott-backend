@@ -40,4 +40,5 @@ mongo-data
 /postgres-inventory/
 /postgres-order/
 /grafana/
+/.configs/
 argo-cd
