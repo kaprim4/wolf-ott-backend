@@ -41,7 +41,7 @@ public class LineController {
         return lineService.update(id, request);
     }
 
-    @PutMapping("/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id){
         lineService.delete(id);
     }
