@@ -2,10 +2,9 @@ package com.wolfott.mangement.user.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -82,12 +81,15 @@ public class UserGroup {
     private Boolean allowChangeBouquets;
 
     @Lob
-    @Column(name = "notice_html")
+    @Column(name = "notice_html", columnDefinition = "mediumtext")
     private String noticeHtml;
 
     @Lob
     @Column(name = "subresellers")
     private String subResellers;
+
+    @OneToMany(mappedBy = "group")
+    private List<User> users;
 
     // Add getters and setters if needed
 }

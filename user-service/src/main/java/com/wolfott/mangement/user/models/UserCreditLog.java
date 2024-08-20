@@ -25,11 +25,22 @@ public class UserCreditLog {
     private Float amount;
 
     @Column(name = "date")
-    private Date date;
+    private Long timestamp;
 
     @Lob
     @Column(name = "reason", columnDefinition = "MEDIUMTEXT")
     private String reason;
+
+
+    // Custom getter for Date
+    public Date getDate() {
+        return timestamp != null ? new Date(timestamp * 1000L) : null;
+    }
+
+    // Custom setter for Date
+    public void setDateRegistered(Date date) {
+        this.timestamp = date != null ? date.getTime() / 1000L : null;
+    }
 
 }
 
