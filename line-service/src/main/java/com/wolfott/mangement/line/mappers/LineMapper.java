@@ -4,7 +4,9 @@ import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.LineCompactResponse;
+import com.wolfott.mangement.line.responses.LineCreateResponse;
 import com.wolfott.mangement.line.responses.LineDetailResponse;
+import com.wolfott.mangement.line.responses.LineUpdateResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,6 +33,16 @@ public class LineMapper {
     // Convert Line entity to LineDetailResponse
     public LineDetailResponse toLineDetailResponse(Line line) {
         return modelMapper.map(line, LineDetailResponse.class);
+    }
+
+    // Convert Line entity to LineCreateResponse
+    public LineCreateResponse toLineCreateResponse(Line line) {
+        return modelMapper.map(line, LineCreateResponse.class);
+    }
+
+    // Convert Line entity to LineUpdateResponse
+    public LineUpdateResponse toLineUpdateResponse(Line line) {
+        return modelMapper.map(line, LineUpdateResponse.class);
     }
 
     // Convert LineCreateRequest to Line entity

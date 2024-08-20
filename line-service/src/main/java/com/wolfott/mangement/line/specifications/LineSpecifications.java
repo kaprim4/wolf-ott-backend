@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class LineSpecifications {
@@ -21,9 +22,17 @@ public class LineSpecifications {
         return (Root<Line> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate predicate = builder.conjunction();
 
+            // Define a set of keys to ignore
+            Set<String> pageableFields = Set.of("page", "size", "sort");
+
             for (Map.Entry<String, Object> entry : filters.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
+
+                // Skip pageable fields
+                if (pageableFields.contains(key)) {
+                    continue;
+                }
 
                 if (value != null && !value.toString().isEmpty()) {
                     Predicate filterPredicate;
@@ -32,7 +41,7 @@ public class LineSpecifications {
                     if (fieldType != null) {
                         if (fieldType.equals(String.class)) {
                             // String field: apply LIKE
-                            filterPredicate = builder.like(builder.lower(root.get(key)), "%" + value.toString().toLowerCase() + "%");
+                            filterPredicate = builder.like(builder.lower(root.get(key).as(String.class)), "%" + value.toString().toLowerCase() + "%");
                         } else if (Number.class.isAssignableFrom(fieldType)) {
                             // Numeric field: apply EQUALS
                             filterPredicate = builder.equal(root.get(key), convertToNumber(value, fieldType));
@@ -40,8 +49,8 @@ public class LineSpecifications {
                             // LocalDate field: apply EQUALS
                             filterPredicate = builder.equal(root.get(key), convertToDate(value));
                         } else {
-                            // Default case for unknown types: apply LIKE
-                            filterPredicate = builder.like(builder.lower(root.get(key)), "%" + value.toString().toLowerCase() + "%");
+                            // Default case for unknown types: apply EQUALS
+                            filterPredicate = builder.equal(root.get(key), value.toString());
                         }
 
                         predicate = builder.and(predicate, filterPredicate);
@@ -53,6 +62,7 @@ public class LineSpecifications {
             return predicate;
         };
     }
+
 
     private Class<?> getFieldType(Class<?> clazz, String fieldName) {
         try {

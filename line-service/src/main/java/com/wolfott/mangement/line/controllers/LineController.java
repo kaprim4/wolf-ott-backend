@@ -1,7 +1,11 @@
 package com.wolfott.mangement.line.controllers;
 
+import com.wolfott.mangement.line.requests.LineCreateRequest;
+import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.LineCompactResponse;
+import com.wolfott.mangement.line.responses.LineCreateResponse;
 import com.wolfott.mangement.line.responses.LineDetailResponse;
+import com.wolfott.mangement.line.responses.LineUpdateResponse;
 import com.wolfott.mangement.line.services.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +29,21 @@ public class LineController {
     @GetMapping
     public Page<LineCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
         return lineService.getAll(filters, pageable);
+    }
+
+    @PostMapping
+    public LineCreateResponse createOne(@RequestBody LineCreateRequest request){
+        return lineService.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public LineUpdateResponse createOne(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request){
+        return lineService.update(id, request);
+    }
+
+    @PutMapping("/{id}")
+    public void delete(@PathVariable("id") Long id){
+        lineService.delete(id);
     }
 
 }
