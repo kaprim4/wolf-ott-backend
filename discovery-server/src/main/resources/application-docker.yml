@@ -15,7 +15,15 @@ management:
     endpoints:
         web:
             exposure:
-                include: prometheus
+                include: health, prometheus, metrics, info
+    endpoint:
+        health:
+            show-details: always
+            enabled: true
+        metrics:
+            enabled: true
+        prometheus:
+            enabled: true
 
 eureka:
     instance:
