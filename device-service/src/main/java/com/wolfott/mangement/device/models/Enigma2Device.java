@@ -12,10 +12,9 @@ import org.hibernate.annotations.ColumnDefault;
 public class Enigma2Device {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "device_seq")
-    @SequenceGenerator(name = "device_seq", sequenceName = "device_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "device_id")
-    private Long deviceId;
+    private Long id;
 
     @Column(name = "mac")
     private String mac;

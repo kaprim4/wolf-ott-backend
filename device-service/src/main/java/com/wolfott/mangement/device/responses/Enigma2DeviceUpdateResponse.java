@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Enigma2DeviceUpdateResponse {
-    private Long deviceId;
+    private Long id;
     private String mac;
     private Long userId;
     private String modemMac;

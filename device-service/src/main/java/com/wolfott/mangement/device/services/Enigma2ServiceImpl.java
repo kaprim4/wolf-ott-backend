@@ -69,7 +69,7 @@ public class Enigma2ServiceImpl implements Enigma2Service {
     @Override
     public Enigma2DeviceUpdateResponse update(Long id, Enigma2DeviceUpdateRequest request) {
         Enigma2Device device = enigma2Mapper.toDevice(request);
-        device.setDeviceId(id);
+        device.setId(id);
         device = enigma2DeviceRepository.save(device);
         return enigma2Mapper.toUpdateResponse(device);
     }

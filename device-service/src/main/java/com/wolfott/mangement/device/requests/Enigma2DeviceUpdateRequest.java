@@ -1,6 +1,6 @@
 package com.wolfott.mangement.device.requests;
 
-public record Enigma2DeviceUpdateRequest(Long deviceId,
+public record Enigma2DeviceUpdateRequest(Long id,
                                          String mac,
                                          Long userId,
                                          String modemMac,

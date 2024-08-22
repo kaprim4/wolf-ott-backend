@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Enigma2DeviceCompactResponse {
-    private Long deviceId;
+    private Long id;
     private Long userId;
     private String enigmaVersion;
     private String cpu;
