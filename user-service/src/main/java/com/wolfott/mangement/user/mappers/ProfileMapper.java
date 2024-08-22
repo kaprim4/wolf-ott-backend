@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -21,11 +22,40 @@ import java.util.stream.Collectors;
 public class ProfileMapper {
     @Autowired
     ModelMapper mapper;
+
+    private Profile mapToProfile(Object request) {
+        Profile profile = new Profile();
+        Class<?> requestClass = request.getClass();
+        Class<?> profileClass = Profile.class;
+
+        // Iterate over all fields in the Profile class
+        for (Field profileField : profileClass.getDeclaredFields()) {
+            profileField.setAccessible(true); // Make private fields accessible
+
+            try {
+                // Find corresponding field in the request class
+                Field requestField = requestClass.getDeclaredField(profileField.getName());
+                requestField.setAccessible(true);
+
+                // Get the value from the request field
+                Object value = requestField.get(request);
+
+                // Set the value to the Profile field
+                profileField.set(profile, value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                // Handle exceptions if field does not exist or is inaccessible
+                e.printStackTrace();
+            }
+        }
+
+        return profile;
+    }
+
     public Profile toProfile(ProfileCreateRequest request){
-        return mapper.map(request, Profile.class);
+        return mapToProfile(request);
     }
     public Profile toProfile(ProfileUpdateRequest request){
-        return mapper.map(request, Profile.class);
+        return mapToProfile(request);
     }
 
     public ProfileCreateResponse toCreateResponse(Profile model){
