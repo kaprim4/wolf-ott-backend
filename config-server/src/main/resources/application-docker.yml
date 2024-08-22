@@ -10,6 +10,7 @@ spring:
                 git:
                     uri: https://github.com/kaprim4/wolf-ott-config-server
                     default-label: main
+                    force-pull: true
         discovery:
             enabled: true
 
