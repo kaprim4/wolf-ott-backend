@@ -6,3 +6,4 @@ spring:
         name: discovery-server
     config:
         import: optional:configserver:http://config-server:9000
+
