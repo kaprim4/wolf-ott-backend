@@ -1,5 +1,150 @@
+eureka:
+    instance:
+        prefer-ip-address: true
+        hostname: eureka-0
+    client:
+        serviceUrl:
+            defaultZone: http://eureka:8761/eureka
+        register-with-eureka: true
+        fetch-registry: true
+
 spring:
     application:
         name: gateway-service
-    config:
-        import: optional:configserver:http://config-server:9000
+    cloud:
+        kubernetes:
+            discovery:
+                enabled: true
+                all-namespaces: true
+        gateway:
+            routes:
+                - id: eureka
+                  uri: http://eureka:8761
+                  predicates:
+                      - Path=/eureka/web
+                  filters:
+                      - SetPath=/
+
+                - id: eureka-static
+                  uri: http://eureka:8761
+                  predicates:
+                      - Path=/eureka/**
+
+                - id: device-service
+                  uri: lb://DEVICE-SERVICE
+                  predicates:
+                      - Path=/api/v1/devices/**
+
+                - id: epg-service
+                  uri: lb://EPG-SERVICE
+                  predicates:
+                      - Path=/api/v1/epgs/**
+
+                - id: line-service
+                  uri: lb://LINE-SERVICE
+                  predicates:
+                      - Path=/api/v1/lines/**
+
+                - id: server-service
+                  uri: lb://SERVER-SERVICE
+                  predicates:
+                      - Path=/api/v1/servers/**
+
+                - id: stream-service
+                  uri: lb://STREAM-SERVICE
+                  predicates:
+                      - Path=/api/v1/streams/**
+
+                - id: ticketing-service
+                  uri: lb://TICKETING-SERVICE
+                  predicates:
+                      - Path=/api/v1/ticketing/**
+
+                - id: user-service
+                  uri: lb://USERS-SERVICE
+                  predicates:
+                      - Path=/api/v1/users/**
+
+
+                - id: device-swagger
+                  uri: lb://DEVICE-SERVICE
+                  predicates:
+                      - Path=/device-service/**
+                  filters:
+                      - RewritePath=/device-service(?<segment>/?.*), $\{segment}
+
+                - id: epg-swagger
+                  uri: lb://EPG-SERVICE
+                  predicates:
+                      - Path=/epg-service/**
+                  filters:
+                      - RewritePath=/epg-service(?<segment>/?.*), $\{segment}
+
+                - id: line-swagger
+                  uri: lb://LINE-SERVICE
+                  predicates:
+                      - Path=/line-service/**
+                  filters:
+                      - RewritePath=/line-service(?<segment>/?.*), $\{segment}
+
+                - id: server-swagger
+                  uri: lb://SERVER-SERVICE
+                  predicates:
+                      - Path=/server-service/**
+                  filters:
+                      - RewritePath=/server-service(?<segment>/?.*), $\{segment}
+
+                - id: stream-swagger
+                  uri: lb://STREAM-SERVICE
+                  predicates:
+                      - Path=/stream-service/**
+                  filters:
+                      - RewritePath=/stream-service(?<segment>/?.*), $\{segment}
+
+                - id: ticketing-swagger
+                  uri: lb://TICKETING-SERVICE
+                  predicates:
+                      - Path=/ticketing-service/**
+                  filters:
+                      - RewritePath=/ticketing-service(?<segment>/?.*), $\{segment}
+
+                - id: user-swagger
+                  uri: lb://USERS-SERVICE
+                  predicates:
+                      - Path=/user-service/**
+                  filters:
+                      - RewritePath=/user-service(?<segment>/?.*), $\{segment}
+
+    main:
+        banner-mode: 'off'
+
+    springdoc:
+        swagger-ui:
+            path: /
+
+    server:
+        port: 8181
+        forward-headers-strategy: framework
+
+    management:
+        zipkin:
+            tracing:
+                endpoint: http://zipkin:9411/api/v2/spans
+        tracing:
+            sampling:
+                probability: 1.0
+        endpoints:
+            web:
+                exposure:
+                    include: health, prometheus, metrics, info
+        endpoint:
+            health:
+                show-details: always
+                enabled: true
+            metrics:
+                enabled: true
+            prometheus:
+                enabled: true
+    logging:
+        pattern:
+            level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
