@@ -1,12 +1,10 @@
 package com.wolfott.mangement.line.requests;
 
-public record BouquetUpdateRequest(
-        Long id,
+public record BouquetCreateRequest(
         String bouquetName,
         String bouquetChannels,
         String bouquetMovies,
         String bouquetRadios,
         String bouquetSeries,
-        Integer bouquetOrder
-) {
+        Integer bouquetOrder) {
 }
