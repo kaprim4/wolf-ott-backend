@@ -77,6 +77,7 @@
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
         </dependency>
+
         <!--springfox dependencies for api documentations in swagger -->
         <dependency>
             <groupId>io.springfox</groupId>
@@ -96,8 +97,8 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
-            <version>3.0.0</version>
         </dependency>
+
     </dependencies>
 
     <build>
