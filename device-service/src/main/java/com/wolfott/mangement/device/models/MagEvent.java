@@ -12,13 +12,9 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @ToString
 @Table(name = "mag_events")
-public class MagEvent implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class MagEvent {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mag_event_seq")
-    @SequenceGenerator(name = "mag_event_seq", sequenceName = "mag_event_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 

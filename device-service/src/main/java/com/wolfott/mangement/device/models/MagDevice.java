@@ -13,18 +13,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class MagDevice {
 
     @Id
-    @GeneratedValue(generator = "mag_id_seq")
-    @GenericGenerator(
-            name = "mag_id_seq",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "mag_id_seq"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mag_id")
-    private Long magId;
+    private Long id;
 
     @Column(name = "user_id")
     private Long userId;
@@ -256,6 +247,37 @@ public class MagDevice {
     @ColumnDefault("'ffmpeg'")
     private String magPlayer;
 
-    // #TODO: rest of columns
+    @Column(name = "play_in_preview_only_by_ok")
+    private String playInPreviewOnlyByOk;
+
+    @Column(name = "watchdog_timeout")
+    private Integer watchdogTimeout;
+
+    @Column(name = "fav_channels", columnDefinition = "mediumtext")
+    private String favChannels;
+
+    @Column(name = "tv_archive_continued", columnDefinition = "mediumtext")
+    private String tvArchiveContinued;
+
+    @Column(name = "tv_channel_default_aspect")
+    private String tvChannelDefaultAspect;
+
+    @Column(name = "last_itv_id")
+    private Integer lastItvId;
+
+    @Column(name = "units")
+    private String units;
+
+    @Column(name = "token")
+    private String token;
+
+    @Column(name = "lock_device")
+    private Short lockDevice;
+
+    @Column(name = "theme_type")
+    private Short themeType;
+
+    @Column(name = "mac_filter")
+    private Short macFilter;
 }
 
