@@ -24,7 +24,7 @@ public class Enigma2Controller {
     }
 
     @GetMapping("/{device_id}/actions/{action_id}")
-    public Enigma2ActionDetailResponse getAction(@PathVariable("device_id") Long deviceId, @PathVariable("action_id") Long actionId){
+    public Enigma2ActionDetailResponse getAction(@PathVariable("device_id") Long deviceId, @PathVariable("action_id") String actionId){
         return enigma2Service.getOne(deviceId, actionId);
     }
 

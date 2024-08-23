@@ -278,6 +278,6 @@ public class MagDevice {
     private Short themeType;
 
     @Column(name = "mac_filter")
-    private Short macFilter;
+    private String macFilter;
 }
 

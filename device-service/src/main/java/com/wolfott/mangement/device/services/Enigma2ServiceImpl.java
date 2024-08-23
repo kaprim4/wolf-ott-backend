@@ -38,7 +38,7 @@ public class Enigma2ServiceImpl implements Enigma2Service {
     }
 
     @Override
-    public Enigma2ActionDetailResponse getOne(Long deviceId, Long actionId) {
+    public Enigma2ActionDetailResponse getOne(Long deviceId, String actionId) {
 //        throw new RuntimeException("UNDER CONSTRUCTION");
         Enigma2Action action = enigma2ActionRepository.findByIdAndDeviceId(actionId, deviceId).orElseThrow(() -> new ActionNotFound("Action Not Found"));
         return enigma2Mapper.toDetailResponse(action);

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface Enigma2Service {
     Enigma2DeviceDetailResponse getOne(Long id);
-    Enigma2ActionDetailResponse getOne(Long deviceId, Long actionId);
+    Enigma2ActionDetailResponse getOne(Long deviceId, String actionId);
     Page<Enigma2DeviceCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
     Page<Enigma2ActionCompactResponse> getAll(Long deviceId, Map<String, Object> filters, Pageable pageable);
     Enigma2DeviceCreateResponse create(Enigma2DeviceCreateRequest request);

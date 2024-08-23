@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.Optional;
 
-public interface Enigma2ActionRepository extends JpaRepository<Enigma2Action, Long>, JpaSpecificationExecutor<Enigma2Action> {
-    Optional<Enigma2Action> findByIdAndDeviceId(Long actionID, Long deviceId);
+public interface Enigma2ActionRepository extends JpaRepository<Enigma2Action, String>, JpaSpecificationExecutor<Enigma2Action> {
+    Optional<Enigma2Action> findByIdAndDeviceId(String actionID, Long deviceId);
     Page<Enigma2Action> findByDeviceId(Long id, Pageable pageable);
     Page<Enigma2Action> findByDeviceId(Long id, Specification<Enigma2Action> spec, Pageable pageable);
 }

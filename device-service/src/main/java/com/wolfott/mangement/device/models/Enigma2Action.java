@@ -26,7 +26,7 @@ public class Enigma2Action implements Serializable {
     @Lob
     private String type;
 
-    @Column(name = "key")
+    @Column(name = "`key`")
     @Lob
     private String key;
 
