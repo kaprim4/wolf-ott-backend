@@ -8,8 +8,9 @@ spring:
         config:
             server:
                 git:
-                    uri: https://github.com/kaprim4/wolf-ott-config-server
+                    uri: https://github.com/kaprim4/wolf-ott-config-server2
                     default-label: main
+                    force-pull: true
         discovery:
             enabled: true
 
@@ -20,7 +21,7 @@ application:
 eureka:
     instance:
         prefer-ip-address: true
-        hostname: eureka-0
+        hostname: eureka
     client:
         serviceUrl:
             defaultZone: http://eureka:8761/eureka

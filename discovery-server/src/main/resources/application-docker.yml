@@ -33,4 +33,3 @@ logging:
         org.springframework.security: DEBUG
     pattern:
         level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-

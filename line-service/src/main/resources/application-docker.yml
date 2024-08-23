@@ -1,5 +1,54 @@
+server:
+    port: 9004
+
+eureka:
+    instance:
+        prefer-ip-address: true
+        hostname: eureka-0
+    client:
+        serviceUrl:
+            defaultZone: http://eureka:8761/eureka
+        register-with-eureka: true
+        fetch-registry: true
+
 spring:
     application:
         name: line-service
-    config:
-        import: optional:configserver:http://config-server:9000
+    datasource:
+        url: jdbc:mysql://mysql:3306/xui
+        username: yahya
+        password: yahya
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: false
+        properties:
+            hibernate:
+                format_sql: true
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+
+management:
+    zipkin:
+        tracing:
+            endpoint: http://zipkin:9411/api/v2/spans
+    tracing:
+        sampling:
+            probability: 1.0
+    endpoints:
+        web:
+            exposure:
+                include: health, prometheus, metrics, info
+    endpoint:
+        health:
+            show-details: always
+            enabled: true
+        metrics:
+            enabled: true
+        prometheus:
+            enabled: true
+
+logging:
+    pattern:
+        level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
