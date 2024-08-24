@@ -57,6 +57,18 @@ public class EpgController {
         return epgService.getChannels(epgId, filters, pageable);
     }
 
+    //    DATA SECTION
+
+    @GetMapping("/{epg_id}/datas/{data_id}")
+    public DataDetailResponse getEpgData(@PathVariable("epg_id") Long epgId, @PathVariable("data_id") Long dataId){
+        return epgService.getData(epgId, dataId);
+    }
+
+    @GetMapping("/{epg_id}/datas")
+    public Page<DataCompactResponse> getAllEpgData(@PathVariable("epg_id") Long epgId, @RequestParam Map<String, Object> filters, Pageable pageable){
+        return epgService.getData(epgId, filters, pageable);
+    }
+
 //    API SECTION
 
     @DeleteMapping("/{id}")

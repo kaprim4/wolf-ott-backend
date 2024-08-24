@@ -1,10 +1,12 @@
 package com.wolfott.mangement.epg.services;
 
 import com.wolfott.mangement.epg.exceptions.ChannelNotFoundException;
+import com.wolfott.mangement.epg.exceptions.DataNotFoundException;
 import com.wolfott.mangement.epg.exceptions.EpgNotFoundException;
 import com.wolfott.mangement.epg.mappers.EpgMapper;
 import com.wolfott.mangement.epg.models.Epg;
 import com.wolfott.mangement.epg.models.EpgChannel;
+import com.wolfott.mangement.epg.models.EpgData;
 import com.wolfott.mangement.epg.repositories.ChannelRepository;
 import com.wolfott.mangement.epg.repositories.DataRepository;
 import com.wolfott.mangement.epg.repositories.EpgRepository;
@@ -49,7 +51,9 @@ public class EpgServiceImpl implements EpgService {
 
     @Override
     public DataDetailResponse getData(Long epgId, Long dataId) {
-        throw new RuntimeException("UNDER CONSTRUCTION");
+        EpgData data = dataRepository.findByIdAndEpg_Id(dataId, epgId).orElseThrow(() -> new DataNotFoundException("Data Not Found"));
+        return epgMapper.toDetailResponse(data);
+//        throw new RuntimeException("UNDER CONSTRUCTION");
     }
 
     @Override
@@ -68,7 +72,9 @@ public class EpgServiceImpl implements EpgService {
 
     @Override
     public Page<DataCompactResponse> getData(Long epgId, Map<String, Object> filters, Pageable pageable) {
-        throw new RuntimeException("UNDER CONSTRUCTION");
+        Page<EpgData> page = dataRepository.findByEpg_Id(epgId, pageable);
+        return epgMapper.toDataCompactResponse(page);
+//        throw new RuntimeException("UNDER CONSTRUCTION");
     }
 
     @Override
