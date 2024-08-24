@@ -1,8 +1,10 @@
 package com.wolfott.mangement.epg.services;
 
+import com.wolfott.mangement.epg.exceptions.ChannelNotFoundException;
 import com.wolfott.mangement.epg.exceptions.EpgNotFoundException;
 import com.wolfott.mangement.epg.mappers.EpgMapper;
 import com.wolfott.mangement.epg.models.Epg;
+import com.wolfott.mangement.epg.models.EpgChannel;
 import com.wolfott.mangement.epg.repositories.ChannelRepository;
 import com.wolfott.mangement.epg.repositories.DataRepository;
 import com.wolfott.mangement.epg.repositories.EpgRepository;
@@ -40,7 +42,9 @@ public class EpgServiceImpl implements EpgService {
 
     @Override
     public ChannelDetailResponse getChannel(Long epgId, Long channelId) {
-        throw new RuntimeException("UNDER CONSTRUCTION");
+        EpgChannel channel = channelRepository.findByIdAndEpg_Id(channelId, epgId).orElseThrow(() -> new ChannelNotFoundException("Channel Not Found"));
+        return epgMapper.toDetailResponse(channel);
+//        throw new RuntimeException("UNDER CONSTRUCTION");
     }
 
     @Override
@@ -57,7 +61,9 @@ public class EpgServiceImpl implements EpgService {
 
     @Override
     public Page<ChannelCompactResponse> getChannels(Long epgId, Map<String, Object> filters, Pageable pageable) {
-        throw new RuntimeException("UNDER CONSTRUCTION");
+        Page<EpgChannel> page = channelRepository.findByEpg_Id(epgId, pageable);
+        return epgMapper.toChannelCompactResponse(page);
+//        throw new RuntimeException("UNDER CONSTRUCTION");
     }
 
     @Override

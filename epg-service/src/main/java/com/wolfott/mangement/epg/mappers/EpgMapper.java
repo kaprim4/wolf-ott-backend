@@ -1,12 +1,11 @@
 package com.wolfott.mangement.epg.mappers;
 
 import com.wolfott.mangement.epg.models.Epg;
+import com.wolfott.mangement.epg.models.EpgChannel;
+import com.wolfott.mangement.epg.models.EpgData;
 import com.wolfott.mangement.epg.requests.EpgCreateRequest;
 import com.wolfott.mangement.epg.requests.EpgUpdateRequest;
-import com.wolfott.mangement.epg.responses.EpgCompactResponse;
-import com.wolfott.mangement.epg.responses.EpgCreateResponse;
-import com.wolfott.mangement.epg.responses.EpgDetailResponse;
-import com.wolfott.mangement.epg.responses.EpgUpdateResponse;
+import com.wolfott.mangement.epg.responses.*;
 import org.modelmapper.ModelMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -57,4 +57,70 @@ public class EpgMapper {
     public Collection<EpgCompactResponse> toCompactResponse(Collection<Epg> collection) {
         return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
     }
+
+//    CHANNEL SECTION
+
+    private EpgChannel mapToChannel(Object request) {
+        EpgChannel channel = new EpgChannel();
+        Class<?> requestClass = request.getClass();
+        Class<?> modelClass = EpgChannel.class;
+
+        // Iterate over all fields in the Model class
+        for (Field modelField : modelClass.getDeclaredFields()) {
+            modelField.setAccessible(true); // Make private fields accessible
+
+            try {
+                // Find corresponding field in the request class
+                Field requestField = requestClass.getDeclaredField(modelField.getName());
+                requestField.setAccessible(true);
+
+                // Get the value from the request field
+                Object value = requestField.get(request);
+
+                // Set the value to the Model field
+                modelField.set(channel, value);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                // Handle exceptions if field does not exist or is inaccessible
+                e.printStackTrace();
+            }
+        }
+
+        return channel;
+    }
+
+//    public EpgChannel mapToChannel(ChannelCreateRequest request){
+//        return mapToDevice(request);
+//    }
+
+//    public EpgChannel mapToChannel(ChannelUpdateRequest request){
+//        return mapToDevice(request);
+//    }
+
+    public ChannelDetailResponse toDetailResponse(EpgChannel channel){
+        return mapper.map(channel, ChannelDetailResponse.class);
+    }
+
+    public ChannelCompactResponse toCompactResponse(EpgChannel channel){
+        return mapper.map(channel, ChannelCompactResponse.class);
+    }
+
+    public ChannelCreateResponse toCreateResponse(EpgChannel channel){
+        return mapper.map(channel, ChannelCreateResponse.class);
+    }
+
+    public ChannelUpdateResponse toUpdateResponse(EpgChannel channel){
+        return mapper.map(channel, ChannelUpdateResponse.class);
+    }
+
+    public Page<ChannelCompactResponse> toChannelCompactResponse(Page<EpgChannel> page) {
+        return new PageImpl<>(
+                page.getContent().stream()
+                        .map(this::toCompactResponse)
+                        .collect(Collectors.toList()),
+                page.getPageable(),
+                page.getTotalElements()
+        );
+    }
+
+
 }

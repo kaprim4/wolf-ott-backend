@@ -45,6 +45,18 @@ public class EpgController {
         return epgService.update(id, request);
     }
 
+    //    CHANNEL SECTION
+
+    @GetMapping("/{epg_id}/channels/{channel_id}")
+    public ChannelDetailResponse getOne(@PathVariable("epg_id") Long epgId, @PathVariable("channel_id") Long channelId){
+        return epgService.getChannel(epgId, channelId);
+    }
+
+    @GetMapping("/{epg_id}/channels")
+    public Page<ChannelCompactResponse> getAll(@PathVariable("epg_id") Long epgId, @RequestParam Map<String, Object> filters, Pageable pageable){
+        return epgService.getChannels(epgId, filters, pageable);
+    }
+
 //    API SECTION
 
     @DeleteMapping("/{id}")
