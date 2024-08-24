@@ -3,13 +3,12 @@ package com.wolfott.mangement.epg.services;
 import com.wolfott.mangement.epg.exceptions.EpgNotFoundException;
 import com.wolfott.mangement.epg.mappers.EpgMapper;
 import com.wolfott.mangement.epg.models.Epg;
+import com.wolfott.mangement.epg.repositories.ChannelRepository;
+import com.wolfott.mangement.epg.repositories.DataRepository;
 import com.wolfott.mangement.epg.repositories.EpgRepository;
 import com.wolfott.mangement.epg.requests.EpgCreateRequest;
 import com.wolfott.mangement.epg.requests.EpgUpdateRequest;
-import com.wolfott.mangement.epg.responses.EpgCompactResponse;
-import com.wolfott.mangement.epg.responses.EpgCreateResponse;
-import com.wolfott.mangement.epg.responses.EpgDetailResponse;
-import com.wolfott.mangement.epg.responses.EpgUpdateResponse;
+import com.wolfott.mangement.epg.responses.*;
 import com.wolfott.mangement.epg.specifications.EpgSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,6 +24,10 @@ public class EpgServiceImpl implements EpgService {
     @Autowired
     EpgRepository epgRepository;
     @Autowired
+    ChannelRepository channelRepository;
+    @Autowired
+    DataRepository dataRepository;
+    @Autowired
     EpgSpecification epgSpecification;
     @Autowired
     EpgMapper epgMapper;
@@ -36,10 +39,30 @@ public class EpgServiceImpl implements EpgService {
     }
 
     @Override
+    public ChannelDetailResponse getChannel(Long epgId, Long channelId) {
+        throw new RuntimeException("UNDER CONSTRUCTION");
+    }
+
+    @Override
+    public DataDetailResponse getData(Long epgId, Long dataId) {
+        throw new RuntimeException("UNDER CONSTRUCTION");
+    }
+
+    @Override
     public Page<EpgCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
         Specification<Epg> spec = epgSpecification.dynamic(filters);
         Page<Epg> page = epgRepository.findAll(spec, pageable);
         return epgMapper.toCompactResponse(page);
+    }
+
+    @Override
+    public Page<ChannelCompactResponse> getChannels(Long epgId, Map<String, Object> filters, Pageable pageable) {
+        throw new RuntimeException("UNDER CONSTRUCTION");
+    }
+
+    @Override
+    public Page<DataCompactResponse> getData(Long epgId, Map<String, Object> filters, Pageable pageable) {
+        throw new RuntimeException("UNDER CONSTRUCTION");
     }
 
     @Override

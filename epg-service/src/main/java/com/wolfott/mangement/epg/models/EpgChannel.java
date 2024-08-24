@@ -13,18 +13,12 @@ import org.hibernate.annotations.GenericGenerator;
 public class EpgChannel {
 
     @Id
-    @GeneratedValue(generator = "custom-sequence")
-    @GenericGenerator(name = "custom-sequence", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "custom_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "2820"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            })
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "epg_id")
-    private Long epgId;
+//    @Column(name = "epg_id")
+//    private Long epgId;
 
     @Column(name = "channel_id")
     private String channelId;
@@ -40,4 +34,7 @@ public class EpgChannel {
     @ColumnDefault("false")
     private Boolean active;
 
+    @ManyToOne
+    @JoinColumn(name = "epg_id")
+    private Epg epg;
 }

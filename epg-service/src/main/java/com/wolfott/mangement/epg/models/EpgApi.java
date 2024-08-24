@@ -11,13 +11,10 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Entity
 @Table(name = "epg_api")
-public class EpgApi implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class EpgApi {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "epg_api_seq")
-    @SequenceGenerator(name = "epg_api_seq", sequenceName = "epg_api_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stationId")
     private Long stationId;
 

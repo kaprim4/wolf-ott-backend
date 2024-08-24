@@ -17,8 +17,8 @@ public class EpgData {
     @Column(name = "id", columnDefinition = "VARCHAR(36)")
     private String id;
 
-    @Column(name = "epg_id")
-    private Integer epgId;
+//    @Column(name = "epg_id")
+//    private Integer epgId;
 
     @Column(name = "title")
     private String title;
@@ -38,5 +38,9 @@ public class EpgData {
 
     @Column(name = "channel_id")
     private String channelId;
+
+    @ManyToOne
+    @JoinColumn(name = "epg_id")
+    private Epg epg;
 
 }

@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
+
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -37,4 +39,10 @@ public class Epg {
     @Column(name = "offset")
     @ColumnDefault("0")
     private Integer offset;
+
+    @OneToMany(mappedBy = "epg")
+    private List<EpgData> datas;
+
+    @OneToMany(mappedBy = "epg")
+    private List<EpgChannel> channels;
 }
