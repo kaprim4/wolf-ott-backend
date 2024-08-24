@@ -31,7 +31,7 @@ public class LanguageServiceImpl implements LanguageService {
 
     @Override
     public LanguageDetailResponse getOne(Long id) {
-        EpgLanguage language = languageRepository.findById(id).orElseThrow(() -> new LanguageNotFoundException("Language Not Found"))
+        EpgLanguage language = languageRepository.findById(id).orElseThrow(() -> new LanguageNotFoundException("Language Not Found"));
         return languageMapper.toDetailResponse(language);
     }
 
