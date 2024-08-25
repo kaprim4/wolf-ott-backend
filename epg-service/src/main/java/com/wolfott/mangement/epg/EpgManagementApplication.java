@@ -1,4 +1,4 @@
-package com.wolfott.stream_mangement;
+package com.wolfott.mangement.epg;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class StreamMangementApplication {
+public class EpgManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(StreamMangementApplication.class, args);
+		SpringApplication.run(EpgManagementApplication.class, args);
 	}
 
 }
