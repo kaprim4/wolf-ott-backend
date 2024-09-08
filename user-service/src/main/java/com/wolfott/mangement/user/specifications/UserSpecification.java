@@ -2,10 +2,8 @@ package com.wolfott.mangement.user.specifications;
 
 import com.wolfott.mangement.user.exceptions.InvalidFilterException;
 import com.wolfott.mangement.user.models.User;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.Transient;
+import jakarta.persistence.criteria.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +15,10 @@ import java.util.Set;
 
 @Component
 public class UserSpecification {
+
+    // Define fields to search and excluded fields
+    private static final Set<String> EXCLUDED_FIELDS = Set.of("id", "password", "timestampLastLogin", "timestampDateRegistered");
+
     public Specification<User> dynamic(Map<String, Object> filters) {
         return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate predicate = builder.conjunction();
@@ -62,6 +64,70 @@ public class UserSpecification {
         };
     }
 
+    public Specification<User> search(String keyword) {
+        return (root, query, builder) -> {
+            Predicate predicate = builder.disjunction(); // OR
+
+            // Iterate over all declared fields of the User class
+            for (Field field : User.class.getDeclaredFields()) {
+                String fieldName = field.getName();
+                Class<?> fieldType = field.getType();
+
+                // Skip excluded fields and transient fields
+                if (EXCLUDED_FIELDS.contains(fieldName) || field.isAnnotationPresent(Transient.class)) {
+                    continue;
+                }
+
+                Path<?> fieldPath = root.get(fieldName);
+
+                if (String.class.equals(fieldType)) {
+                    // Create a predicate for String fields
+                    Predicate fieldPredicate = builder.like(
+                            builder.lower(fieldPath.as(String.class)),
+                            "%" + keyword.toLowerCase() + "%"
+                    );
+                    predicate = builder.or(predicate, fieldPredicate);
+
+                } else if (Number.class.isAssignableFrom(fieldType)) {
+                    // Create a predicate for Numeric fields
+                    Predicate fieldPredicate = buildNumericPredicate(fieldPath, keyword, fieldType, builder);
+                    if (fieldPredicate != null) {
+                        predicate = builder.or(predicate, fieldPredicate);
+                    }
+
+                } else if (Boolean.class.equals(fieldType)) {
+                    // Create a predicate for Boolean fields
+                    Predicate fieldPredicate = builder.equal(fieldPath, Boolean.parseBoolean(keyword));
+                    predicate = builder.or(predicate, fieldPredicate);
+                }
+            }
+
+            return predicate;
+        };
+    }
+
+    private Predicate buildNumericPredicate(Path<?> fieldPath, String keyword, Class<?> fieldType, CriteriaBuilder builder) {
+        try {
+            Number numberValue = convertToNumber(keyword, fieldType);
+            return builder.equal(fieldPath, numberValue);
+        } catch (NumberFormatException e) {
+            // Return null if conversion fails, meaning no predicate for invalid numbers
+            return null;
+        }
+    }
+
+    private Number convertToNumber(String value, Class<?> fieldType) {
+        if (fieldType.equals(Integer.class) || fieldType.equals(int.class)) {
+            return Integer.parseInt(value);
+        } else if (fieldType.equals(Long.class) || fieldType.equals(long.class)) {
+            return Long.parseLong(value);
+        } else if (fieldType.equals(Double.class) || fieldType.equals(double.class)) {
+            return Double.parseDouble(value);
+        } else if (fieldType.equals(Float.class) || fieldType.equals(float.class)) {
+            return Float.parseFloat(value);
+        }
+        throw new IllegalArgumentException("Unsupported number type: " + fieldType);
+    }
 
     private Class<?> getFieldType(Class<?> clazz, String fieldName) {
         try {

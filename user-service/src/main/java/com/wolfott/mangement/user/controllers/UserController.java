@@ -31,6 +31,11 @@ public class UserController {
         return userService.getAll(filters, pageable);
     }
 
+    @GetMapping("/search")
+    public Page<UserCompactResponse> getAll(@RequestParam("q") String search, Pageable pageable) {
+        return userService.getAll(search, pageable);
+    }
+
     @PostMapping
     public UserCreateResponse create(@RequestBody UserCreateRequest request){
         return userService.create(request);

@@ -41,6 +41,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserCompactResponse> getAll(String search, Pageable pageable) {
+        Specification<User> spec = userSpecification.search(search);
+        Page<User> page = userRepository.findAll(spec, pageable);
+        return userMapper.toCompactResponse(page);
+    }
+
+    @Override
     public UserCreateResponse create(UserCreateRequest request) {
         User user = userMapper.toUser(request);
         user = userRepository.save(user);

@@ -14,6 +14,7 @@ import java.util.Map;
 public interface UserService {
     UserDetailResponse getOne(Long id);
     Page<UserCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
+    Page<UserCompactResponse> getAll(String search, Pageable pageable);
     UserCreateResponse create(UserCreateRequest request);
     UserUpdateResponse update(Long id, UserUpdateRequest request);
     void delete(Long id);
