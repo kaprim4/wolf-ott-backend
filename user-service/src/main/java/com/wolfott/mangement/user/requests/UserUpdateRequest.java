@@ -1,24 +1,26 @@
 package com.wolfott.mangement.user.requests;
 
 import java.util.Date;
+import lombok.Data;
 
-public record UserUpdateRequest(
-        Long id,
-        String username,
-//        String password,
-        String email,
-        String ip,
-//        Long memberGroupId,
-        Float credits,
-        String notes,
-        Boolean status,
-        String resellerDns,
-        Long ownerId,
-        String overridePackages,
-        String hue,
-        Integer theme,
-        String timezone,
-        String apiKey,
-        Date lastLogin,
-        Date dateRegistered
-) { }
+@Data
+public class UserUpdateRequest{
+    private Long id;
+    private String username;
+    //        String password,
+    private String email;
+    private String ip;
+    //        Long memberGroupId,
+    private Float credits;
+    private String notes;
+    private Boolean status;
+    private String resellerDns;
+    private Long ownerId;
+    private String overridePackages;
+    private String hue;
+    private Integer theme;
+    private String timezone;
+    private String apiKey;
+    private Date lastLogin;
+    private Date dateRegistere;
+}

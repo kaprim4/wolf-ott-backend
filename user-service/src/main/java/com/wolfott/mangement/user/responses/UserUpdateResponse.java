@@ -1,7 +1,9 @@
 package com.wolfott.mangement.user.responses;
 
 import java.util.Date;
+import lombok.Data;
 
+@Data
 public class UserUpdateResponse {
     private Long id;
     private String username;
