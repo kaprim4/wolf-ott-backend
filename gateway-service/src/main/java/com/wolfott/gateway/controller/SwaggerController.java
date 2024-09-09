@@ -1,9 +1,10 @@
 package com.wolfott.gateway.controller;
-/*
+
+import jakarta.validation.constraints.NotNull;
 import org.springdoc.core.AbstractSwaggerUiConfigProperties;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.bind.annotation.GetMapping;*/
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -12,7 +13,7 @@ import java.util.*;
 
 @RestController
 public class SwaggerController {
-/*
+
     private final DiscoveryClient discoveryClient;
 
     public SwaggerController(final DiscoveryClient discoveryClient) {
@@ -37,5 +38,5 @@ public class SwaggerController {
         );
         swaggerConfig.put("urls", swaggerUrls);
         return swaggerConfig;
-    }*/
+    }
 }
