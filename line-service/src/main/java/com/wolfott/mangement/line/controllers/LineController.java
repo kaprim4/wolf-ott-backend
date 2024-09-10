@@ -26,7 +26,7 @@ public class LineController {
         return lineService.getOne(id);
     }
 
-    @GetMapping
+    @GetMapping("/count")
     public int getLinesCount() {
         return lineService.getLinesCount();
     }
