@@ -37,6 +37,11 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
+    public int getLinesCount() {
+        return lineRepository.findAll().size();
+    }
+
+    @Override
     public Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         Page<Line> linePage = lineRepository.findAll(spec, pageable);

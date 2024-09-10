@@ -14,6 +14,9 @@ import java.util.Map;
 public interface LineService {
 
     LineDetailResponse getOne(Long id);
+
+    int getLinesCount();
+
     Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
     LineCreateResponse create(LineCreateRequest request);

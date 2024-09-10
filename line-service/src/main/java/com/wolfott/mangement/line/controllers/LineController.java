@@ -27,6 +27,11 @@ public class LineController {
     }
 
     @GetMapping
+    public int getLinesCount() {
+        return lineService.getLinesCount();
+    }
+
+    @GetMapping
     public Page<LineCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
         return lineService.getAll(filters, pageable);
     }
@@ -37,7 +42,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public LineUpdateResponse createOne(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request){
+    public LineUpdateResponse updateOne(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request){
         return lineService.update(id, request);
     }
 
