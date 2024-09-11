@@ -1,12 +1,10 @@
 package com.wolfott.mangement.line.mappers;
 
 import com.wolfott.mangement.line.models.Line;
+import com.wolfott.mangement.line.models.LineListDto;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
-import com.wolfott.mangement.line.responses.LineCompactResponse;
-import com.wolfott.mangement.line.responses.LineCreateResponse;
-import com.wolfott.mangement.line.responses.LineDetailResponse;
-import com.wolfott.mangement.line.responses.LineUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +26,11 @@ public class LineMapper {
     // Convert Line entity to LineCompactResponse
     public LineCompactResponse toLineCompactResponse(Line line) {
         return modelMapper.map(line, LineCompactResponse.class);
+    }
+
+    // Convert Line entity to LineCompactResponse
+    public LineListDto toLineCompactListResponse(Line line) {
+        return modelMapper.map(line, LineListDto.class);
     }
 
     // Convert Line entity to LineDetailResponse
@@ -58,7 +61,6 @@ public class LineMapper {
         return updatedLine;
     }
 
-    // Convert Page<Line> to Page<LineCompactResponse>
     public Page<LineCompactResponse> toLineCompactResponsePage(Page<Line> linePage) {
         return new PageImpl<>(
                 linePage.getContent().stream()

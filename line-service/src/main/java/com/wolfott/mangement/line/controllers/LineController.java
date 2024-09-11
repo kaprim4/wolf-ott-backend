@@ -36,6 +36,11 @@ public class LineController {
         return lineService.getAll(filters, pageable);
     }
 
+    @GetMapping("/list")
+    public Page<LineCompactResponse> getAllForListing(@RequestParam Map<String, Object> filters, Pageable pageable) {
+        return lineService.getAll(filters, pageable);
+    }
+
     @PostMapping
     public LineCreateResponse createOne(@RequestBody LineCreateRequest request){
         return lineService.create(request);

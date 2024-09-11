@@ -1,11 +1,9 @@
 package com.wolfott.mangement.line.services;
 
+import com.wolfott.mangement.line.models.LineListDto;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
-import com.wolfott.mangement.line.responses.LineCompactResponse;
-import com.wolfott.mangement.line.responses.LineCreateResponse;
-import com.wolfott.mangement.line.responses.LineDetailResponse;
-import com.wolfott.mangement.line.responses.LineUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,6 +16,7 @@ public interface LineService {
     int getLinesCount();
 
     Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
+    Page<LineListDto> getAllforListing(Map<String, Object> filters, Pageable pageable);
 
     LineCreateResponse create(LineCreateRequest request);
 
