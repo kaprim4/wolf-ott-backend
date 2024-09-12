@@ -10,8 +10,8 @@ import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.specifications.LineSpecifications;
-import com.wolfott.mangement.user.models.User;
-import com.wolfott.mangement.user.repositories.UserRepository;
+import com.wolfott.mangement.line.models.User;
+import com.wolfott.mangement.line.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,6 +32,7 @@ public class LineServiceImpl implements LineService {
     @Autowired
     LineActivityRepository lineActivityRepository;
 
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
