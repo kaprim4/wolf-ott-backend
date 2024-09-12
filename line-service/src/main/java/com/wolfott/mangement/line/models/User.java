@@ -1,6 +1,5 @@
 package com.wolfott.mangement.line.models;
 
-import com.wolfott.mangement.user.models.UserGroup;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
