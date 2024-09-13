@@ -1,7 +1,7 @@
 package com.wolfott.mangement.line.mappers;
 
 import com.wolfott.mangement.line.models.Line;
-import com.wolfott.mangement.line.models.LineListDto;
+import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
@@ -29,8 +29,8 @@ public class LineMapper {
     }
 
     // Convert Line entity to LineCompactResponse
-    public LineListDto toLineCompactListResponse(Line line) {
-        return modelMapper.map(line, LineListDto.class);
+    public LineListCompactResponse toLineCompactListResponse(LineList line) {
+        return modelMapper.map(line, LineListCompactResponse.class);
     }
 
     // Convert Line entity to LineDetailResponse
@@ -65,6 +65,16 @@ public class LineMapper {
         return new PageImpl<>(
                 linePage.getContent().stream()
                         .map(this::toLineCompactResponse)
+                        .collect(Collectors.toList()),
+                linePage.getPageable(),
+                linePage.getTotalElements()
+        );
+    }
+
+    public Page<LineListCompactResponse> toLineCompactListResponsePage(Page<LineList> linePage) {
+        return new PageImpl<>(
+                linePage.getContent().stream()
+                        .map(this::toLineCompactListResponse)
                         .collect(Collectors.toList()),
                 linePage.getPageable(),
                 linePage.getTotalElements()

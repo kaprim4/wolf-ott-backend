@@ -1,6 +1,6 @@
 package com.wolfott.mangement.line.services;
 
-import com.wolfott.mangement.line.models.LineListDto;
+import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
@@ -16,7 +16,8 @@ public interface LineService {
     int getLinesCount();
 
     Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
-    Page<LineListDto> getAllforListing(Map<String, Object> filters, Pageable pageable);
+
+    Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable);
 
     LineCreateResponse create(LineCreateRequest request);
 

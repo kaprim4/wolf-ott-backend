@@ -1,10 +1,16 @@
-package com.wolfott.mangement.line.models;
+package com.wolfott.mangement.line.responses;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 
-@Builder
-public class LineListDto {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class LineListCompactResponse {
+
     private Long id;
     private String username;
     private String password;

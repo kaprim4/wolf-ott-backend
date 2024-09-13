@@ -3,14 +3,13 @@ package com.wolfott.mangement.line.services;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
 import com.wolfott.mangement.line.mappers.LineMapper;
 import com.wolfott.mangement.line.models.Line;
-import com.wolfott.mangement.line.models.LineListDto;
+import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.repositories.LineActivityRepository;
 import com.wolfott.mangement.line.repositories.LineRepository;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.specifications.LineSpecifications;
-import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,13 +45,6 @@ public class LineServiceImpl implements LineService {
         return lineMapper.toLineDetailResponse(line);
     }
 
-    public Page<LineListDto> convertListToPage(List<LineListDto> lineList, Pageable pageable) {
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), lineList.size());
-        List<LineListDto> sublist = lineList.subList(start, end);
-        return new PageImpl<>(sublist, pageable, lineList.size());
-    }
-
     @Override
     public int getLinesCount() {
         return lineRepository.findAll().size();
@@ -67,29 +58,10 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public Page<LineListDto> getAllforListing(Map<String, Object> filters, Pageable pageable) {
+    public Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
-        Page<Line> linePage = lineRepository.findAll(spec, pageable);
-        List<LineListDto> lineList = new ArrayList<>();
-        for (Line line : linePage.getContent()) {
-            User owner = userRepository.findOneById(line.getMemberId());
-            int count_cnx = lineActivityRepository.findCountByLineID(line.getLastActivity());
-            LineListDto lineListDto = LineListDto.builder()
-                    .id(line.getId())
-                    .username(line.getUsername())
-                    .password(line.getPassword())
-                    .owner(owner.getUsername())
-                    .status(line.getEnabled())
-                    .online(line.getLastActivity() != null)
-                    .trial(line.getIsTrial())
-                    .active(line.getAdminEnabled())
-                    .connections(count_cnx)
-                    .expiration(line.getExpDate())
-                    .lastConnection(line.getUpdated())
-                    .build();
-            lineList.add(lineListDto);
-        }
-        return convertListToPage(lineList, pageable);
+        List<LineList> linePage = lineRepository.findLinesList();
+        return new PageImpl<LineList>(linePage, pageable, linePage.size());
     }
 
     @Override
