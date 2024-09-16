@@ -7,7 +7,6 @@ import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
 import com.wolfott.mangement.line.repositories.LineRepository;
 import com.wolfott.mangement.line.repositories.BouquetRepository;
-import com.wolfott.mangement.line.responses.LineCompactResponse;
 import org.modelmapper.*;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +29,7 @@ public class MapperConfig {
         // Configure mappings for Bouquet
 //        configureBouquetMappings(modelMapper, bouquetRepository);
         // Configure custom converters for Page objects
-//        configurePageConverters(modelMapper); // , Line.class, LineCompactResponse.class
+//        configurePageConverters(modelMapper); // , Line.class, LineResponse.class
 
         return modelMapper;
     }
@@ -75,7 +74,7 @@ public class MapperConfig {
         });
     }
 
-    private void configureLineMappings(ModelMapper modelMapper, LineRepository lineRepository) {
+   /* private void configureLineMappings(ModelMapper modelMapper, LineRepository lineRepository) {
         modelMapper.createTypeMap(LineUpdateRequest.class, Line.class)
                 .setProvider(request -> {
                     Long id = ContextHolder.getCurrentId(Long.class);
@@ -87,7 +86,7 @@ public class MapperConfig {
                         map().setId(ContextHolder.getCurrentId(Long.class)); // Map the ID from context
                     }
                 });
-    }
+    }*/
 
     private void configureBouquetMappings(ModelMapper modelMapper, BouquetRepository bouquetRepository) {
         Provider<Bouquet> bouquetProvider = request -> {

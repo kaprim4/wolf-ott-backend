@@ -1,5 +1,6 @@
 package com.wolfott.mangement.user.controllers;
 
+import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
 import com.wolfott.mangement.user.responses.UserCompactResponse;
@@ -22,7 +23,7 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/{id}")
-    public UserDetailResponse getOne(@PathVariable("id") Long id){
+    public UserDetailResponse getOne(@PathVariable("id") Long id) {
         return userService.getOne(id);
     }
 
@@ -37,17 +38,22 @@ public class UserController {
     }
 
     @PostMapping
-    public UserCreateResponse create(@RequestBody UserCreateRequest request){
+    public UserCreateResponse create(@RequestBody UserCreateRequest request) {
         return userService.create(request);
     }
 
     @PutMapping("/{id}")
-    public UserUpdateResponse update(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request){
+    public UserUpdateResponse update(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request) {
         return userService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id){
+    public void delete(@PathVariable("id") Long id) {
         userService.delete(id);
+    }
+
+    @GetMapping("/username")
+    public String getUsernameByMemberId(@RequestParam Long memberId) {
+        return userService.findById(memberId);
     }
 }

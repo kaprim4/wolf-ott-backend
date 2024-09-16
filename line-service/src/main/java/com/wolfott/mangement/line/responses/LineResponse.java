@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class LineCompactResponse {
+public class LineResponse {
 
     private Long id;
     private Long memberId;

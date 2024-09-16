@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
     UserSpecification userSpecification;
     @Autowired
     UserMapper userMapper;
+
     @Override
     public UserDetailResponse getOne(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
@@ -65,5 +67,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public String findById(Long memberId) {
+        User user = userRepository.findById(memberId).orElse(null);
+        return user != null ? user.getUsername() : null;
     }
 }
