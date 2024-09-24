@@ -1,41 +1,50 @@
 package com.wolfott.mangement.line.requests;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 
-public record LineUpdateRequest(Long id,
-                                Long memberId,
-                                String username,
-                                String password,
-                                String lastIp,
-                                Long expDate,
-                                Integer adminEnabled,
-                                Integer enabled,
-                                String adminNotes,
-                                String resellerNotes,
-                                String bouquet,
-                                String allowedOutputs,
-                                Integer maxConnections,
-                                Boolean isRestreamer,
-                                Boolean isTrial,
-                                Boolean isMag,
-                                Boolean isE2,
-                                Boolean isStalker,
-                                Boolean isIsplock,
-                                String allowedIps,
-                                String allowedUa,
-                                Long createdAt,
-                                Long pairId,
-                                Integer forceServerId,
-                                String asNumber,
-                                String ispDesc,
-                                String forcedCountry,
-                                Boolean bypassUa,
-                                String playToken,
-                                Long lastExpirationVideo,
-                                Long packageId,
-                                String accessToken,
-                                String contact,
-                                Long lastActivity,
-                                String lastActivityArray,
-                                Timestamp updated) {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LineUpdateRequest {
+    private Long id;
+    private Long memberId;
+    private String username;
+    private String password;
+    private String lastIp;
+    private Long expDate;
+    private Integer adminEnabled;
+    private Integer enabled;
+    private String adminNotes;
+    private String resellerNotes;
+    private String bouquet;
+    private String allowedOutputs;
+    private Integer maxConnections;
+    private Boolean isRestreamer;
+    private Boolean isTrial;
+    private Boolean isMag;
+    private Boolean isE2;
+    private Boolean isStalker;
+    private Boolean isIsplock;
+    private String allowedIps;
+    private String allowedUa;
+    private Long createdAt;
+    private Long pairId;
+    private Integer forceServerId;
+    private String asNumber;
+    private String ispDesc;
+    private String forcedCountry;
+    private Boolean bypassUa;
+    private String playToken;
+    private Long lastExpirationVideo;
+    private Long packageId;
+    private String accessToken;
+    private String contact;
+    private Long lastActivity;
+    private String lastActivityArray;
+    private Timestamp updated;
 }

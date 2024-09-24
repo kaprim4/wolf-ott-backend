@@ -1,44 +1,27 @@
 package com.wolfott.mangement.line.services;
 
-import com.wolfott.mangement.line.configs.UserServiceClient;
-import com.wolfott.mangement.line.dto.LineCompact;
-import com.wolfott.mangement.line.models.Line;
-import com.wolfott.mangement.line.repositories.LineRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.wolfott.mangement.line.models.LineList;
+import com.wolfott.mangement.line.requests.LineCreateRequest;
+import com.wolfott.mangement.line.requests.LineUpdateRequest;
+import com.wolfott.mangement.line.responses.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-@Service
-public class LineService {
+import java.util.Map;
 
-    @Autowired
-    LineRepository lineRepository;
+public interface LineService {
 
-    @Autowired
-    private UserServiceClient userServiceClient;
+    LineDetailResponse getOne(Long id);
 
-    public Page<LineCompact> getAllLines(Pageable pageable) {
-        return lineRepository.findAll(pageable).map(this::convertToCompact);
-    }
+    int getLinesCount();
 
-    public void delete(Long id) {
-        lineRepository.deleteById(id);
-    }
+    Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
-    private LineCompact convertToCompact(Line line) {
-        LineCompact compact = new LineCompact();
-        compact.setId(line.getId());
-        compact.setUsername(line.getUsername());
-        compact.setPassword(line.getPassword());
-        // Fetch the username from user-service using member_id
-        String ownerUsername = userServiceClient.getUsernameByMemberId(line.getMemberId());
-        compact.setOwner(ownerUsername != null ? ownerUsername : "Unknown");
+    Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable);
 
-        compact.setStatus(line.getEnabled() != null && line.getEnabled() == 1 ? "Active" : "Inactive");
-        compact.setTrial(line.getIsTrial() != null && line.getIsTrial() ? "Yes" : "No");
-        compact.setExpiration(line.getExpDate() != null ? line.getExpDate().toString() : "N/A");
-        compact.setLastConnection(line.getUpdated() != null ? line.getUpdated().toString() : "N/A");
-        return compact;
-    }
+    LineCreateResponse create(LineCreateRequest request);
+
+    LineUpdateResponse update(Long id, LineUpdateRequest request);
+
+    void delete(Long id);
 }
