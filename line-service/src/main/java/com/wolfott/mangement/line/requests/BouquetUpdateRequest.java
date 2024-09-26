@@ -1,12 +1,18 @@
 package com.wolfott.mangement.line.requests;
 
-public record BouquetUpdateRequest(
-        Long id,
-        String bouquetName,
-        String bouquetChannels,
-        String bouquetMovies,
-        String bouquetRadios,
-        String bouquetSeries,
-        Integer bouquetOrder
-) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class BouquetUpdateRequest {
+    private Long id;
+    private String bouquetName;
+    private String bouquetChannels;
+    private String bouquetMovies;
+    private String bouquetRadios;
+    private String bouquetSeries;
+    private Integer bouquetOrder;
 }

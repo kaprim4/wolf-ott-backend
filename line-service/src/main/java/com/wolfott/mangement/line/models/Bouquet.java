@@ -7,6 +7,8 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -41,4 +43,10 @@ public class Bouquet implements Serializable {
     @Column(name = "bouquet_order")
     @ColumnDefault("0")
     private Integer bouquetOrder;
+
+    @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PresetBouquet> presetBouquets = new HashSet<>();
+
+    @Column(name = "position_order")
+    private Integer positionOrder; // This field stores the order/index
 }
