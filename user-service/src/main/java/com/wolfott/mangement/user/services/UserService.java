@@ -23,6 +23,8 @@ public interface UserService {
 
     Page<UserCompactResponse> getAll(String search, Pageable pageable);
 
+    List<User> getAllUsers();
+
     UserCreateResponse create(UserCreateRequest request);
 
     UserUpdateResponse update(Long id, UserUpdateRequest request);

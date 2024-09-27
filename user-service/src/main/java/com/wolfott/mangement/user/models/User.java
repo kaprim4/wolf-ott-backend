@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -27,15 +28,6 @@ public class User {
 
     @Column(name = "ip")
     private String ip;
-
-//    @Column(name = "date_registered")
-//    private Date dateRegistered;
-
-//    @Column(name = "last_login", columnDefinition = )
-//    private Date lastLogin;
-
-//    @Column(name = "member_group_id")
-//    private Long memberGroupId;
 
     @Column(name = "credits")
     private Float credits;
@@ -77,39 +69,44 @@ public class User {
     @JoinColumn(name = "member_group_id")
     private UserGroup group;
 
+    @Column(name = "last_login")
+    private Long timestampLastLogin;
 
-    @Column(name = "last_login") // Prevent automatic DDL changes
-    private Long timestampLastLogin; // Internal representation in Unix timestamp
+    @Column(name = "date_registered")
+    private Long timestampDateRegistered;
 
-    @Transient // Mark as transient to prevent JPA from mapping this field
-    private Date lastLogin; // Public getter/setter uses Date
+    @Transient
+    private String lastLogin;
 
-    // Custom getter for LastLogin
-    public Date getLastLogin() {
-        return timestampLastLogin != null ? new Date(timestampLastLogin * 1000L) : null;
+    @Transient
+    private String dateRegistered;
+
+
+    public String getLastLogin() {
+        if (timestampLastLogin != null) {
+            Date date = new Date(timestampLastLogin * 1000L);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return sdf.format(date);
+        }
+        return null;
     }
 
-    // Custom setter for Date
     public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
+        this.lastLogin = lastLogin != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(lastLogin) : null;
         this.timestampLastLogin = lastLogin != null ? lastLogin.getTime() / 1000L : null;
     }
 
-    @Column(name = "date_registered") // Prevent automatic DDL changes
-    private Long timestampDateRegistered; // Internal representation in Unix timestamp
-
-    @Transient // Mark as transient to prevent JPA from mapping this field
-    private Date dateRegistered; // Public getter/setter uses Date
-
-    // Custom getter for DateRegistered
-    public Date getDateRegistered() {
-        return timestampDateRegistered != null ? new Date(timestampDateRegistered * 1000L) : null;
+    public String getDateRegistered() {
+        if (timestampDateRegistered != null) {
+            Date date = new Date(timestampDateRegistered * 1000L);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return sdf.format(date);
+        }
+        return null;
     }
 
-    // Custom setter for DateRegistered
     public void setDateRegistered(Date date) {
-        this.dateRegistered = date;
+        this.dateRegistered = date != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date) : null;
         this.timestampDateRegistered = date != null ? date.getTime() / 1000L : null;
     }
-
 }

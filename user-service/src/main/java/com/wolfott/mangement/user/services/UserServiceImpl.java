@@ -58,6 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllUsers() {
+
+        return userRepository.findAll();
+    }
+
+    @Override
     public UserCreateResponse create(UserCreateRequest request) {
         User user = userMapper.toUser(request);
         user = userRepository.save(user);

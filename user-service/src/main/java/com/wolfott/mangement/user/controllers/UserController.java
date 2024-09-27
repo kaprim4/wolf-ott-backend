@@ -33,6 +33,11 @@ public class UserController {
         return userService.getAll(filters, pageable);
     }
 
+    @GetMapping("/all")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
     @GetMapping("/list")
     public List<UserCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
         return userService.getAll(filters);
