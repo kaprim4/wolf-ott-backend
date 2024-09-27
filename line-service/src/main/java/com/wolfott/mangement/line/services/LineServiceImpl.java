@@ -46,6 +46,13 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
+    public List<LineCompactResponse> getAll(Map<String, Object> filters) {
+        Specification<Line> spec = lineSpecifications.dynamic(filters);
+        List<Line> list = lineRepository.findAll(spec);
+        return lineMapper.toLineCompactResponsePage(list);
+    }
+
+    @Override
     public Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         Page<Line> page = lineRepository.findAll(spec, pageable);

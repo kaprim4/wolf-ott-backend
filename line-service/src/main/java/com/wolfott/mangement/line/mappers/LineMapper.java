@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -105,5 +106,9 @@ public class LineMapper {
                 linePage.getPageable(),
                 linePage.getTotalElements()
         );
+    }
+
+    public List<LineCompactResponse> toLineCompactResponsePage(List<Line> list) {
+        return list.stream().map(this::toLineCompactResponse).toList();
     }
 }

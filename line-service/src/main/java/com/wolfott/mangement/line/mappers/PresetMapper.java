@@ -1,30 +1,125 @@
 package com.wolfott.mangement.line.mappers;
 
-import com.wolfott.mangement.line.models.Preset;
+import com.wolfott.mangement.line.models.*;
 import com.wolfott.mangement.line.requests.PresetCreateRequest;
 import com.wolfott.mangement.line.requests.PresetUpdateRequest;
-import com.wolfott.mangement.line.responses.PresetCompactResponse;
-import com.wolfott.mangement.line.responses.PresetCreateResponse;
-import com.wolfott.mangement.line.responses.PresetDetailResponse;
-import com.wolfott.mangement.line.responses.PresetUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class PresetMapper {
     @Autowired
     ModelMapper mapper;
+
+    @PostConstruct
+    private void setupMappings() {
+        // Mapping from PresetUpdateRequest to Preset
+        mapper.addMappings(new PropertyMap<PresetUpdateRequest, Preset>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setStatus(source.getStatus());
+                // Pass the current preset to the converter
+                using(idxToBouquetsConverter()).map(source.getBouquets()).setPresetBouquets(null);
+            }
+        });
+
+        // Mapping from Preset to PresetUpdateResponse
+        mapper.addMappings(new PropertyMap<Preset, PresetUpdateResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setStatus(source.getStatus());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
+                // Map PresetBouquet entities to bouquet IDs
+                using(presetBouquetsToIdsConverter()).map(source.getPresetBouquets()).setBouquets(null);
+            }
+        });
+
+        // Mapping from Preset to PresetUpdateResponse
+        mapper.addMappings(new PropertyMap<Preset, PresetDetailResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setStatus(source.getStatus());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
+                // Map PresetBouquet entities to bouquet IDs
+                using(presetBouquetsToIdsConverter()).map(source.getPresetBouquets()).setBouquets(null);
+            }
+        });
+    }
+
+    private Converter<List<Long>, Set<PresetBouquet>> idxToBouquetsConverter() {
+        return context -> {
+            List<Long> bouquetIds = context.getSource();
+            Preset preset = (Preset) context.getDestination(); // Get the current preset object
+            Set<PresetBouquet> presetBouquets = new HashSet<>();
+            if (bouquetIds != null) {
+                for (int i = 0; i < bouquetIds.size(); i++) {
+                    Long id = bouquetIds.get(i);
+                    PresetBouquet presetBouquet = new PresetBouquet();
+                    Bouquet bouquet = new Bouquet(id); // Assuming you're only using the ID for now
+                    presetBouquet.setBouquet(bouquet);
+                    presetBouquet.setPreset(preset); // Set the existing preset
+                    presetBouquet.setPositionOrder(i); // Set position order based on index
+                    presetBouquets.add(presetBouquet);
+                    log.info("Bouquet [{}]", id);
+                }
+            }
+            return presetBouquets;
+        };
+    }
+
+    private Converter<Set<PresetBouquet>, List<Long>> presetBouquetsToIdsConverter() {
+        return context -> {
+            Set<PresetBouquet> presetBouquets = context.getSource();
+            List<Long> bouquetIds = new ArrayList<>();
+            if (presetBouquets != null) {
+                for (PresetBouquet presetBouquet : presetBouquets) {
+                    bouquetIds.add(presetBouquet.getBouquet().getId());
+                }
+            }
+            return bouquetIds;
+        };
+    }
+
+
     public Preset toBouquet(PresetCreateRequest request){
         return mapper.map(request, Preset.class);
     }
     public Preset toBouquet(PresetUpdateRequest request){
         return mapper.map(request, Preset.class);
+    }
+    public Preset merge(PresetUpdateRequest request, Preset model) {
+        Long id = model.getId();
+        LocalDateTime createdAt = model.getCreatedAt();
+        LocalDateTime updatedAt = LocalDateTime.now();
+        model = mapper.map(request, Preset.class);
+        model.setId(id);
+        model.setCreatedAt(createdAt);
+        model.setUpdatedAt(updatedAt);
+        return model;
     }
 
     public PresetCreateResponse toCreateResponse(Preset model){
@@ -51,6 +146,10 @@ public class PresetMapper {
                 page.getPageable(),
                 page.getTotalElements()
         );
+    }
+
+    public List<PresetCompactResponse> toCompactResponse(List<Preset> list) {
+        return list.stream().map(this::toCompactResponse).toList();
     }
 
     public Collection<PresetCompactResponse> toCompactResponse(Collection<Preset> collection) {

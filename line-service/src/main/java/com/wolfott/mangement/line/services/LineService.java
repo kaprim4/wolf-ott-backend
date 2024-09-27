@@ -7,6 +7,7 @@ import com.wolfott.mangement.line.responses.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 public interface LineService {
@@ -15,6 +16,7 @@ public interface LineService {
 
     int getLinesCount();
 
+    List<LineCompactResponse> getAll(Map<String, Object> filters);
     Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
     Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable);

@@ -3,6 +3,7 @@ package com.wolfott.mangement.line.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode
 @Table(name = "bouquets")
+@NoArgsConstructor
 public class Bouquet implements Serializable {
 
     @Id
@@ -44,9 +46,19 @@ public class Bouquet implements Serializable {
     @ColumnDefault("0")
     private Integer bouquetOrder;
 
-    @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<PresetBouquet> presetBouquets = new HashSet<>();
 
-    @Column(name = "position_order")
-    private Integer positionOrder; // This field stores the order/index
+    public Bouquet(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Bouquet{" +
+                "id=" + id +
+                ", bouquetName='" + bouquetName + '\'' +
+                ", bouquetOrder=" + bouquetOrder +
+                '}';
+    }
 }

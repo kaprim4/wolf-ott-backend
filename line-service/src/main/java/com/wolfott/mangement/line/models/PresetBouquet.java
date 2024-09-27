@@ -6,24 +6,32 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
-@Entity
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Entity
 @Table(name = "preset_bouquets")
+@IdClass(PresetBouquetId.class) // Use a composite key
 public class PresetBouquet implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "preset_id", nullable = false)
     private Preset preset;
 
-    @ManyToOne
+    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bouquet_id", nullable = false)
     private Bouquet bouquet;
 
     @Column(name = "position_order")
     private Integer positionOrder; // This field stores the order/index
+
+    @Override
+    public String toString() {
+        return "PresetBouquet{" +
+                "presetId=" + (preset != null ? preset.getId() : "null") +
+                ", bouquetId=" + (bouquet != null ? bouquet.getId() : "null") +
+                ", positionOrder=" + positionOrder +
+                '}';
+    }
 }

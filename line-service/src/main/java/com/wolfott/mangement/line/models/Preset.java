@@ -3,6 +3,7 @@ package com.wolfott.mangement.line.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
@@ -12,8 +13,9 @@ import java.util.Set;
 
 @Entity
 @Data
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "presets")
+@NoArgsConstructor
 public class Preset implements Serializable {
 
     @Id
@@ -34,6 +36,22 @@ public class Preset implements Serializable {
     @Column(name = "preset_updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "preset", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "preset", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<PresetBouquet> presetBouquets = new HashSet<>();
+
+    public Preset(Long id) {
+        this.id = id;
+    }
+    @Override
+    public String toString() {
+        return "Preset{" +
+                "id=" + id +
+                ", presetName='" + presetName + '\'' +
+                ", presetDescription='" + presetDescription + '\'' +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
 }
