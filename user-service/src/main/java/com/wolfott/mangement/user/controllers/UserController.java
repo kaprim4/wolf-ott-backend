@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -30,6 +31,11 @@ public class UserController {
     @GetMapping
     public Page<UserCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
         return userService.getAll(filters, pageable);
+    }
+
+    @GetMapping("/all")
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @GetMapping("/search")

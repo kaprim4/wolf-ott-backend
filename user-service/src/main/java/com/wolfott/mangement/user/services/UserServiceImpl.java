@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -47,6 +48,12 @@ public class UserServiceImpl implements UserService {
         Specification<User> spec = userSpecification.search(search);
         Page<User> page = userRepository.findAll(spec, pageable);
         return userMapper.toCompactResponse(page);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+
+        return userRepository.findAll();
     }
 
     @Override

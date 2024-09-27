@@ -1,4 +1,5 @@
 package com.wolfott.mangement.line.services;
+
 import com.wolfott.mangement.line.configs.UserServiceClient;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
 import com.wolfott.mangement.line.mappers.LineMapper;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 @Service
 public class LineServiceImpl implements LineService {
     @Autowired
@@ -34,6 +36,7 @@ public class LineServiceImpl implements LineService {
     LineMapper lineMapper;
     @Autowired
     private UserServiceClient userServiceClient;
+
     @Override
     public LineDetailResponse getOne(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException("Line not found"));
