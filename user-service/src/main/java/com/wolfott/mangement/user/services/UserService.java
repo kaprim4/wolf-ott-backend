@@ -11,12 +11,14 @@ import io.micrometer.core.instrument.config.validate.Validated;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
     UserDetailResponse getOne(Long id);
 
+    List<UserCompactResponse> getAll(Map<String, Object> filters);
     Page<UserCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
     Page<UserCompactResponse> getAll(String search, Pageable pageable);

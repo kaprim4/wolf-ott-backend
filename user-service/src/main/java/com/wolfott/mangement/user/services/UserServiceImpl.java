@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,6 +34,13 @@ public class UserServiceImpl implements UserService {
     public UserDetailResponse getOne(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         return userMapper.toDetailResponse(user);
+    }
+
+    @Override
+    public List<UserCompactResponse> getAll(Map<String, Object> filters) {
+        Specification<User> spec = userSpecification.dynamic(filters);
+        List<User> page = userRepository.findAll(spec);
+        return userMapper.toCompactResponse(page);
     }
 
     @Override

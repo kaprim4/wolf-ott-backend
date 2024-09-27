@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -51,6 +52,10 @@ public class UserMapper {
                 page.getPageable(),
                 page.getTotalElements()
         );
+    }
+
+    public List<UserCompactResponse> toCompactResponse(List<User> list) {
+        return list.stream().map(this::toCompactResponse).toList();
     }
 
     public Collection<UserCompactResponse> toCompactResponse(Collection<User> collection) {
