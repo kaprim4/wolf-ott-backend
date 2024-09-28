@@ -8,7 +8,9 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,7 +39,7 @@ public class Preset implements Serializable {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "preset", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<PresetBouquet> presetBouquets = new HashSet<>();
+    private List<PresetBouquet> presetBouquets = new ArrayList<>();
 
     public Preset(Long id) {
         this.id = id;
@@ -51,6 +53,7 @@ public class Preset implements Serializable {
                 ", status=" + status +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+//                ", presetBouquets=" + presetBouquets.stream().map(PresetBouquet::toString) +
                 '}';
     }
 

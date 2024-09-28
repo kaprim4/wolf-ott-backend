@@ -8,7 +8,9 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -47,7 +49,7 @@ public class Bouquet implements Serializable {
     private Integer bouquetOrder;
 
     @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<PresetBouquet> presetBouquets = new HashSet<>();
+    private List<PresetBouquet> presetBouquets = new ArrayList<>();
 
     public Bouquet(Long id) {
         this.id = id;

@@ -70,30 +70,35 @@ public class PresetMapper {
         });
     }
 
-    private Converter<List<Long>, Set<PresetBouquet>> idxToBouquetsConverter() {
+    private Converter<List<Long>, List<PresetBouquet>> idxToBouquetsConverter() {
         return context -> {
             List<Long> bouquetIds = context.getSource();
-            Preset preset = (Preset) context.getDestination(); // Get the current preset object
-            Set<PresetBouquet> presetBouquets = new HashSet<>();
+            Preset preset = (Preset) context.getDestination();
+            List<PresetBouquet> presetBouquets = new ArrayList<>();
+
             if (bouquetIds != null) {
                 for (int i = 0; i < bouquetIds.size(); i++) {
                     Long id = bouquetIds.get(i);
                     PresetBouquet presetBouquet = new PresetBouquet();
                     Bouquet bouquet = new Bouquet(id); // Assuming you're only using the ID for now
                     presetBouquet.setBouquet(bouquet);
-                    presetBouquet.setPreset(preset); // Set the existing preset
-                    presetBouquet.setPositionOrder(i); // Set position order based on index
+                    presetBouquet.setPreset(preset);
+                    presetBouquet.setPositionOrder(i);
                     presetBouquets.add(presetBouquet);
-                    log.info("Bouquet [{}]", id);
+
+                    // Logging the added bouquet
+                    System.out.println("Added PresetBouquet: " + presetBouquet);
                 }
             }
+            System.out.println("Total PresetBouquets: " + presetBouquets.size());
             return presetBouquets;
         };
     }
 
-    private Converter<Set<PresetBouquet>, List<Long>> presetBouquetsToIdsConverter() {
+
+    private Converter<List<PresetBouquet>, List<Long>> presetBouquetsToIdsConverter() {
         return context -> {
-            Set<PresetBouquet> presetBouquets = context.getSource();
+            List<PresetBouquet> presetBouquets = context.getSource();
             List<Long> bouquetIds = new ArrayList<>();
             if (presetBouquets != null) {
                 for (PresetBouquet presetBouquet : presetBouquets) {
