@@ -18,8 +18,8 @@ public class Line {
     @Column(name = "id", columnDefinition = "int")
     private Long id;
 
-//    @Column(name = "member_id", columnDefinition = "int")
-//    private Long memberId;
+    @Column(name = "member_id", columnDefinition = "int")
+    private Long memberId;
 
     @Column(name = "username")
     private String username;
@@ -141,12 +141,12 @@ public class Line {
     @Column(name = "last_activity_array", columnDefinition = "mediumtext")
     private String lastActivityArray;
 
-    @Column(name = "updated", columnDefinition = "timestamp")
-    @ColumnDefault("current_timestamp()")
-    private Timestamp updated;
+//    @Column(name = "updated", columnDefinition = "timestamp")
+//    @ColumnDefault("current_timestamp()")
+//    private Timestamp updated;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", insertable = false, updatable = false)
-//    @Transient
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    @Transient
     private User member;
 }

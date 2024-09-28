@@ -7,6 +7,7 @@ import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.repositories.LineRepository;
+import com.wolfott.mangement.line.repositories.UserRepository;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.LineCompactResponse;
@@ -35,6 +36,8 @@ public class LineServiceImpl implements LineService {
     @Autowired
     LineMapper lineMapper;
     @Autowired
+    UserRepository userRepository;
+    @Autowired
     private UserServiceClient userServiceClient;
 
     @Override
@@ -52,26 +55,40 @@ public class LineServiceImpl implements LineService {
     public List<LineCompactResponse> getAll(Map<String, Object> filters) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         List<Line> list = lineRepository.findAll(spec);
-        return lineMapper.toLineCompactResponsePage(list);
+        List<Line> lines = list.stream().parallel()
+                .map(line -> {
+                    if (line.getMemberId() != null){
+                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
+//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
+                        String username = member.getUsername();
+                        member.setUsername(username);
+                        line.setMember(member);
+                    }
+                    return line;
+                }).toList();
+        return lineMapper.toLineCompactResponsePage(lines);
     }
 
     @Override
     public Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         Page<Line> page = lineRepository.findAll(spec, pageable);
-//        List<Line> lines = page.getContent().stream().parallel()
-//                .map(line -> {
-//                    User member = new User();
+        List<Line> lines = page.getContent().stream().parallel()
+                .map(line -> {
+                    if (line.getMemberId() != null){
+                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
 //                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-//                    member.setUsername(username);
-//                    line.setMember(member);
-//                    return line;
-//                }).toList();
-//        page = new PageImpl<>(
-//                lines,
-//                pageable,
-//                page.getTotalElements()
-//        );
+                        String username = member.getUsername();
+                        member.setUsername(username);
+                        line.setMember(member);
+                    }
+                    return line;
+                }).toList();
+        page = new PageImpl<>(
+                lines,
+                pageable,
+                page.getTotalElements()
+        );
         return lineMapper.toLineCompactResponsePage(page);
     }
 

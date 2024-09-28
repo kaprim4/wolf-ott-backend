@@ -13,7 +13,9 @@ import com.wolfott.mangement.line.responses.PresetDetailResponse;
 import com.wolfott.mangement.line.responses.PresetUpdateResponse;
 import com.wolfott.mangement.line.specifications.PresetSpecification;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -21,10 +23,12 @@ import org.springframework.orm.jpa.JpaObjectRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class PresetServiceImpl implements PresetService {
     @Autowired
@@ -78,6 +82,16 @@ public class PresetServiceImpl implements PresetService {
             String msg = ex.getMessage();
             msg = msg.replaceAll("com.wolfott.mangement.line.models.Bouquet", "Bouquet");
             throw new BouquetNotFoundException(msg);
+        } catch (DataIntegrityViolationException ex) {
+            // Check if the exception is due to foreign key constraint violation
+            if (ex.getCause() instanceof SQLIntegrityConstraintViolationException) {
+                String msg = ex.getCause().getMessage();
+                throw new BouquetNotFoundException("Foreign key constraint violation: " + msg);
+            }else {
+                log.warn("It's not an SQLIntegrityConstraintViolationException instance");
+            }
+            // Rethrow other DataIntegrityViolationExceptions if not related to foreign keys
+            throw ex;
         }
         return presetMapper.toUpdateResponse(preset);
     }
