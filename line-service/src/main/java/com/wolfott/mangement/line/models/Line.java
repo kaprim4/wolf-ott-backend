@@ -18,7 +18,8 @@ public class Line {
     @Column(name = "id", columnDefinition = "int")
     private Long id;
 
-    @Column(name = "member_id", columnDefinition = "int")
+//    @Column(name = "member_id", columnDefinition = "int")
+    @Transient
     private Long memberId;
 
     @Column(name = "username")
@@ -145,8 +146,8 @@ public class Line {
 //    @ColumnDefault("current_timestamp()")
 //    private Timestamp updated;
 
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "member_id", insertable = false, updatable = false)
-    @Transient
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+//    @Transient
     private User member;
 }

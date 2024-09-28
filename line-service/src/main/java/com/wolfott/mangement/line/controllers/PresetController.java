@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,6 +29,11 @@ public class PresetController {
     @GetMapping
     public Page<PresetCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
         return presetService.getAll(filters, pageable);
+    }
+
+    @GetMapping("/list")
+    public List<PresetCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
+        return presetService.getAll(filters);
     }
 
     @PostMapping
