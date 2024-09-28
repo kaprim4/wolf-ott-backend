@@ -13,6 +13,7 @@ import java.util.Date;
 public class LineCompactResponse {
     private Long id;
     private String username;
+    private Long memberId;
     private String password;
     private String owner;
     private Integer status;

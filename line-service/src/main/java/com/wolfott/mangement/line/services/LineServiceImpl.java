@@ -55,18 +55,18 @@ public class LineServiceImpl implements LineService {
     public List<LineCompactResponse> getAll(Map<String, Object> filters) {
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         List<Line> list = lineRepository.findAll(spec);
-        List<Line> lines = list.stream().parallel()
-                .map(line -> {
-                    if (line.getMemberId() != null){
-                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
-//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-                        String username = member.getUsername();
-                        member.setUsername(username);
-                        line.setMember(member);
-                    }
-                    return line;
-                }).toList();
-        return lineMapper.toLineCompactResponsePage(lines);
+//        List<Line> lines = list.stream().parallel()
+//                .map(line -> {
+//                    if (line.getMemberId() != null){
+//                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
+////                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
+//                        String username = member.getUsername();
+//                        member.setUsername(username);
+//                        line.setMember(member);
+//                    }
+//                    return line;
+//                }).toList();
+        return lineMapper.toLineCompactResponsePage(list);
     }
 
     @Override

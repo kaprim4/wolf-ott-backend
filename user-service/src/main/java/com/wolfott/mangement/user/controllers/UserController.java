@@ -28,6 +28,11 @@ public class UserController {
         return userService.getOne(id);
     }
 
+    @GetMapping("/{id}/username")
+    public String getUsernameByMemberId(@PathVariable("id") Long memberId) {
+        return userService.findById(memberId);
+    }
+
     @GetMapping
     public Page<UserCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
         return userService.getAll(filters, pageable);
@@ -63,8 +68,4 @@ public class UserController {
         userService.delete(id);
     }
 
-    @GetMapping("/username")
-    public String getUsernameByMemberId(@RequestParam Long memberId) {
-        return userService.findById(memberId);
-    }
 }

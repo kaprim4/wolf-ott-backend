@@ -37,6 +37,7 @@ public class LineMapper {
         modelMapper.addMappings(new PropertyMap<Line, LineCompactResponse>() {
             @Override
             protected void configure() {
+                map().setMemberId(source.getMemberId());
                 using(userToStringConverter()).map(source.getMember(), destination.getOwner());
                 map().setTrial(source.getIsTrial());
                 using(lastActivityArrayToActiveConverter()).map(source.getLastActivityArray(), destination.getActive());
