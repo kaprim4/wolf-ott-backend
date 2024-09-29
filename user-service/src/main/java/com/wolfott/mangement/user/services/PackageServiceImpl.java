@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -33,6 +34,13 @@ public class PackageServiceImpl implements PackageService {
     public PackageDetailResponse getOne(String id) {
         UserPackage pkg = packageRepository.findById(id).orElseThrow(() -> new PackageNotFoundException("Package Not Found"));
         return packageMapper.toDetailResponse(pkg);
+    }
+
+    @Override
+    public List<PackageCompactResponse> getAll(Map<String, Object> filters) {
+        Specification<UserPackage> spec = packageSpecification.dynamic(filters);
+        List<UserPackage> list = packageRepository.findAll(spec);
+        return packageMapper.toPackageCompactResponsePage(list);
     }
 
     @Override

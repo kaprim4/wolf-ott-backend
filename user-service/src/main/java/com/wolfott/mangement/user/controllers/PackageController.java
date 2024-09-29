@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,6 +30,11 @@ public class PackageController {
     @GetMapping
     public Page<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable){
         return packageService.getAll(filters, pageable);
+    }
+
+    @GetMapping("/list")
+    public List<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
+        return packageService.getAll(filters);
     }
 
     @PostMapping
