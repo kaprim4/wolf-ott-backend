@@ -37,12 +37,21 @@ public class LineMapper {
         modelMapper.addMappings(new PropertyMap<Line, LineCompactResponse>() {
             @Override
             protected void configure() {
-                map().setMemberId(source.getMemberId());
+//                map().setMemberId(source.getMemberId());
                 using(userToStringConverter()).map(source.getMember(), destination.getOwner());
+                using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
                 map().setTrial(source.getIsTrial());
                 using(lastActivityArrayToActiveConverter()).map(source.getLastActivityArray(), destination.getActive());
                 map().setConnections(source.getMaxConnections());
                 using(expDateToDateConverter()).map(source.getExpDate(), destination.getExpiration());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<Line, LineDetailResponse>() {
+            @Override
+            protected void configure() {
+//                map().setMemberId(source.getMemberId());
+                using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
             }
         });
     }
@@ -50,7 +59,13 @@ public class LineMapper {
     private Converter<User, String> userToStringConverter() {
         return context -> Optional.ofNullable(context.getSource())
                 .map(User::getUsername)
-                .orElse("Anonymous");
+                .orElse(null); // "Anonymous"
+    }
+
+    private Converter<User, Long> userToMemberIdConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(User::getId)
+                .orElse(null); // "Anonymous"
     }
 
     private Converter<String, Integer> lastActivityArrayToActiveConverter() {
