@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -33,6 +34,13 @@ public class BouquetServiceImpl implements BouquetService {
     public BouquetDetailResponse getOne(Long id) {
         Bouquet bouquet = bouquetRepository.findById(id).orElseThrow(() -> new BouquetNotFoundException("Bouquet Not Found"));
         return bouquetMapper.toDetailResponse(bouquet);
+    }
+
+    @Override
+    public List<BouquetCompactResponse> getAll(Map<String, Object> filters) {
+        Specification<Bouquet> spec = bouquetSpecification.dynamic(filters);
+        List<Bouquet> list = bouquetRepository.findAll(spec);
+        return bouquetMapper.toCompactResponse(list);
     }
 
     @Override

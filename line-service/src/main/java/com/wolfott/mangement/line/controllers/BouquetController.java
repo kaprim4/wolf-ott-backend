@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,6 +25,11 @@ public class BouquetController {
     @GetMapping("/{id}")
     public BouquetDetailResponse getOne(@PathVariable("id") Long id){
         return bouquetService.getOne(id);
+    }
+
+    @GetMapping("/list")
+    public List<BouquetCompactResponse> getAll(@RequestParam Map<String, Object> filters){
+        return bouquetService.getAll(filters);
     }
 
     @GetMapping

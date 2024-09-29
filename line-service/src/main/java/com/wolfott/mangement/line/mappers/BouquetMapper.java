@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,6 +55,10 @@ public class BouquetMapper {
     }
 
     public Collection<BouquetCompactResponse> toCompactResponse(Collection<Bouquet> collection) {
+        return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
+    }
+
+    public List<BouquetCompactResponse> toCompactResponse(List<Bouquet> collection) {
         return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
     }
 }

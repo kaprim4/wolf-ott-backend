@@ -9,10 +9,12 @@ import com.wolfott.mangement.line.responses.BouquetUpdateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Map;
 
 public interface BouquetService {
     BouquetDetailResponse getOne(Long id);
+    List<BouquetCompactResponse> getAll(Map<String, Object> filters);
     Page<BouquetCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
     BouquetCreateResponse create(BouquetCreateRequest request);
     BouquetUpdateResponse update(Long id, BouquetUpdateRequest request);
