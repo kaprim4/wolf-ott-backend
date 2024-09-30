@@ -51,11 +51,11 @@ public class PackageMapper {
         );
     }
 
-    public List<PackageCompactResponse> toPackageCompactResponsePage(List<UserPackage> list) {
-        return list.stream().map(this::toCompactResponse).toList();
+    public Collection<PackageCompactResponse> toCompactResponse(Collection<UserPackage> collection) {
+        return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
     }
 
-    public Collection<PackageCompactResponse> toCompactResponse(Collection<UserPackage> collection) {
+    public List<PackageCompactResponse> toCompactResponse(List<UserPackage> collection) {
         return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
     }
 }

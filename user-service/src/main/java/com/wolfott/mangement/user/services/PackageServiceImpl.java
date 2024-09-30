@@ -40,7 +40,7 @@ public class PackageServiceImpl implements PackageService {
     public List<PackageCompactResponse> getAll(Map<String, Object> filters) {
         Specification<UserPackage> spec = packageSpecification.dynamic(filters);
         List<UserPackage> list = packageRepository.findAll(spec);
-        return packageMapper.toPackageCompactResponsePage(list);
+        return packageMapper.toCompactResponse(list);
     }
 
     @Override

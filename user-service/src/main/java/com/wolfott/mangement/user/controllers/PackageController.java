@@ -27,14 +27,13 @@ public class PackageController {
         return packageService.getOne(id);
     }
 
+    @GetMapping("list")
+    public List<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters){
+        return packageService.getAll(filters);
+    }
     @GetMapping
     public Page<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable){
         return packageService.getAll(filters, pageable);
-    }
-
-    @GetMapping("/list")
-    public List<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
-        return packageService.getAll(filters);
     }
 
     @PostMapping
