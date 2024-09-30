@@ -1,20 +1,23 @@
 package com.wolfott.mangement.line.services;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.configs.UserServiceClient;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
+import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
+import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.models.User;
+import com.wolfott.mangement.line.repositories.BouquetRepository;
 import com.wolfott.mangement.line.repositories.LineRepository;
 import com.wolfott.mangement.line.repositories.UserRepository;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
-import com.wolfott.mangement.line.responses.LineCompactResponse;
-import com.wolfott.mangement.line.responses.LineCreateResponse;
-import com.wolfott.mangement.line.responses.LineDetailResponse;
-import com.wolfott.mangement.line.responses.LineUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.specifications.LineSpecifications;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,10 +26,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class LineServiceImpl implements LineService {
     @Autowired
@@ -38,6 +43,10 @@ public class LineServiceImpl implements LineService {
     @Autowired
     UserRepository userRepository;
     @Autowired
+    BouquetRepository bouquetRepository;
+    @Autowired
+    BouquetMapper bouquetMapper;
+    @Autowired
     private UserServiceClient userServiceClient;
 
     @Override
@@ -45,6 +54,26 @@ public class LineServiceImpl implements LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineNotFoundException("Line not found"));
         return lineMapper.toLineDetailResponse(line);
     }
+
+    @Override
+    public List<BouquetCompactResponse> getLineBouquets(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        log.info("bouquet's : {}", line.getBouquet());
+
+        String bouquetJson = line.getBouquet(); // Assume this is a JSON string
+        List<Long> lineBouquets;
+
+        try {
+            lineBouquets = new ObjectMapper().readValue(bouquetJson, new TypeReference<List<Long>>() {});
+        } catch (IOException e) {
+            log.error("Failed to deserialize bouquet JSON", e);
+            throw new RuntimeException("Deserialization error", e);
+        }
+
+        List<Bouquet> bouquets = bouquetRepository.findAllById(lineBouquets);
+        return bouquetMapper.toCompactResponse(bouquets);
+    }
+
 
     @Override
     public int getLinesCount() {

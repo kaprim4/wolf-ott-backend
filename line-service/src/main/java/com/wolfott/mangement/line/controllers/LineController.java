@@ -25,6 +25,11 @@ public class LineController {
         return lineService.getOne(id);
     }
 
+    @GetMapping("/{id}/bouquets")
+    public List<BouquetCompactResponse> getLineBouquets(@PathVariable Long id) {
+        return lineService.getLineBouquets(id);
+    }
+
     @GetMapping("/count")
     public int getLinesCount() {
         return lineService.getLinesCount();

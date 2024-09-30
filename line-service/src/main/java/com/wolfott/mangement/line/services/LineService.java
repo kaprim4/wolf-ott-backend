@@ -13,6 +13,7 @@ import java.util.Map;
 public interface LineService {
 
     LineDetailResponse getOne(Long id);
+    List<BouquetCompactResponse> getLineBouquets(Long id);
 
     int getLinesCount();
 
