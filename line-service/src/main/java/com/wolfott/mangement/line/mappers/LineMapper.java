@@ -70,6 +70,20 @@ public class LineMapper {
                 using(memberIdToUserConverter()).map(source.getMemberId(), destination.getMember());
             }
         });
+
+        modelMapper.addMappings(new PropertyMap<Line, LineCreateResponse>() {
+            @Override
+            protected void configure() {
+                using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<LineCreateRequest, Line>() {
+            @Override
+            protected void configure() {
+                using(memberIdToUserConverter()).map(source.getMemberId(), destination.getMember());
+            }
+        });
     }
 
     private Converter<User, String> userToUsernameConverter() {
