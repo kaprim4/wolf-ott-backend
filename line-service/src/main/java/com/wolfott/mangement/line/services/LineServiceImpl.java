@@ -27,6 +27,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -64,7 +65,10 @@ public class LineServiceImpl implements LineService {
         List<Long> lineBouquets;
 
         try {
-            lineBouquets = new ObjectMapper().readValue(bouquetJson, new TypeReference<List<Long>>() {});
+            if (bouquetJson == null)
+                lineBouquets = new ArrayList<>();
+            else
+                lineBouquets = new ObjectMapper().readValue(bouquetJson, new TypeReference<List<Long>>() {});
         } catch (IOException e) {
             log.error("Failed to deserialize bouquet JSON", e);
             throw new RuntimeException("Deserialization error", e);
