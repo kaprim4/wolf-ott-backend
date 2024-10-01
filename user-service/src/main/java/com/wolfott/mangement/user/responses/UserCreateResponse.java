@@ -1,13 +1,17 @@
 package com.wolfott.mangement.user.responses;
 
+import lombok.Data;
+
 import java.util.Date;
 
+@Data
 public class UserCreateResponse {
+    private Long id;
     private String username;
     private String password;
     private String email;
     private String ip;
-//    private Long memberGroupId;
+    private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;
