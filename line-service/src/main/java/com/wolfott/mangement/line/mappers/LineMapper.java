@@ -9,10 +9,10 @@ import com.wolfott.mangement.line.responses.LineCreateResponse;
 import com.wolfott.mangement.line.responses.LineDetailResponse;
 import com.wolfott.mangement.line.responses.LineUpdateResponse;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
-import org.modelmapper.spi.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class LineMapper {
     private final ModelMapper modelMapper;
@@ -38,7 +39,7 @@ public class LineMapper {
             @Override
             protected void configure() {
 //                map().setMemberId(source.getMemberId());
-                using(userToStringConverter()).map(source.getMember(), destination.getOwner());
+                using(userToUsernameConverter()).map(source.getMember(), destination.getOwner());
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
                 map().setTrial(source.getIsTrial());
                 using(lastActivityArrayToActiveConverter()).map(source.getLastActivityArray(), destination.getActive());
@@ -54,9 +55,24 @@ public class LineMapper {
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
             }
         });
+
+        modelMapper.addMappings(new PropertyMap<Line, LineUpdateResponse>() {
+            @Override
+            protected void configure() {
+                using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<LineUpdateRequest, Line>() {
+            @Override
+            protected void configure() {
+//                map().setMemberId(source.getMemberId());
+                using(memberIdToUserConverter()).map(source.getMemberId(), destination.getMember());
+            }
+        });
     }
 
-    private Converter<User, String> userToStringConverter() {
+    private Converter<User, String> userToUsernameConverter() {
         return context -> Optional.ofNullable(context.getSource())
                 .map(User::getUsername)
                 .orElse(null); // "Anonymous"
@@ -66,6 +82,19 @@ public class LineMapper {
         return context -> Optional.ofNullable(context.getSource())
                 .map(User::getId)
                 .orElse(null); // "Anonymous"
+    }
+
+    private Converter<Long, User> memberIdToUserConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(User::new)
+                .map(user -> {
+                    log.info("User initiated: {}", user);
+                    return user;
+                })
+                .orElseGet(() -> {
+                    log.info("User initiation failed: source is null");
+                    return null;
+                });
     }
 
     private Converter<String, Integer> lastActivityArrayToActiveConverter() {

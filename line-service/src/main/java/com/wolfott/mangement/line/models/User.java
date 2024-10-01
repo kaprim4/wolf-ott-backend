@@ -2,6 +2,7 @@ package com.wolfott.mangement.line.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "users")
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -108,4 +110,7 @@ public class User {
         this.timestampDateRegistered = date != null ? date.getTime() / 1000L : null;
     }
 
+    public User(Long id) {
+        this.id = id;
+    }
 }

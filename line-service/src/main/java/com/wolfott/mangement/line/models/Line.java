@@ -147,7 +147,7 @@ public class Line {
 //    private Timestamp updated;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    @JoinColumn(name = "member_id") // , insertable = false, updatable = false
 //    @Transient
     private User member;
 }
