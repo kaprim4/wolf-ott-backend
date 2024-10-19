@@ -5,6 +5,7 @@ import com.wolfott.stream_mangement.models.StreamEpisode;
 import com.wolfott.stream_mangement.models.StreamSeries;
 import com.wolfott.stream_mangement.responses.EpisodeCompactResponse;
 import com.wolfott.stream_mangement.responses.EpisodeDetailResponse;
+import com.wolfott.stream_mangement.responses.SerieDetailResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
@@ -24,10 +25,12 @@ import java.util.stream.Collectors;
 @Component
 public class EpisodeMapper {
     private final ModelMapper modelMapper;
+    private final SerieMapper serieMapper;
     @Autowired
-    public EpisodeMapper(ModelMapper modelMapper) {
+    public EpisodeMapper(ModelMapper modelMapper, SerieMapper serieMapper) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         this.modelMapper = modelMapper;
+        this.serieMapper = serieMapper;
     }
 
     @PostConstruct
@@ -45,8 +48,9 @@ public class EpisodeMapper {
             @Override
             protected void configure() {
                 using(streamToTitleConverter()).map(source.getStream(), destination.getTitle());
-                using(serieToTitleConverter()).map(source.getSerie(), destination.getSerie());
+//                using(serieToTitleConverter()).map(source.getSerie(), destination.getSerie());
                 map().setNumber(source.getEpisodeNum());
+                using(serieToDetailResponse()).map(source.getSerie(), destination.getSerie());
             }
         });
     }
@@ -63,11 +67,8 @@ public class EpisodeMapper {
                 .orElse(null); // "Anonymous"
     }
 
-    private Converter<String, Integer> lastActivityArrayToActiveConverter() {
-        return context -> Optional.ofNullable(context.getSource())
-                .filter(lastActivityArray -> !lastActivityArray.isEmpty())
-                .map(lastActivityArray -> 1)
-                .orElse(0);
+    private Converter<StreamSeries, SerieDetailResponse> serieToDetailResponse(){
+        return context -> Optional.ofNullable(context.getSource()).map(serieMapper::toSerieDetailResponse).orElse(null);
     }
 
     private Converter<Long, Date> expDateToDateConverter() {
