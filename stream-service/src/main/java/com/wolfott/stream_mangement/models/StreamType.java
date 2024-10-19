@@ -1,5 +1,6 @@
 package com.wolfott.stream_mangement.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +34,7 @@ public class StreamType {
     @ColumnDefault("false")
     private Boolean live;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
     private List<Stream> streams;
 
