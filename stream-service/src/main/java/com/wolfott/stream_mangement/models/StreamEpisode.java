@@ -27,16 +27,22 @@ public class StreamEpisode implements Serializable {
     @Column(name = "episode_num")
     private Integer episodeNum;
 
-    @Column(name = "series_id")
-    private Integer seriesId;
+//    @Column(name = "series_id")
+//    private Integer seriesId;
 
-    @Column(name = "stream_id")
-    private Integer streamId;
+//    @Column(name = "stream_id")
+//    private Integer streamId;
 
     @ColumnDefault("false")
     @Column(name = "is_active")
     private Boolean active;
 
-    // Add @Lob annotation for large objects if necessary
+    @ManyToOne()
+    @JoinColumn(name = "series_id")
+    private StreamSeries serie;
+
+    @ManyToOne()
+    @JoinColumn(name = "stream_id")
+    private Stream stream;
 
 }

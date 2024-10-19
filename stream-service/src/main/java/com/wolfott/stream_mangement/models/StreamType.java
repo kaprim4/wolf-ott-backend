@@ -7,18 +7,16 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Data
 @EqualsAndHashCode
 @Table(name = "streams_types")
-public class StreamType implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
+public class StreamType {
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+//    @GeneratedValue(generator = "uuid")
+//    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "type_id")
     private String typeId;
 
@@ -34,5 +32,8 @@ public class StreamType implements Serializable {
     @Column(name = "live")
     @ColumnDefault("false")
     private Boolean live;
+
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
+    private List<Stream> streams;
 
 }

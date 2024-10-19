@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
@@ -85,6 +87,9 @@ public class StreamSeries {
     @Lob
     @Column(name = "similar", columnDefinition = "MEDIUMTEXT")
     private String similar;
+
+    @OneToMany(mappedBy = "serie", fetch = FetchType.LAZY)
+    private List<StreamEpisode> episodes;
 
 }
 
