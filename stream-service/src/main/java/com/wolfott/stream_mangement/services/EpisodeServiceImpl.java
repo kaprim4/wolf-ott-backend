@@ -10,7 +10,9 @@ import com.wolfott.stream_mangement.responses.SerieCompactResponse;
 import com.wolfott.stream_mangement.specifications.EpisodeSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +55,12 @@ public class EpisodeServiceImpl implements EpisodeService {
     @Override
     public Page<EpisodeCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
         Specification<StreamEpisode> spec = episodeSpecification.dynamic(filters);
+        if (pageable.getSort().isUnsorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                    Sort.by(Sort.Order.asc("serie.id"), // Assuming 'title' is a field in StreamSeries
+                            Sort.Order.asc("seasonNum"),
+                            Sort.Order.asc("episodeNum")));
+        }
         Page<StreamEpisode> episodes = episodeRepository.findAll(spec, pageable);
         return episodeMapper.toEpisodeCompactResponsePage(episodes);
     }

@@ -9,5 +9,5 @@ public class EpisodeDetailResponse {
     private Integer season;
     private Integer number;
     private Boolean active;
-    private String serie;
+    private SerieDetailResponse serie;
 }

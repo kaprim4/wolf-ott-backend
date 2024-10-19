@@ -19,8 +19,8 @@ public class Enigma2Device {
     @Column(name = "mac")
     private String mac;
 
-    @Column(name = "user_id")
-    private Long userId;
+//    @Column(name = "user_id")
+//    private Long userId;
 
     @Column(name = "modem_mac")
     private String modemMac;
@@ -84,5 +84,10 @@ public class Enigma2Device {
 
     @Column(name = "mac_filter")
     private String macFilter;
+
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User owner;
 
 }
