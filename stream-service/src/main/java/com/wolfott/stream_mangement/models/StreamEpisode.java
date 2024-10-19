@@ -11,9 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Entity
 @Table(name = "streams_episodes")
-public class StreamEpisode implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class StreamEpisode {
 
     @Id
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stream_episode_seq")
