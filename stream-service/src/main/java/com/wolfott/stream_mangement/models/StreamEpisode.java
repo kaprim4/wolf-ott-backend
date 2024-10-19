@@ -16,8 +16,8 @@ public class StreamEpisode implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stream_episode_seq")
-    @SequenceGenerator(name = "stream_episode_seq", sequenceName = "stream_episode_seq", allocationSize = 1)
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stream_episode_seq")
+//    @SequenceGenerator(name = "stream_episode_seq", sequenceName = "stream_episode_seq", allocationSize = 1)
     @Column(name = "id")
     private Long id;
 
@@ -37,11 +37,11 @@ public class StreamEpisode implements Serializable {
     @Column(name = "is_active")
     private Boolean active;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "series_id")
     private StreamSeries serie;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stream_id")
     private Stream stream;
 
