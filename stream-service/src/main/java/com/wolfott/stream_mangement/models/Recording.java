@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 @Data
 @NoArgsConstructor
-@Entity
+//@Entity
 @Table(name = "recordings")
 public class Recording {
 

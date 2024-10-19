@@ -7,7 +7,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 
-@Entity
+//@Entity
 @Data
 @Table(name = "watch_logs")
 public class WatchLog {

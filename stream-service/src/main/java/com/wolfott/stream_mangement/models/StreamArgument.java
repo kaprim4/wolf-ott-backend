@@ -8,7 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 
-@Entity
+//@Entity
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode

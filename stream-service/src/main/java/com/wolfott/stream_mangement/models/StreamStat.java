@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
-@Entity
+//@Entity
 @Table(name = "streams_stats")
 public class StreamStat {
 

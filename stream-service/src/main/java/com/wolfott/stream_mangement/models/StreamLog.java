@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@Entity
+//@Entity
 @Table(name = "streams_logs")
 public class StreamLog {
 

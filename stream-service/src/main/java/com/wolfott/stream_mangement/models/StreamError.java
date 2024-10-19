@@ -8,7 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Date;
 
-@Entity
+//@Entity
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode

@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
-@Entity
+//@Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString

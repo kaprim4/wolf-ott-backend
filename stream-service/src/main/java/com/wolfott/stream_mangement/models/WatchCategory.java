@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-@Entity
+//@Entity
 @Table(name = "watch_categories")
 public class WatchCategory implements Serializable {
 

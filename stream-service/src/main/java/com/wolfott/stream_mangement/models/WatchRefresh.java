@@ -7,7 +7,7 @@ import org.hibernate.annotations.ColumnDefault;
 import java.sql.Timestamp;
 
 @Data
-@Entity
+//@Entity
 @Table(name = "watch_refresh")
 public class WatchRefresh {
 

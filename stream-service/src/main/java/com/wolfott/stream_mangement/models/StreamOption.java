@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Data
-@Entity
+//@Entity
 @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "streams_options")

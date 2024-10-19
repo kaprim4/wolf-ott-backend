@@ -9,7 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
 
-@Entity
+//@Entity
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
