@@ -1,3 +1,5 @@
 spring:
     application:
         name: epg-service
+    config:
+        import: optional:configserver:http://localhost:9000

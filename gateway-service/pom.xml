@@ -33,6 +33,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+            <version>6.1.13</version>
         </dependency>
 
         <!-- Open api docs dependencies
