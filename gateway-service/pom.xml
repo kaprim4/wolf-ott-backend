@@ -35,7 +35,7 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
-        <!-- Open api docs dependencies -->
+        <!-- Open api docs dependencies
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-webflux-ui</artifactId>
@@ -54,7 +54,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-kubernetes-fabric8-config</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <dependencyManagement>
