@@ -11,9 +11,7 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Entity
 @Table(name = "users_logs")
-public class UserLog implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class UserLog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -65,7 +65,7 @@ public class User {
     @Column(name = "api_key")
     private String apiKey;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_group_id")
     private UserGroup group;
 

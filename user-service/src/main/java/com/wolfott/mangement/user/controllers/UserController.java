@@ -3,10 +3,8 @@ package com.wolfott.mangement.user.controllers;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
-import com.wolfott.mangement.user.responses.UserCompactResponse;
-import com.wolfott.mangement.user.responses.UserCreateResponse;
-import com.wolfott.mangement.user.responses.UserDetailResponse;
-import com.wolfott.mangement.user.responses.UserUpdateResponse;
+import com.wolfott.mangement.user.responses.*;
+import com.wolfott.mangement.user.services.UserLogService;
 import com.wolfott.mangement.user.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +20,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    private UserLogService userLogService;
 
     @GetMapping("/{id}")
     public UserDetailResponse getOne(@PathVariable("id") Long id) {
@@ -66,6 +66,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         userService.delete(id);
+    }
+
+    @GetMapping("/logs")
+    public Page<UserLogCompactResponse> getAllLogs(Pageable pageable){
+        return userLogService.getAll(pageable);
     }
 
 }
