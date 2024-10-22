@@ -4,6 +4,7 @@ import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
+import com.wolfott.mangement.line.services.LineActivityService;
 import com.wolfott.mangement.line.services.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,8 @@ public class LineController {
 
     @Autowired
     LineService lineService;
+    @Autowired
+    LineActivityService activityService;
 
     @GetMapping("/{id}")
     public LineDetailResponse getOne(@PathVariable Long id) {
@@ -58,6 +61,11 @@ public class LineController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id){
         lineService.delete(id);
+    }
+
+    @GetMapping("/activities")
+    public  Page<LineActivityCompactResponse> getAllActivities(Pageable pageable){
+        return activityService.getAll(pageable);
     }
 
 }
