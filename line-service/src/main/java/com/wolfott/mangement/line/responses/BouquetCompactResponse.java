@@ -11,4 +11,9 @@ public class BouquetCompactResponse {
     private Long id;
     private String bouquetName;
     private Integer bouquetOrder;
+
+    private Integer streams;
+    private Integer movies;
+    private Integer series;
+    private Integer stations;
 }

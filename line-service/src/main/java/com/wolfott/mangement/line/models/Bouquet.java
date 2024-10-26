@@ -18,7 +18,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @Table(name = "bouquets")
 @NoArgsConstructor
-public class Bouquet implements Serializable {
+public class Bouquet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
