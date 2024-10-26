@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -21,8 +23,8 @@ public class LineUpdateRequest {
     private Integer enabled;
     private String adminNotes;
     private String resellerNotes;
-    private String bouquet;
-    private String allowedOutputs;
+    private List<Integer> bouquets;
+    private List<Integer> allowedOutputs;
     private Integer maxConnections;
     private Boolean isRestreamer;
     private Boolean isTrial;
@@ -30,8 +32,8 @@ public class LineUpdateRequest {
     private Boolean isE2;
     private Boolean isStalker;
     private Boolean isIsplock;
-    private String allowedIps;
-    private String allowedUa;
+    private List<String> allowedIps;
+    private List<String> allowedUa;
     private Long createdAt;
     private Long pairId;
     private Integer forceServerId;
@@ -45,6 +47,6 @@ public class LineUpdateRequest {
     private String accessToken;
     private String contact;
     private Long lastActivity;
-    private String lastActivityArray;
+    private Map<String, Object> lastActivityArray;
     private Timestamp updated;
 }

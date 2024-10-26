@@ -66,6 +66,11 @@ public class LineMapper {
             @Override
             protected void configure() {
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
+                using(jsonToList()).map(source.getBouquet(), destination.getBouquets());
+                using(jsonToList()).map(source.getAllowedOutputs(), destination.getAllowedOutputs());
+                using(jsonToList()).map(source.getAllowedIps(), destination.getAllowedIps());
+                using(jsonToList()).map(source.getAllowedUa(), destination.getAllowedUa());
+                using(jsonToMap()).map(source.getLastActivityArray(), destination.getLastActivityArray());
             }
         });
 
@@ -74,6 +79,11 @@ public class LineMapper {
             protected void configure() {
 //                map().setMemberId(source.getMemberId());
                 using(memberIdToUserConverter()).map(source.getMemberId(), destination.getMember());
+                using(listToJson()).map(source.getBouquets(), destination.getBouquet());
+                using(listToJson()).map(source.getAllowedOutputs(), destination.getAllowedOutputs());
+                using(listToJson()).map(source.getAllowedIps(), destination.getAllowedIps());
+                using(listToJson()).map(source.getAllowedUa(), destination.getAllowedUa());
+                using(mapToJson()).map(source.getLastActivityArray(), destination.getLastActivityArray());
             }
         });
 
@@ -81,7 +91,11 @@ public class LineMapper {
             @Override
             protected void configure() {
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
-//                using(jsonToList()).map();
+                using(jsonToList()).map(source.getBouquet(), destination.getBouquets());
+                using(jsonToList()).map(source.getAllowedOutputs(), destination.getAllowedOutputs());
+                using(jsonToList()).map(source.getAllowedIps(), destination.getAllowedIps());
+                using(jsonToList()).map(source.getAllowedUa(), destination.getAllowedUa());
+                using(jsonToMap()).map(source.getLastActivityArray(), destination.getLastActivityArray());
             }
         });
 
@@ -89,8 +103,18 @@ public class LineMapper {
             @Override
             protected void configure() {
                 using(memberIdToUserConverter()).map(source.getMemberId(), destination.getMember());
+                using(listToJson()).map(source.getBouquets(), destination.getBouquet());
+                using(listToJson()).map(source.getAllowedOutputs(), destination.getAllowedOutputs());
+                using(listToJson()).map(source.getAllowedIps(), destination.getAllowedIps());
+                using(listToJson()).map(source.getAllowedUa(), destination.getAllowedUa());
+                using(mapToJson()).map(source.getLastActivityArray(), destination.getLastActivityArray());
+                using(booleanToInteger()).map(source.getAdminEnabled(), destination.getAdminEnabled());
             }
         });
+    }
+
+    private Converter<Boolean, Integer> booleanToInteger(){
+        return context -> Optional.ofNullable(context.getSource()).map(value -> value ? 1 : 0).orElse(null);
     }
 
     private Converter<String, List> jsonToList(){
@@ -106,6 +130,20 @@ public class LineMapper {
         };
     }
 
+    private Converter<List, String> listToJson() {
+        return context -> {
+            List<?> list = context.getSource();
+            if (list == null) return null; // Return null for a null input
+            try {
+                return new ObjectMapper().writeValueAsString(list);
+            } catch (JsonProcessingException e) {
+                log.error("Error converting list to JSON: {}", list, e);
+                return null; // Or handle it as needed, e.g., return an empty string or a specific error message
+            }
+        };
+    }
+
+
     private Converter<String, Map<String, Object>> jsonToMap() {
         return context -> {
             String json = context.getSource();
@@ -118,6 +156,19 @@ public class LineMapper {
             }
         };
     }
+    private Converter<Map<String, Object>, String> mapToJson() {
+        return context -> {
+            Map<String, Object> map = context.getSource();
+            if (map == null) return null; // Return null for a null input
+            try {
+                return new ObjectMapper().writeValueAsString(map);
+            } catch (JsonProcessingException e) {
+                log.error("Error converting map to JSON: {}", map, e);
+                return null; // Or handle it as needed, e.g., return an empty string or a specific error message
+            }
+        };
+    }
+
     private Converter<User, String> userToUsernameConverter() {
         return context -> Optional.ofNullable(context.getSource())
                 .map(User::getUsername)

@@ -63,6 +63,20 @@ public class PackageMapper {
         };
     }
 
+    private Converter<List, String> listToJson() {
+        return context -> {
+            List<?> list = context.getSource();
+            if (list == null) return null; // Return null for a null input
+            try {
+                return new ObjectMapper().writeValueAsString(list);
+            } catch (JsonProcessingException e) {
+                log.error("Error converting list to JSON: {}", list, e);
+                return null; // Or handle it as needed, e.g., return an empty string or a specific error message
+            }
+        };
+    }
+
+
     public UserPackage toPackage(PackageCreateRequest request){
         return mapper.map(request, UserPackage.class);
     }
