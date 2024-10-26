@@ -2,10 +2,7 @@ package com.wolfott.mangement.line.controllers;
 
 import com.wolfott.mangement.line.requests.PresetCreateRequest;
 import com.wolfott.mangement.line.requests.PresetUpdateRequest;
-import com.wolfott.mangement.line.responses.PresetCompactResponse;
-import com.wolfott.mangement.line.responses.PresetCreateResponse;
-import com.wolfott.mangement.line.responses.PresetDetailResponse;
-import com.wolfott.mangement.line.responses.PresetUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.PresetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +21,11 @@ public class PresetController {
     @GetMapping("/{id}")
     public PresetDetailResponse getOne(@PathVariable Long id) {
         return presetService.getOne(id);
+    }
+
+    @GetMapping("/{id}/bouquets")
+    public List<BouquetCompactResponse> getPresetBouquets(@PathVariable Long id) {
+        return presetService.getPresetBouquets(id);
     }
 
     @GetMapping

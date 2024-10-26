@@ -2,15 +2,15 @@ package com.wolfott.mangement.line.services;
 
 import com.wolfott.mangement.line.exceptions.BouquetNotFoundException;
 import com.wolfott.mangement.line.exceptions.PresetNotFoundException;
+import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.PresetMapper;
+import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.models.Preset;
+import com.wolfott.mangement.line.repositories.BouquetRepository;
 import com.wolfott.mangement.line.repositories.PresetRepository;
 import com.wolfott.mangement.line.requests.PresetCreateRequest;
 import com.wolfott.mangement.line.requests.PresetUpdateRequest;
-import com.wolfott.mangement.line.responses.PresetCompactResponse;
-import com.wolfott.mangement.line.responses.PresetCreateResponse;
-import com.wolfott.mangement.line.responses.PresetDetailResponse;
-import com.wolfott.mangement.line.responses.PresetUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.specifications.PresetSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +37,22 @@ public class PresetServiceImpl implements PresetService {
     PresetSpecification presetSpecification;
     @Autowired
     PresetMapper presetMapper;
+    @Autowired
+    BouquetRepository bouquetRepository;
+    @Autowired
+    BouquetMapper bouquetMapper;
 
     @Override
     public PresetDetailResponse getOne(Long id) {
         Preset preset = presetRepository.findById(id).orElseThrow(() -> new PresetNotFoundException("Preset not found"));
         return presetMapper.toDetailResponse(preset);
+    }
+
+    @Override
+    public List<BouquetCompactResponse> getPresetBouquets(Long id) {
+//        List<Bouquet> bouquets = bouquetRepository.findByPresetBouquets_Preset_Id(id);
+        List<Bouquet> bouquets = bouquetRepository.findByPresetBouquets_Preset_IdOrderByPresetBouquets_PositionOrderAsc(id);
+        return bouquetMapper.toCompactResponse(bouquets);
     }
 
     @Override
