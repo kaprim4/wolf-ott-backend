@@ -1,5 +1,8 @@
 package com.wolfott.mangement.line.mappers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
@@ -18,9 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,6 +54,11 @@ public class LineMapper {
             protected void configure() {
 //                map().setMemberId(source.getMemberId());
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
+                using(jsonToList()).map(source.getBouquet(), destination.getBouquets());
+                using(jsonToList()).map(source.getAllowedOutputs(), destination.getAllowedOutputs());
+                using(jsonToList()).map(source.getAllowedIps(), destination.getAllowedIps());
+                using(jsonToList()).map(source.getAllowedUa(), destination.getAllowedUa());
+                using(jsonToMap()).map(source.getLastActivityArray(), destination.getLastActivityArray());
             }
         });
 
@@ -75,6 +81,7 @@ public class LineMapper {
             @Override
             protected void configure() {
                 using(userToMemberIdConverter()).map(source.getMember(), destination.getMemberId());
+//                using(jsonToList()).map();
             }
         });
 
@@ -86,6 +93,31 @@ public class LineMapper {
         });
     }
 
+    private Converter<String, List> jsonToList(){
+        return context -> {
+            String json = context.getSource();
+            if (json == null) return Collections.emptyList();
+            try {
+                return new ObjectMapper().readValue(json, new TypeReference<List>() {});
+            } catch (JsonProcessingException e) {
+                log.error("Error parsing JSON to list: {}", json, e);
+                return Collections.emptyList();
+            }
+        };
+    }
+
+    private Converter<String, Map<String, Object>> jsonToMap() {
+        return context -> {
+            String json = context.getSource();
+            if (json == null) return Collections.emptyMap();
+            try {
+                return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {});
+            } catch (JsonProcessingException e) {
+                log.error("Error parsing JSON to map: {}", json, e);
+                return Collections.emptyMap();
+            }
+        };
+    }
     private Converter<User, String> userToUsernameConverter() {
         return context -> Optional.ofNullable(context.getSource())
                 .map(User::getUsername)
