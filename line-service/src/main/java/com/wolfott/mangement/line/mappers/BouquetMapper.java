@@ -1,5 +1,7 @@
 package com.wolfott.mangement.line.mappers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.models.Bouquet;
@@ -10,6 +12,7 @@ import com.wolfott.mangement.line.responses.BouquetCreateResponse;
 import com.wolfott.mangement.line.responses.BouquetDetailResponse;
 import com.wolfott.mangement.line.responses.BouquetUpdateResponse;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -19,10 +22,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class BouquetMapper {
     @Autowired
@@ -45,8 +50,36 @@ public class BouquetMapper {
 
             }
         });
+
+        mapper.addMappings(new PropertyMap<Bouquet, BouquetDetailResponse>() {
+
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setBouquetName(source.getBouquetName());
+                map().setBouquetOrder(source.getBouquetOrder());
+
+                using(jsonToList()).map(source.getBouquetChannels(), destination.getStreams());
+                using(jsonToList()).map(source.getBouquetMovies(), destination.getMovies());
+                using(jsonToList()).map(source.getBouquetSeries(), destination.getSeries());
+                using(jsonToList()).map(source.getBouquetRadios(), destination.getStations());
+
+            }
+        });
     }
 
+    private Converter<String, List> jsonToList(){
+        return context -> {
+            String json = context.getSource();
+            if (json == null) return Collections.emptyList();
+            try {
+                return new ObjectMapper().readValue(json, new TypeReference<List>() {});
+            } catch (JsonProcessingException e) {
+                log.error("Error parsing JSON to list: {}", json, e);
+                return Collections.emptyList();
+            }
+        };
+    }
     private Converter<String, Integer> countJsonArray(){
         return context -> Optional.ofNullable(context.getSource()).stream().map(this::countItems).findAny().orElse(0);
     }
