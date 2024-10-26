@@ -3,6 +3,7 @@ package com.wolfott.mangement.line.handlers;
 import com.wolfott.mangement.line.exceptions.BouquetNotFoundException;
 import com.wolfott.mangement.line.responses.GenericErrorResponse;
 import com.wolfott.mangement.line.responses.ValidationErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(BouquetNotFoundException.class)
@@ -40,5 +42,18 @@ public class GlobalExceptionHandler {
                 fieldErrors
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<GenericErrorResponse> handleException(Exception ex, WebRequest request) {
+        GenericErrorResponse errorResponse = new GenericErrorResponse(
+                LocalDateTime.now(),
+                request.getDescription(false), // Path where the error occurred
+                ex.getMessage(),
+                "INTERNAL_SERVER_ERROR", // Error code
+                HttpStatus.INTERNAL_SERVER_ERROR // HTTP status
+        );
+        log.error("Uncaught Exception", ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
