@@ -23,7 +23,7 @@ public class LineCreateResponse {
     private String adminNotes;
     private String resellerNotes;
     private List<Integer> bouquets;
-    private String allowedOutputs;
+    private List<Integer> allowedOutputs;
     private Integer maxConnections;
     private Boolean isRestreamer;
     private Boolean isTrial;

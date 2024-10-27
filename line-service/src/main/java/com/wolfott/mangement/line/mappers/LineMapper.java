@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,8 @@ public class LineMapper {
                 map().setTrial(source.getIsTrial());
                 using(lastActivityArrayToActiveConverter()).map(source.getLastActivityArray(), destination.getActive());
                 map().setConnections(source.getMaxConnections());
-                using(expDateToDateConverter()).map(source.getExpDate(), destination.getExpiration());
+//                using(expDateToDateConverter()).map(source.getExpDate(), destination.getExpiration());
+                using(integerToDate()).map(source.getExpDate(), destination.getExpiration());
             }
         });
 
@@ -113,14 +115,22 @@ public class LineMapper {
         });
     }
 
-    private Converter<Boolean, Integer> booleanToInteger(){
-        return context -> Optional.ofNullable(context.getSource()).map(value -> value ? 1 : 0).orElse(null);
+    private Converter<Boolean, Integer> booleanToInteger() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(value -> value ? 1 : 0)
+                .orElse(null);
+    }
+
+    private Converter<Integer, Date> integerToDate() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(timestamp -> new Date(timestamp.longValue() * 1000)) // Convert seconds to milliseconds
+                .orElse(null);
     }
 
     private Converter<String, List> jsonToList(){
         return context -> {
             String json = context.getSource();
-            if (json == null) return Collections.emptyList();
+            if (json == null || json.isEmpty()) return Collections.emptyList();
             try {
                 return new ObjectMapper().readValue(json, new TypeReference<List>() {});
             } catch (JsonProcessingException e) {

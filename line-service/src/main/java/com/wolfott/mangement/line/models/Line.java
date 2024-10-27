@@ -32,7 +32,7 @@ public class Line {
     private String lastIp;
 
     @Column(name = "exp_date", columnDefinition = "int")
-    private Long expDate;
+    private Integer expDate;
 
     @Column(name = "admin_enabled")
     @ColumnDefault("1")
