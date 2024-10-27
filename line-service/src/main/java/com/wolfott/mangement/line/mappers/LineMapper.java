@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 @Component
 public class LineMapper {
     private final ModelMapper modelMapper;
+
     @Autowired
     public LineMapper(ModelMapper modelMapper) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
@@ -113,16 +114,17 @@ public class LineMapper {
         });
     }
 
-    private Converter<Boolean, Integer> booleanToInteger(){
+    private Converter<Boolean, Integer> booleanToInteger() {
         return context -> Optional.ofNullable(context.getSource()).map(value -> value ? 1 : 0).orElse(null);
     }
 
-    private Converter<String, List> jsonToList(){
+    private Converter<String, List> jsonToList() {
         return context -> {
             String json = context.getSource();
             if (json == null) return Collections.emptyList();
             try {
-                return new ObjectMapper().readValue(json, new TypeReference<List>() {});
+                return new ObjectMapper().readValue(json, new TypeReference<List>() {
+                });
             } catch (JsonProcessingException e) {
                 log.error("Error parsing JSON to list: {}", json, e);
                 return Collections.emptyList();
@@ -149,13 +151,15 @@ public class LineMapper {
             String json = context.getSource();
             if (json == null) return Collections.emptyMap();
             try {
-                return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {});
+                return new ObjectMapper().readValue(json, new TypeReference<Map<String, Object>>() {
+                });
             } catch (JsonProcessingException e) {
                 log.error("Error parsing JSON to map: {}", json, e);
                 return Collections.emptyMap();
             }
         };
     }
+
     private Converter<Map<String, Object>, String> mapToJson() {
         return context -> {
             Map<String, Object> map = context.getSource();
@@ -211,6 +215,7 @@ public class LineMapper {
     public LineCompactResponse toLineCompactResponse(Line line) {
         return modelMapper.map(line, LineCompactResponse.class);
     }
+
     // Convert Line entity to LineDetailResponse
     public LineDetailResponse toLineDetailResponse(Line line) {
         return modelMapper.map(line, LineDetailResponse.class);
@@ -230,6 +235,7 @@ public class LineMapper {
     public Line toLine(LineCreateRequest request) {
         return modelMapper.map(request, Line.class);
     }
+
     // Convert LineUpdateRequest to Line entity and merge with existing entity
     public Line mergeLine(LineUpdateRequest request, Line existingLine) {
         // Create a copy of the existing line and update its properties
@@ -239,6 +245,7 @@ public class LineMapper {
         updatedLine.setId(id);
         return updatedLine;
     }
+
     // Convert Page<Line> to Page<LineCompactResponse>
     public Page<LineCompactResponse> toLineCompactResponsePage(Page<Line> linePage) {
         return new PageImpl<>(

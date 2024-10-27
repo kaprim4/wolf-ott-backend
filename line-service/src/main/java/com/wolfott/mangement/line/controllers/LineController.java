@@ -9,6 +9,7 @@ import com.wolfott.mangement.line.services.LineService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +47,18 @@ public class LineController {
     @GetMapping("/list")
     public List<LineCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
         return lineService.getAll(filters);
+    }
+
+    @GetMapping("/last-registered")
+    public ResponseEntity<List<LineCompactResponse>> getLastRegisteredLines() {
+        List<LineCompactResponse> lines = lineService.getLastRegisteredLines();
+        return ResponseEntity.ok(lines);
+    }
+
+    @GetMapping("/api/v1/lines/last-week-count")
+    public ResponseEntity<Integer> getLastWeekCount() {
+        int count = lineService.getLastWeekCount();
+        return ResponseEntity.ok(count);
     }
 
     @PostMapping
