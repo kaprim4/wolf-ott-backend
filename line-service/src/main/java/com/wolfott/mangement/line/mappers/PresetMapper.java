@@ -27,6 +27,17 @@ public class PresetMapper {
     @PostConstruct
     private void setupMappings() {
         // Mapping from PresetUpdateRequest to Preset
+        mapper.addMappings(new PropertyMap<PresetCreateRequest, Preset>() {
+            @Override
+            protected void configure() {
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setStatus(source.getStatus());
+                // Pass the current preset to the converter
+                using(idxToBouquetsConverter()).map(source.getBouquets()).setPresetBouquets(null);
+            }
+        });
+
         mapper.addMappings(new PropertyMap<PresetUpdateRequest, Preset>() {
             @Override
             protected void configure() {
@@ -66,6 +77,20 @@ public class PresetMapper {
                 map().setUpdatedAt(source.getUpdatedAt());
                 // Map PresetBouquet entities to bouquet IDs
                 using(presetBouquetsToIdsConverter()).map(source.getPresetBouquets()).setBouquets(null);
+            }
+        });
+
+        mapper.addMappings(new PropertyMap<Preset, PresetCompactResponse>() {
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setStatus(source.getStatus());
+                map().setCreatedAt(source.getCreatedAt());
+                map().setUpdatedAt(source.getUpdatedAt());
+                // Map PresetBouquet entities to bouquet IDs
+                using(presetBouquetsToIdsConverter()).map(source.getPresetBouquets(), destination.getBouquets());
             }
         });
     }
