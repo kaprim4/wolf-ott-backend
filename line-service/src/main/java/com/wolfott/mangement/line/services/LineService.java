@@ -17,7 +17,12 @@ public interface LineService {
 
     int getLinesCount();
 
+    int getLastWeekCount();
+
+    List<LineCompactResponse> getLastRegisteredLines();
+
     List<LineCompactResponse> getAll(Map<String, Object> filters);
+
     Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
     Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable);
@@ -27,4 +32,6 @@ public interface LineService {
     LineUpdateResponse update(Long id, LineUpdateRequest request);
 
     void delete(Long id);
+
+
 }

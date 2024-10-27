@@ -27,10 +27,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 @Service
@@ -68,7 +72,8 @@ public class LineServiceImpl implements LineService {
             if (bouquetJson == null)
                 lineBouquets = new ArrayList<>();
             else
-                lineBouquets = new ObjectMapper().readValue(bouquetJson, new TypeReference<List<Long>>() {});
+                lineBouquets = new ObjectMapper().readValue(bouquetJson, new TypeReference<List<Long>>() {
+                });
         } catch (IOException e) {
             log.error("Failed to deserialize bouquet JSON", e);
             throw new RuntimeException("Deserialization error", e);
@@ -108,7 +113,7 @@ public class LineServiceImpl implements LineService {
         Page<Line> page = lineRepository.findAll(spec, pageable);
         List<Line> lines = page.getContent().stream().parallel()
                 .map(line -> {
-                    if (line.getMemberId() != null){
+                    if (line.getMemberId() != null) {
                         User member = userRepository.findById(line.getMemberId()).orElse(new User());
 //                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
                         String username = member.getUsername();
@@ -148,5 +153,19 @@ public class LineServiceImpl implements LineService {
     @Override
     public void delete(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    public List<LineCompactResponse> getLastRegisteredLines() {
+        return lineRepository.findTop10ByEnabledOrderByCreatedAtDesc()
+                .stream()
+                .map(line -> {
+                    return lineMapper.toLineCompactResponse(line);
+                })
+                .toList();
+    }
+
+    public int getLastWeekCount() {
+        LocalDate lastWeekStartDate = LocalDate.now().minusDays(7);
+        return lineRepository.countByCreatedAtAfter(lastWeekStartDate);
     }
 }
