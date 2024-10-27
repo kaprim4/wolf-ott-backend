@@ -13,6 +13,7 @@ public class PresetCompactResponse {
     private Long id;
     private String presetName;
     private String presetDescription;
+    private String bouquets;
     private Boolean status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
