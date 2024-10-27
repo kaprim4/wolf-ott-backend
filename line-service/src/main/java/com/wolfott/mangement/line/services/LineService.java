@@ -19,6 +19,8 @@ public interface LineService {
 
     int getLastWeekCount();
 
+    Map<String, Long> getCreatedLinesLastSixMonths();
+
     List<LineCompactResponse> getLastRegisteredLines();
 
     List<LineCompactResponse> getAll(Map<String, Object> filters);

@@ -55,10 +55,16 @@ public class LineController {
         return ResponseEntity.ok(lines);
     }
 
-    @GetMapping("/api/v1/lines/last-week-count")
+    @GetMapping("/last-week-count")
     public ResponseEntity<Integer> getLastWeekCount() {
         int count = lineService.getLastWeekCount();
         return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/created-last-six-months")
+    public ResponseEntity<Map<String, Long>> getCreatedLinesLastSixMonths() {
+        Map<String, Long> createdCounts = lineService.getCreatedLinesLastSixMonths();
+        return ResponseEntity.ok(createdCounts);
     }
 
     @PostMapping

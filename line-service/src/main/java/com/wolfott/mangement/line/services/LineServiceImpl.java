@@ -28,10 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -165,7 +163,23 @@ public class LineServiceImpl implements LineService {
     }
 
     public int getLastWeekCount() {
-        LocalDate lastWeekStartDate = LocalDate.now().minusDays(7);
-        return lineRepository.countByCreatedAtAfter(lastWeekStartDate);
+        long lastWeekStartTimestamp = LocalDate.now().minusDays(7).atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
+        return lineRepository.countByCreatedAtAfter(lastWeekStartTimestamp);
     }
+
+    public Map<String, Long> getCreatedLinesLastSixMonths() {
+        LocalDate now = LocalDate.now();
+        Map<String, Long> createdCounts = new HashMap<>();
+
+        for (int i = 0; i < 6; i++) {
+            LocalDate date = now.minusMonths(i);
+            Long count = lineRepository.countByCreatedAtBetween(
+                    date.withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond(),
+                    date.plusMonths(1).withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
+            );
+            createdCounts.put(date.getMonth().name(), count);
+        }
+        return createdCounts;
+    }
+
 }
