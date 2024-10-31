@@ -26,6 +26,10 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
     @Query("SELECT l FROM Line l WHERE l.enabled = 1 ORDER BY l.createdAt DESC")
     List<Line> findTop10ByEnabledOrderByCreatedAtDesc();
 
-    @Query("SELECT COUNT(l) FROM Line l WHERE l.createdAt > :lastWeekStartDate")
-    int countByCreatedAtAfter(@Param("lastWeekStartDate") LocalDate lastWeekStartDate);
+    @Query("SELECT COUNT(l) FROM Line l WHERE l.createdAt > :lastWeekStartTimestamp")
+    int countByCreatedAtAfter(@Param("lastWeekStartTimestamp") Long lastWeekStartTimestamp);
+
+    @Query("SELECT COUNT(l) FROM Line l WHERE l.createdAt >= :startTimestamp AND l.createdAt < :endTimestamp")
+    Long countByCreatedAtBetween(@Param("startTimestamp") Long startTimestamp, @Param("endTimestamp") Long endTimestamp);
+
 }
