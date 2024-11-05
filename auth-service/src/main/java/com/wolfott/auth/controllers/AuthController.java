@@ -33,7 +33,7 @@ public class AuthController {
         // 1.initialize geetest parameter
         String captchaId = "3474b7f80d5f0cdcefcc27778bed5ff2";
         String captchaKey = "071544ae9d0d0dc2b3676dc1d28d932f";
-        String domain = "http://212.237.231.147:32200/";
+        String domain = "http://gcaptcha4.geetest.com";
 
         // 2.获取用户验证后前端传过来的验证流水号等参数
         // 2.get the verification parameters passed from the front end after verification
