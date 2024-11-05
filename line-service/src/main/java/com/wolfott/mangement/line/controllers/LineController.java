@@ -1,6 +1,5 @@
 package com.wolfott.mangement.line.controllers;
 
-import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
@@ -21,6 +20,7 @@ public class LineController {
 
     @Autowired
     LineService lineService;
+
     @Autowired
     LineActivityService activityService;
 
