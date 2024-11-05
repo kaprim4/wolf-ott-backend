@@ -3,6 +3,7 @@ package com.wolfott.auth.controllers;
 import com.wolfott.auth.requests.LoginRequest;
 import com.wolfott.auth.responses.LoginResponse;
 import com.wolfott.auth.services.AuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.json.JSONObject;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
@@ -28,23 +30,21 @@ public class AuthController {
     }
 
     @GetMapping(value = "/validate")
-    public String userLogin(@RequestParam Map<String, String> getParams)
-    {
-        String captchaId = "3474b7f80d5f0cdcefcc27778bed5ff2";
+    public String userLogin(@RequestParam Map<String, String> getParams) {
+
+        log.info("getParams: {}", getParams);
+
         String captchaKey = "071544ae9d0d0dc2b3676dc1d28d932f";
         String domain = "http://gcaptcha4.geetest.com";
-
+        String captchaId = getParams.get("captcha_id");
         String lotNumber = getParams.get("lot_number");
-        String captchaOutput = getParams.get("captcha_output");
-        String passToken = getParams.get("pass_token");
-        String genTime = getParams.get("gen_time");
         String signToken = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, captchaKey).hmacHex(lotNumber);
 
         MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("captcha_output", getParams.get("captcha_output"));
+        queryParams.add("gen_time", getParams.get("gen_time"));
         queryParams.add("lot_number", lotNumber);
-        queryParams.add("captcha_output", captchaOutput);
-        queryParams.add("pass_token", passToken);
-        queryParams.add("gen_time", genTime);
+        queryParams.add("pass_token", getParams.get("pass_token"));
         queryParams.add("sign_token", signToken);
 
         String url = String.format(domain + "/validate" + "?captcha_id=%s", captchaId);
@@ -53,6 +53,9 @@ public class AuthController {
         HttpMethod method = HttpMethod.POST;
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         JSONObject jsonObject = new JSONObject();
+
+        log.info("url: {}", url);
+        log.info("queryParams: {}", queryParams.toString());
 
         try {
             HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(queryParams, headers);
@@ -63,15 +66,8 @@ public class AuthController {
             jsonObject.put("result", "success");
             jsonObject.put("reason", "request geetest api fail");
         }
+        log.info("JSONObject: {}", jsonObject.toString());
 
-        JSONObject res = new JSONObject();
-        if (jsonObject.getString("result").equals("success")) {
-            res.put("login", "success");
-            res.put("reason", jsonObject.getString("reason"));
-        } else {
-            res.put("login", "fail");
-            res.put("reason", jsonObject.getString("reason"));
-        }
-        return res.toString();
+        return jsonObject.toString();
     }
 }
