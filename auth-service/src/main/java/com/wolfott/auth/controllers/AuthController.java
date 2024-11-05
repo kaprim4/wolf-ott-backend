@@ -27,7 +27,7 @@ public class AuthController {
         return authService.login(request);
     }
 
-    @GetMapping(value = "/auth")
+    @GetMapping(value = "/validate")
     public String userLogin(@RequestParam Map<String, String> getParams) {
         // 1.初始化极验参数信息
         // 1.initialize geetest parameter
