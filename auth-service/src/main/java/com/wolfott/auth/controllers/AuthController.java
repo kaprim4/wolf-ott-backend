@@ -28,7 +28,8 @@ public class AuthController {
     }
 
     @GetMapping(value = "/validate")
-    public String userLogin(@RequestParam Map<String, String> getParams) {
+    public String userLogin(@RequestParam Map<String, String> getParams)
+    {
         String captchaId = "3474b7f80d5f0cdcefcc27778bed5ff2";
         String captchaKey = "071544ae9d0d0dc2b3676dc1d28d932f";
         String domain = "http://gcaptcha4.geetest.com";
