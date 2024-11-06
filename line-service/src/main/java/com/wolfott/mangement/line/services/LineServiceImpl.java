@@ -136,6 +136,8 @@ public class LineServiceImpl implements LineService {
     @Override
     public LineCreateResponse create(LineCreateRequest request) {
         Line line = lineMapper.toLine(request);
+        Long createdAt = System.currentTimeMillis() / 1000;
+        line.setCreatedAt(createdAt);
         line = lineRepository.save(line);
         return lineMapper.toLineCreateResponse(line);
     }
