@@ -14,5 +14,7 @@ public class Ranking {
     private String title;
     private Integer minPoints;
     private Integer maxPoints;
-    private String imgPath;
+    @Lob
+    @Column(name = "badge_image", columnDefinition = "LONGTEXT")
+    private String badgeImage;
 }
