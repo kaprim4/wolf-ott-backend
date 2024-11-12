@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,12 +32,15 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article create(Article article) {
+        article.setCreatedAt(LocalDateTime.now());
+        article.setUpdatedAt(LocalDateTime.now());
         return articleRepository.save(article);
     }
 
     @Override
     public Article update(Long id, Article article) {
         article.setId(id);
+        article.setUpdatedAt(LocalDateTime.now());
         return articleRepository.save(article);
     }
 
