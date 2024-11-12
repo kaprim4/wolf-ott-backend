@@ -22,15 +22,14 @@
         <module>discovery-server</module>
         <module>gateway-service</module>
 
+        <module>administration-service</module>
         <module>auth-service</module>
-        <module>user-service</module>
         <module>device-service</module>
+        <module>line-service</module>
         <module>server-service</module>
         <module>stream-service</module>
-        <module>line-service</module>
         <module>ticketing-service</module>
-        <module>administration-service</module>
-
+        <module>user-service</module>
     </modules>
 
     <properties>

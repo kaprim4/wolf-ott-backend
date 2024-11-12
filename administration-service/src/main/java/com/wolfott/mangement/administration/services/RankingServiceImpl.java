@@ -11,9 +11,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class RankingServiceImpl implements RankingService{
+public class RankingServiceImpl implements RankingService {
     @Autowired
     private RankingRepository rankingRepository;
+
     @Override
     public List<Ranking> getAll() {
         return rankingRepository.findAll();

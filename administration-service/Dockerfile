@@ -12,4 +12,4 @@ ENV SPRING_PROFILES_ACTIVE=docker
 ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Expose port
-EXPOSE 9009
+EXPOSE 9010

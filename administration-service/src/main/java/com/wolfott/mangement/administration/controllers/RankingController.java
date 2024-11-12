@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/ranks")
 public class RankingController {
@@ -14,26 +17,32 @@ public class RankingController {
     private RankingService rankingService;
 
     @GetMapping
-    public Page<Ranking> getAll(Pageable pageable){
+    public Page<Ranking> getAll(Pageable pageable) {
         return rankingService.getAll(pageable);
     }
 
+    @GetMapping("/list")
+    public List<Ranking> getAll() {
+        return rankingService.getAll();
+    }
+
     @GetMapping("/{id}")
-    public Ranking getAll(@PathVariable("id") Long id){
+    public Ranking getAll(@PathVariable("id") Long id) {
         return rankingService.getOne(id);
     }
 
     @PostMapping
-    public Ranking create(@RequestBody Ranking ranking){
+    public Ranking create(@RequestBody Ranking ranking) {
         return rankingService.create(ranking);
     }
+
     @PutMapping("/{id}")
-    public Ranking create(@PathVariable("id") Long id, @RequestBody Ranking ranking){
+    public Ranking update(@PathVariable("id") Long id, @RequestBody Ranking ranking) {
         return rankingService.update(id, ranking);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id){
+    public void delete(@PathVariable("id") Long id) {
         rankingService.delete(id);
     }
 }

@@ -16,26 +16,27 @@ public class ArticleController {
     private ArticleService articleService;
 
     @GetMapping
-    public Page<Article> getAll(Pageable pageable){
+    public Page<Article> getAll(Pageable pageable) {
         return articleService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public Article getAll(@PathVariable("id") Long id){
+    public Article getAll(@PathVariable("id") Long id) {
         return articleService.getOne(id);
     }
 
     @PostMapping
-    public Article create(@RequestBody Article article){
+    public Article create(@RequestBody Article article) {
         return articleService.create(article);
     }
+
     @PutMapping("/{id}")
-    public Article create(@PathVariable("id") Long id, @RequestBody Article article){
+    public Article update(@PathVariable("id") Long id, @RequestBody Article article) {
         return articleService.update(id, article);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id){
+    public void delete(@PathVariable("id") Long id) {
         articleService.delete(id);
     }
 }

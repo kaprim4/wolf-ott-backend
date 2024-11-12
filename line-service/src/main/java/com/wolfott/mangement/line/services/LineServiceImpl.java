@@ -169,6 +169,10 @@ public class LineServiceImpl implements LineService {
         return lineRepository.countByCreatedAtAfter(lastWeekStartTimestamp);
     }
 
+    public int getCountByMemberId(Long id) {
+        return lineRepository.getCountByMemberId(id);
+    }
+
     public Map<String, Long> getCreatedLinesLastSixMonths() {
         LocalDate now = LocalDate.now();
         Map<String, Long> createdCounts = new HashMap<>();

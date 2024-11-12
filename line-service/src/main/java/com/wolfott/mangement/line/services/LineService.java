@@ -19,6 +19,8 @@ public interface LineService {
 
     int getLastWeekCount();
 
+    int getCountByMemberId(Long id);
+
     Map<String, Long> getCreatedLinesLastSixMonths();
 
     List<LineCompactResponse> getLastRegisteredLines();

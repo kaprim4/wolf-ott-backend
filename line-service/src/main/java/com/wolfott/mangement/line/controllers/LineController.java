@@ -49,6 +49,12 @@ public class LineController {
         return lineService.getAll(filters);
     }
 
+    @GetMapping("/member/{id}")
+    public ResponseEntity<Integer> getCountByMemberId(@PathVariable Long id) {
+        int count = lineService.getCountByMemberId(id);
+        return ResponseEntity.ok(count);
+    }
+
     @GetMapping("/last-registered")
     public ResponseEntity<List<LineCompactResponse>> getLastRegisteredLines() {
         List<LineCompactResponse> lines = lineService.getLastRegisteredLines();

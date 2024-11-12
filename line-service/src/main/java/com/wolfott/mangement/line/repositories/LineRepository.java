@@ -32,4 +32,6 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
     @Query("SELECT COUNT(l) FROM Line l WHERE l.createdAt >= :startTimestamp AND l.createdAt < :endTimestamp")
     Long countByCreatedAtBetween(@Param("startTimestamp") Long startTimestamp, @Param("endTimestamp") Long endTimestamp);
 
+    @Query("SELECT COUNT(l) FROM Line l WHERE l.member.id = :id")
+    int getCountByMemberId(@Param("id") Long id);
 }

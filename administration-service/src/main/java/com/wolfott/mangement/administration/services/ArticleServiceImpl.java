@@ -15,6 +15,7 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private ArticleRepository articleRepository;
+
     @Override
     public List<Article> getAll() {
         return articleRepository.findAll();
