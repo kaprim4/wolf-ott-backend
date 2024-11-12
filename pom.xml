@@ -20,17 +20,16 @@
     <modules>
         <module>config-server</module>
         <module>discovery-server</module>
-        <module>notification-service</module>
         <module>gateway-service</module>
 
         <module>auth-service</module>
         <module>user-service</module>
         <module>device-service</module>
-        <module>epg-service</module>
         <module>server-service</module>
         <module>stream-service</module>
         <module>line-service</module>
         <module>ticketing-service</module>
+        <module>administration-service</module>
 
     </modules>
 

@@ -1,0 +1,16 @@
+services:
+  wolfott-administration-service:
+    image: maven:latest  # Use the latest Maven image
+    working_dir: /app
+    volumes:
+      - ./administration-service:/app  # Mount the administration-service directory
+    command: mvn spring-boot:run
+    environment:
+      - SPRING_APPLICATION_NAME=administration-service
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+    networks:
+      - wolfott-network
+
+networks:
+  wolfott-network:
+    external: true
