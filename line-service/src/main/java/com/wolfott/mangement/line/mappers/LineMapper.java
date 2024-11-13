@@ -7,10 +7,7 @@ import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
-import com.wolfott.mangement.line.responses.LineCompactResponse;
-import com.wolfott.mangement.line.responses.LineCreateResponse;
-import com.wolfott.mangement.line.responses.LineDetailResponse;
-import com.wolfott.mangement.line.responses.LineUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
@@ -234,6 +231,10 @@ public class LineMapper {
     // Convert Line entity to LineUpdateResponse
     public LineUpdateResponse toLineUpdateResponse(Line line) {
         return modelMapper.map(line, LineUpdateResponse.class);
+    }
+    // Convert Line entity to LinePatchResponse
+    public LinePatchResponse toLinePatchResponse(Line line) {
+        return modelMapper.map(line, LinePatchResponse.class);
     }
 
     // Convert LineCreateRequest to Line entity

@@ -3,6 +3,7 @@ package com.wolfott.mangement.line.services;
 import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
+import com.wolfott.mangement.line.requests.PatchRequest;
 import com.wolfott.mangement.line.responses.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ public interface LineService {
     LineCreateResponse create(LineCreateRequest request);
 
     LineUpdateResponse update(Long id, LineUpdateRequest request);
+    LinePatchResponse update(Long id, PatchRequest request);
 
     void delete(Long id);
 

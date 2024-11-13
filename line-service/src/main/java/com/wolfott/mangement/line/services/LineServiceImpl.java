@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.configs.UserServiceClient;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
+import com.wolfott.mangement.line.exceptions.PatchOperationException;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
 import com.wolfott.mangement.line.models.Bouquet;
@@ -15,10 +16,13 @@ import com.wolfott.mangement.line.repositories.LineRepository;
 import com.wolfott.mangement.line.repositories.UserRepository;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
+import com.wolfott.mangement.line.requests.PatchRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.specifications.LineSpecifications;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -148,6 +152,65 @@ public class LineServiceImpl implements LineService {
         line = lineMapper.mergeLine(request, line);
         line = lineRepository.save(line);
         return lineMapper.toLineUpdateResponse(line);
+    }
+
+    @Override
+    public LinePatchResponse update(Long id, PatchRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        applyPatch(line, request);
+        lineRepository.save(line);
+        return lineMapper.toLinePatchResponse(line);
+    }
+
+
+    private void applyPatch(Line line, PatchRequest patch) {
+        try {
+            String path = patch.getPath();
+            String op = patch.getOp();
+            Object value = patch.getValue();
+
+            // Handle different operations
+            switch (op.toLowerCase()) {
+                case "replace":
+                    applyReplaceOperation(line, path, value);
+                    break;
+                case "add":
+                    applyAddOperation(line, path, value);
+                    break;
+                case "remove":
+                    applyRemoveOperation(line, path);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unsupported operation: " + op);
+            }
+        } catch (Exception e) {
+            throw new PatchOperationException("Failed to apply patch operation", e);
+        }
+    }
+
+    private void applyReplaceOperation(Line line, String path, Object value) {
+        // Use BeanWrapper to set properties dynamically by path
+        BeanWrapper wrapper = new BeanWrapperImpl(line);
+
+        // Here we're assuming 'path' is a valid field name (e.g., "/name")
+        String fieldName = path.substring(1); // Remove leading "/"
+
+        // Directly set the field using the BeanWrapper
+        wrapper.setPropertyValue(fieldName, value);
+    }
+
+    private void applyAddOperation(Line line, String path, Object value) {
+        // If it's an optional field, we might want to set a new value
+        BeanWrapper wrapper = new BeanWrapperImpl(line);
+        String fieldName = path.substring(1); // Remove leading "/"
+        wrapper.setPropertyValue(fieldName, value);
+    }
+
+    private void applyRemoveOperation(Line line, String path) {
+        // Remove operation, set the field value to null (or default value)
+        BeanWrapper wrapper = new BeanWrapperImpl(line);
+        String fieldName = path.substring(1); // Remove leading "/"
+        wrapper.setPropertyValue(fieldName, null);
     }
 
     @Override

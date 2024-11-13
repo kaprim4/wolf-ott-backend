@@ -2,6 +2,7 @@ package com.wolfott.mangement.line.controllers;
 
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
+import com.wolfott.mangement.line.requests.PatchRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.LineActivityService;
 import com.wolfott.mangement.line.services.LineService;
@@ -91,6 +92,17 @@ public class LineController {
     @GetMapping("/activities")
     public  Page<LineActivityCompactResponse> getAllActivities(Pageable pageable){
         return activityService.getAll(pageable);
+    }
+
+
+    @PatchMapping("/{id}")
+    public LinePatchResponse update(@PathVariable("id") Long id, @RequestBody PatchRequest request){
+        return lineService.update(id, request);
+    }
+
+    @PostMapping("/vpn/refresh")
+    public void refresh(){
+        // TODO: refresh vpn dns
     }
 
 }

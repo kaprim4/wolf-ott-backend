@@ -142,6 +142,11 @@ public class Line {
     @Column(name = "last_activity_array", columnDefinition = "mediumtext")
     private String lastActivityArray;
 
+    @Column(name = "use_vpn", columnDefinition = "tinyint")
+    private Boolean useVPN;
+    @Column(name = "vpn_dns", columnDefinition = "tinytext")
+    private String vpnDns;
+
 //    @Column(name = "updated", columnDefinition = "timestamp")
 //    @ColumnDefault("current_timestamp()")
 //    private Timestamp updated;
