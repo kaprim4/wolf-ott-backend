@@ -101,6 +101,7 @@ public class AuthServiceImpl implements AuthService {
         }
         claims.put("role_access", roleAccess);
         claims.put("role", role);
+        claims.put("isAdmin", user.getGroup().getIsAdmin());
         claims.put("scope", "user");
         claims.put("sid", user.getId());
         claims.put("email_verified", true);
