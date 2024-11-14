@@ -4,15 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.configs.UserServiceClient;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
+import com.wolfott.mangement.line.exceptions.ParameterNotFoundException;
 import com.wolfott.mangement.line.exceptions.PatchOperationException;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
-import com.wolfott.mangement.line.models.Bouquet;
-import com.wolfott.mangement.line.models.Line;
-import com.wolfott.mangement.line.models.LineList;
-import com.wolfott.mangement.line.models.User;
+import com.wolfott.mangement.line.models.*;
 import com.wolfott.mangement.line.repositories.BouquetRepository;
 import com.wolfott.mangement.line.repositories.LineRepository;
+import com.wolfott.mangement.line.repositories.ParameterRepository;
 import com.wolfott.mangement.line.repositories.UserRepository;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
@@ -43,6 +42,8 @@ import static java.util.stream.Collectors.toList;
 public class LineServiceImpl implements LineService {
     @Autowired
     LineRepository lineRepository;
+    @Autowired
+    ParameterRepository parameterRepository;
     @Autowired
     LineSpecifications lineSpecifications;
     @Autowired
@@ -216,6 +217,29 @@ public class LineServiceImpl implements LineService {
     @Override
     public void delete(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Override
+    public void changeVPN(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        Parameter parm = parameterRepository.findFirstByKey("vpn").orElseThrow(() -> new ParameterNotFoundException("No VPN Parameter Found"));
+        String value = parm.getValue();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<String> vpnDnsList = objectMapper.readValue(value, new TypeReference<List<String>>() {});
+
+            if (vpnDnsList.isEmpty())
+                return;
+
+            Random random = new Random();
+            String randomVpnDns = vpnDnsList.get(random.nextInt(vpnDnsList.size()));
+            line.setVpnDns(randomVpnDns);
+
+            lineRepository.save(line);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid format for VPN DNS list in parameter value", e);
+        }
     }
 
     public List<LineCompactResponse> getLastRegisteredLines() {

@@ -39,5 +39,6 @@ public interface LineService {
 
     void delete(Long id);
 
+    void changeVPN(Long id);
 
 }

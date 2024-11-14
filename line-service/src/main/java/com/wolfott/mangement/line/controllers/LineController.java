@@ -100,9 +100,9 @@ public class LineController {
         return lineService.update(id, request);
     }
 
-    @PostMapping("/vpn/refresh")
-    public void refresh(){
-        // TODO: refresh vpn dns
+    @PostMapping("/{id}/vpn/refresh")
+    public void refresh(@PathVariable("id") Long id){
+        lineService.changeVPN(id);
     }
 
 }
