@@ -15,7 +15,7 @@ public class ParameterCreateResponse {
     private String description;
     private String moduleName;
     private String key;
-    private String value;
+    private Object value;
     private String type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

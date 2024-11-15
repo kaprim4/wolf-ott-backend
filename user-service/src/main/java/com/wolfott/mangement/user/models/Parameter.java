@@ -1,13 +1,7 @@
 package com.wolfott.mangement.user.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
+import com.wolfott.mangement.user.converters.JsonConverter;
+import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -32,8 +26,10 @@ public class Parameter {
     @Column(name = "key", nullable = false)
     private String key;  // Unique key for the setting (e.g., 'max_login_attempts')
 
+    @Lob
+    @Convert(converter = JsonConverter.class)
     @Column(name = "value", nullable = false, columnDefinition = "TEXT")
-    private String value;  // The actual value of the setting (can be a string, JSON, or serialized object)
+    private Object value;  // The actual value of the setting (can be a string, JSON, or serialized object)
 
     @Column(name = "type", nullable = false, length = 50)
     private String type;  // Type of the value: 'string', 'integer', 'boolean', 'list:string', 'object', etc.
