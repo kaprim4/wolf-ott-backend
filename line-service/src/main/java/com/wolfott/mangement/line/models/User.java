@@ -4,14 +4,21 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 @Entity
 @Data
 @Table(name = "users")
 @NoArgsConstructor
-public class User {
+public class User implements UserDetails, Authentication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -112,5 +119,101 @@ public class User {
 
     public User(Long id) {
         this.id = id;
+    }
+
+    // ---------------------------------
+    // Implementation of UserDetails methods
+    // ---------------------------------
+
+    @Transient
+    private boolean admin;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Typically, you'd return a list of roles/permissions here
+        return new ArrayList<>();
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        // Can implement logic to check if the account is expired
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        // Can implement logic to check if the account is locked
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        // Can implement logic to check if credentials are expired
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // Can implement logic to check if the account is enabled
+        return this.status != null && this.status;
+    }
+
+    @Override
+    public String getName() {
+        return this.username;
+    }
+
+    // ---------------------------------
+    // Implementation of Authentication methods
+    // ---------------------------------
+
+    @Override
+    public Object getCredentials() {
+        return this.password;
+    }
+
+    @Override
+    public User getDetails() {
+        return this; // You could return other user-related details if needed
+    }
+
+    @Override
+    public User getPrincipal() {
+        return this; // You could return a user object or a principal here
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        // Should return if the user is authenticated, but this is generally handled by Spring Security
+        return true;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+        // If needed, you can handle logic for setting authenticated state,
+        // but Spring Security handles most authentication logic
+        if (isAuthenticated) {
+            throw new IllegalArgumentException("Cannot change the authenticated state");
+        }
+    }
+
+    @Override
+    public boolean implies(Subject subject) {
+        return Authentication.super.implies(subject);
+    }
+
+    @Override
+    public String toString() {
+        return "User{id=" + id + ", username='" + username + "', email='" + email + "', status=" + status + "}";
     }
 }
