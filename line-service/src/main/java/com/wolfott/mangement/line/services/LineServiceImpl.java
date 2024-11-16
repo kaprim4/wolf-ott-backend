@@ -6,6 +6,7 @@ import com.wolfott.mangement.line.configs.UserServiceClient;
 import com.wolfott.mangement.line.exceptions.LineNotFoundException;
 import com.wolfott.mangement.line.exceptions.ParameterNotFoundException;
 import com.wolfott.mangement.line.exceptions.PatchOperationException;
+import com.wolfott.mangement.line.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
 import com.wolfott.mangement.line.models.*;
@@ -27,6 +28,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -112,25 +116,38 @@ public class LineServiceImpl implements LineService {
 
     @Override
     public Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
-        Specification<Line> spec = lineSpecifications.dynamic(filters);
-        Page<Line> page = lineRepository.findAll(spec, pageable);
-        List<Line> lines = page.getContent().stream().parallel()
-                .map(line -> {
-                    if (line.getMemberId() != null) {
-                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
+        if (isAdmin()){
+            Specification<Line> spec = lineSpecifications.dynamic(filters);
+            Page<Line> page = lineRepository.findAll(spec, pageable);
+            page.stream().parallel().forEach(line -> {
+                if (line.getMemberId() != null) {
+                    User member = userRepository.findById(line.getMemberId()).orElse(new User());
 //                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-                        String username = member.getUsername();
-                        member.setUsername(username);
-                        line.setMember(member);
-                    }
-                    return line;
-                }).toList();
-        page = new PageImpl<>(
-                lines,
-                pageable,
-                page.getTotalElements()
-        );
-        return lineMapper.toLineCompactResponsePage(page);
+                    String username = member.getUsername();
+                    member.setUsername(username);
+                    line.setMember(member);
+                }
+            });
+            return lineMapper.toLineCompactResponsePage(page);
+        } else  {
+            Long ownerId = getCurrentUserId();
+            if (ownerId == null) {
+                throw new UnauthorizedAccessException("User not authenticated");
+            }
+            Specification<Line> spec = lineSpecifications.dynamic(filters).and(LineSpecifications.hasMemberId(ownerId));
+            Page<Line> page = lineRepository.findAll(spec, pageable);
+            page.stream().parallel().forEach(line -> {
+                if (line.getMemberId() != null) {
+                    User member = userRepository.findById(line.getMemberId()).orElse(new User());
+//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
+                    String username = member.getUsername();
+                    member.setUsername(username);
+                    line.setMember(member);
+                }
+            });
+            return lineMapper.toLineCompactResponsePage(page);
+        }
+
     }
 
     @Override
@@ -227,7 +244,8 @@ public class LineServiceImpl implements LineService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            List<String> vpnDnsList = objectMapper.readValue(value, new TypeReference<List<String>>() {});
+            Map<String, Object> config = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
+            List<String> vpnDnsList = (List<String>) config.get("dns");
 
             if (vpnDnsList.isEmpty())
                 return;
@@ -273,6 +291,37 @@ public class LineServiceImpl implements LineService {
             createdCounts.put(date.getMonth().name(), count);
         }
         return createdCounts;
+    }
+
+
+    // Helper method to get current authenticated user's role
+    private Authentication getPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    // Helper method to get user ID (or any other user details you need)
+    private Long getCurrentUserId() {
+        Authentication auth = getPrincipal();
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            System.out.println("Principal: " + principal);
+            if (principal instanceof User) {
+                return ((User) principal).getId();
+            }
+        }
+        return null;
+    }
+
+
+    // Helper method to check if the current user is an admin
+    private boolean isAdmin() {
+        Authentication auth = getPrincipal();
+        Object principal = auth.getPrincipal();
+//        return auth != null && auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        if (principal instanceof User) {
+            return ((User) principal).isAdmin();
+        }
+        return false;
     }
 
 }

@@ -18,6 +18,10 @@ import java.util.Set;
 @Component
 public class LineSpecifications {
 
+    public static Specification<Line> hasMemberId(Long userId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("member").get("id"), userId);
+    }
+
     public Specification<Line> dynamic(Map<String, Object> filters) {
         return (Root<Line> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate predicate = builder.conjunction();

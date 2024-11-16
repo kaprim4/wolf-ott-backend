@@ -25,6 +25,7 @@ public class LineController {
     @Autowired
     LineActivityService activityService;
 
+
     @GetMapping("/{id}")
     public LineDetailResponse getOne(@PathVariable Long id) {
         return lineService.getOne(id);
