@@ -19,33 +19,9 @@ public class UserThemeOptions {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ColumnDefault("ltr")
-    @Column(name = "dir")
-    private String dir;
-
     @ColumnDefault("dark")
     @Column(name = "theme")
     private String theme;
-
-    @ColumnDefault("false")
-    @Column(name = "is_sidenav_opened")
-    private Boolean sidenavOpened;
-
-    @ColumnDefault("false")
-    @Column(name = "is_sidenav_collapsed")
-    private Boolean sidenavCollapsed;
-
-    @ColumnDefault("false")
-    @Column(name = "is_boxed")
-    private Boolean boxed;
-
-    @ColumnDefault("false")
-    @Column(name = "is_horizontal")
-    private Boolean horizontal;
-
-    @ColumnDefault("false")
-    @Column(name = "is_card_border")
-    private Boolean cardBorder;
 
     @ColumnDefault("blue_theme")
     @Column(name = "active_theme")
@@ -54,10 +30,6 @@ public class UserThemeOptions {
     @ColumnDefault("en-us")
     @Column(name = "language")
     private String language;
-
-    @ColumnDefault("side")
-    @Column(name = "nav_pos")
-    private String navPos;
 
 }
 /*
