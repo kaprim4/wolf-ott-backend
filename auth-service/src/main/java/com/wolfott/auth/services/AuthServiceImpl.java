@@ -6,6 +6,7 @@ import com.wolfott.auth.models.User;
 import com.wolfott.auth.repositories.UserRepository;
 import com.wolfott.auth.requests.LoginRequest;
 import com.wolfott.auth.responses.LoginResponse;
+import com.wolfott.auth.utils.PasswordUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -41,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         String plainPassword = request.password();
         String hashedPassword = user.getPassword();
 
-//        boolean validPassword = validatePassword(plainPassword, hashedPassword);
+//        boolean validPassword = PasswordUtils.validatePassword(plainPassword, hashedPassword);
 //        if (!validPassword)
 //            throw new InvalidCredentialsException();
 
@@ -50,41 +51,9 @@ public class AuthServiceImpl implements AuthService {
         return new LoginResponse(accessToken, refreshToken, accessTokenValidity, "Bearer", "Active", "User");
     }
 
-    // Method to hash a password using SHA-512 with the given salt and rounds
-    public static String hashPassword(String password, String salt, int rounds) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(salt.getBytes(StandardCharsets.UTF_8));
-
-        byte[] hashed = md.digest(password.getBytes(StandardCharsets.UTF_8));
-        for (int i = 1; i < rounds; i++) {
-            md.reset();
-            md.update(hashed);
-            hashed = md.digest();
-        }
-
-        return Base64.getEncoder().encodeToString(hashed);
-    }
-
-
-    // Method to validate a password against the stored hashed password
-    public static boolean validatePassword(String plainPassword, String hashedPassword) {
-        try {
-            // Extract information from the hashedPassword
-            Pattern pattern = Pattern.compile("^\\$6\\$rounds=(\\d+)\\$([a-zA-Z0-9./]+)\\$([a-zA-Z0-9./]+)$");
-            Matcher matcher = pattern.matcher(hashedPassword);
-
-            if (!matcher.matches()) {
-                throw new IllegalArgumentException("Invalid hashed password format");
-            }
-
-            int rounds = Integer.parseInt(matcher.group(1));
-            String salt = matcher.group(2);
-            String storedHash = matcher.group(3);
-            String computedHash = hashPassword(plainPassword, salt, rounds);
-            return computedHash.equals(storedHash);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+    @Override
+    public LoginResponse register(LoginRequest request) {
+        return null;
     }
 
     public String createToken(User user) {
