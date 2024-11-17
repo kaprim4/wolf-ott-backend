@@ -98,7 +98,15 @@ public class LineServiceImpl implements LineService {
 
     @Override
     public List<LineCompactResponse> getAll(Map<String, Object> filters) {
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
+
         Specification<Line> spec = lineSpecifications.dynamic(filters);
+        if (!isAdmin()){
+            spec = spec.and(LineSpecifications.hasMemberId(ownerId));
+        }
         List<Line> list = lineRepository.findAll(spec);
 //        List<Line> lines = list.stream().parallel()
 //                .map(line -> {
@@ -116,37 +124,26 @@ public class LineServiceImpl implements LineService {
 
     @Override
     public Page<LineCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
-        if (isAdmin()){
-            Specification<Line> spec = lineSpecifications.dynamic(filters);
-            Page<Line> page = lineRepository.findAll(spec, pageable);
-            page.stream().parallel().forEach(line -> {
-                if (line.getMemberId() != null) {
-                    User member = userRepository.findById(line.getMemberId()).orElse(new User());
-//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-                    String username = member.getUsername();
-                    member.setUsername(username);
-                    line.setMember(member);
-                }
-            });
-            return lineMapper.toLineCompactResponsePage(page);
-        } else  {
-            Long ownerId = getCurrentUserId();
-            if (ownerId == null) {
-                throw new UnauthorizedAccessException("User not authenticated");
-            }
-            Specification<Line> spec = lineSpecifications.dynamic(filters).and(LineSpecifications.hasMemberId(ownerId));
-            Page<Line> page = lineRepository.findAll(spec, pageable);
-            page.stream().parallel().forEach(line -> {
-                if (line.getMemberId() != null) {
-                    User member = userRepository.findById(line.getMemberId()).orElse(new User());
-//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-                    String username = member.getUsername();
-                    member.setUsername(username);
-                    line.setMember(member);
-                }
-            });
-            return lineMapper.toLineCompactResponsePage(page);
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
         }
+
+        Specification<Line> spec = lineSpecifications.dynamic(filters);
+        if (!isAdmin()){
+            spec = spec.and(LineSpecifications.hasMemberId(ownerId));
+        }
+        Page<Line> page = lineRepository.findAll(spec, pageable);
+        page.stream().parallel().forEach(line -> {
+            if (line.getMemberId() != null) {
+                User member = userRepository.findById(line.getMemberId()).orElse(new User());
+//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
+                String username = member.getUsername();
+                member.setUsername(username);
+                line.setMember(member);
+            }
+        });
+        return lineMapper.toLineCompactResponsePage(page);
 
     }
 
