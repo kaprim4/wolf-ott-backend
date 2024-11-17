@@ -1,4 +1,4 @@
-package com.wolfott.mangement.user.requests;
+package com.wolfott.mangement.administration.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParameterUpdateRequest {
+public class ParameterDetailResponse {
     private Long id;
     private String title;
     private String description;
@@ -17,4 +17,6 @@ public class ParameterUpdateRequest {
     private String key;
     private Object value;
     private String type;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

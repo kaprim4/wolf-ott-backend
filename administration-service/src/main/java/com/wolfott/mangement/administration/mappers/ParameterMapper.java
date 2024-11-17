@@ -1,12 +1,12 @@
-package com.wolfott.mangement.user.mappers;
+package com.wolfott.mangement.administration.mappers;
 
-import com.wolfott.mangement.user.models.Parameter;
-import com.wolfott.mangement.user.requests.ParameterCreateRequest;
-import com.wolfott.mangement.user.requests.ParameterUpdateRequest;
-import com.wolfott.mangement.user.responses.ParameterCompactResponse;
-import com.wolfott.mangement.user.responses.ParameterCreateResponse;
-import com.wolfott.mangement.user.responses.ParameterDetailResponse;
-import com.wolfott.mangement.user.responses.ParameterUpdateResponse;
+import com.wolfott.mangement.administration.models.Parameter;
+import com.wolfott.mangement.administration.requests.ParameterCreateRequest;
+import com.wolfott.mangement.administration.requests.ParameterUpdateRequest;
+import com.wolfott.mangement.administration.responses.ParameterCompactResponse;
+import com.wolfott.mangement.administration.responses.ParameterCreateResponse;
+import com.wolfott.mangement.administration.responses.ParameterDetailResponse;
+import com.wolfott.mangement.administration.responses.ParameterUpdateResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

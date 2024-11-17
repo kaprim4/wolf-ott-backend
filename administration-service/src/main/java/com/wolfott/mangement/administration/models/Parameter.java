@@ -1,6 +1,6 @@
-package com.wolfott.mangement.user.models;
+package com.wolfott.mangement.administration.models;
 
-import com.wolfott.mangement.user.converters.JsonConverter;
+import com.wolfott.mangement.administration.converters.JsonConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;

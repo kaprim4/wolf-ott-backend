@@ -1,4 +1,4 @@
-package com.wolfott.mangement.user.responses;
+package com.wolfott.mangement.administration.responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ParameterUpdateResponse {
+public class ParameterCompactResponse {
+
     private Long id;
     private String title;
     private String description;
@@ -19,4 +20,5 @@ public class ParameterUpdateResponse {
     private String type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
 }
