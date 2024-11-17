@@ -12,10 +12,13 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String title;
+
     @Lob
     @Column(name = "thumbnail_image", columnDefinition = "LONGTEXT")
     private String thumbnail;
+
     @Column(name = "download_url", columnDefinition = "LONGTEXT")
     private String url;
 
