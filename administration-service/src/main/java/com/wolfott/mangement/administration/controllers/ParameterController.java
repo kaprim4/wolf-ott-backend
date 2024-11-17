@@ -1,13 +1,12 @@
-package com.wolfott.mangement.user.controllers;
+package com.wolfott.mangement.administration.controllers;
 
-import com.wolfott.mangement.user.models.Parameter;
-import com.wolfott.mangement.user.requests.ParameterCreateRequest;
-import com.wolfott.mangement.user.requests.ParameterUpdateRequest;
-import com.wolfott.mangement.user.responses.ParameterCompactResponse;
-import com.wolfott.mangement.user.responses.ParameterCreateResponse;
-import com.wolfott.mangement.user.responses.ParameterDetailResponse;
-import com.wolfott.mangement.user.responses.ParameterUpdateResponse;
-import com.wolfott.mangement.user.services.ParameterService;
+import com.wolfott.mangement.administration.requests.ParameterCreateRequest;
+import com.wolfott.mangement.administration.requests.ParameterUpdateRequest;
+import com.wolfott.mangement.administration.responses.ParameterCompactResponse;
+import com.wolfott.mangement.administration.responses.ParameterCreateResponse;
+import com.wolfott.mangement.administration.responses.ParameterDetailResponse;
+import com.wolfott.mangement.administration.responses.ParameterUpdateResponse;
+import com.wolfott.mangement.administration.services.ParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
