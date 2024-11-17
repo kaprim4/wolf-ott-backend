@@ -1,14 +1,16 @@
 package com.wolfott.mangement.user.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 @Data
 @EqualsAndHashCode
 @Entity
+@Builder
 @Table(name = "user_theme_options")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserThemeOptions {
 
     @Id
@@ -32,17 +34,3 @@ public class UserThemeOptions {
     private String language;
 
 }
-/*
-export const defaults: AppSettings = {
-    dir: 'ltr',
-    theme: 'dark',
-    sidenavOpened: false,
-    sidenavCollapsed: false,
-    boxed: false,
-    horizontal: false,
-    cardBorder: false,
-    activeTheme: 'blue_theme',
-    language: 'en-us',
-    navPos: 'side',
-};
-        */
