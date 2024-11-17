@@ -7,7 +7,7 @@ import lombok.Data;
 public class UserUpdateRequest{
     private Long id;
     private String username;
-    //        String password,
+    private String password;
     private String email;
     private String ip;
     //        Long memberGroupId,

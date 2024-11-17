@@ -8,7 +8,7 @@ import java.util.Date;
 public class UserCreateResponse {
     private Long id;
     private String username;
-    private String password;
+//    private String owner;
     private String email;
     private String ip;
     private Long memberGroupId;

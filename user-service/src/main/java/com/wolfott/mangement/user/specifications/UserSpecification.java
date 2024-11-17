@@ -19,6 +19,10 @@ public class UserSpecification {
     // Define fields to search and excluded fields
     private static final Set<String> EXCLUDED_FIELDS = Set.of("id", "password", "timestampLastLogin", "timestampDateRegistered");
 
+    public static Specification<User> hasMemberId(Long userId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("ownerId"), userId);
+    }
+
     public Specification<User> dynamic(Map<String, Object> filters) {
         return (Root<User> root, CriteriaQuery<?> query, CriteriaBuilder builder) -> {
             Predicate predicate = builder.conjunction();

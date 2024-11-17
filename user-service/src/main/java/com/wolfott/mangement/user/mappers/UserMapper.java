@@ -7,7 +7,10 @@ import com.wolfott.mangement.user.responses.UserCompactResponse;
 import com.wolfott.mangement.user.responses.UserCreateResponse;
 import com.wolfott.mangement.user.responses.UserDetailResponse;
 import com.wolfott.mangement.user.responses.UserUpdateResponse;
+import jakarta.annotation.PostConstruct;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,33 +18,66 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class UserMapper {
     @Autowired
-    ModelMapper mapper;
+    ModelMapper modelMapper;
+
+    @PostConstruct
+    private void setupMappings() {
+        modelMapper.addMappings(new PropertyMap<User, UserCompactResponse>() {
+            @Override
+            protected void configure() {
+                using(userToUsernameConverter()).map(source.getOwner(), destination.getOwner());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<User, UserDetailResponse>() {
+            @Override
+            protected void configure() {
+//                map().setId(destination.getId());
+                map(source.getId(), destination.getId());
+//                map().setOwnerId(destination.getOwnerId());
+                map(source.getOwnerId(), destination.getOwnerId());
+            }
+        });
+
+    }
+
+    private Converter<User, String> userToUsernameConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(User::getUsername)
+                .orElse(null); // "Anonymous"
+    }
     public User toUser(UserCreateRequest request){
-        return mapper.map(request, User.class);
+        return modelMapper.map(request, User.class);
     }
     public User toUser(UserUpdateRequest request){
-        return mapper.map(request, User.class);
+        return modelMapper.map(request, User.class);
+    }
+
+    public User toUser(UserUpdateRequest request, User model){
+        modelMapper.map(request, model);
+        return model;
     }
 
     public UserCreateResponse toCreateResponse(User user){
-        return mapper.map(user, UserCreateResponse.class);
+        return modelMapper.map(user, UserCreateResponse.class);
     }
 
     public UserUpdateResponse toUpdateResponse(User user){
-        return mapper.map(user, UserUpdateResponse.class);
+        return modelMapper.map(user, UserUpdateResponse.class);
     }
 
     public UserDetailResponse toDetailResponse(User user){
-        return mapper.map(user, UserDetailResponse.class);
+        return modelMapper.map(user, UserDetailResponse.class);
     }
 
     public UserCompactResponse toCompactResponse(User user){
-        return mapper.map(user, UserCompactResponse.class);
+        return modelMapper.map(user, UserCompactResponse.class);
     }
 
     public Page<UserCompactResponse> toCompactResponse(Page<User> page) {

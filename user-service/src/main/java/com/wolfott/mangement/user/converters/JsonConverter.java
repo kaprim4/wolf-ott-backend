@@ -6,7 +6,7 @@ import jakarta.persistence.Converter;
 
 import java.io.IOException;
 
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class JsonConverter implements AttributeConverter<Object, String> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
