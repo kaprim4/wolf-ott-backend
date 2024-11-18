@@ -21,6 +21,7 @@ public class UserDetailResponse {
     private Boolean status;
     private String resellerDns;
     private Long ownerId;
+    private Long groupId;
     private String overridePackages;
     private String hue;
     private Integer theme;

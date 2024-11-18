@@ -4,6 +4,8 @@ import com.wolfott.mangement.administration.exceptions.ArticleNotFoundException;
 import com.wolfott.mangement.administration.models.Application;
 import com.wolfott.mangement.administration.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,11 @@ public class ApplicationServiceImpl implements ApplicationService
     @Override
     public List<Application> getAll() {
         return applicationRepository.findAll();
+    }
+
+    @Override
+    public Page<Application> getAll(Pageable pageable) {
+        return applicationRepository.findAll(pageable);
     }
 
     @Override

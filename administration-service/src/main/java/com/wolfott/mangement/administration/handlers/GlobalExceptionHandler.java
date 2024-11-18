@@ -1,5 +1,6 @@
 package com.wolfott.mangement.administration.handlers;
 
+import com.wolfott.mangement.administration.exceptions.ParameterNotFoundException;
 import com.wolfott.mangement.administration.exceptions.UserNotFoundException;
 import com.wolfott.mangement.administration.responses.GenericErrorResponse;
 import com.wolfott.mangement.administration.responses.ValidationErrorResponse;
@@ -23,7 +24,19 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 request.getDescription(false), // Path where the error occurred
                 ex.getMessage(),
-                "BOUQUET_NOT_FOUND", // Error code
+                "USER_NOT_FOUND", // Error code
+                HttpStatus.NOT_FOUND // HTTP status
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ParameterNotFoundException.class)
+    public ResponseEntity<GenericErrorResponse> handleParameterNotFoundException(ParameterNotFoundException ex, WebRequest request) {
+        GenericErrorResponse errorResponse = new GenericErrorResponse(
+                LocalDateTime.now(),
+                request.getDescription(false), // Path where the error occurred
+                ex.getMessage(),
+                "PARAMS_NOT_FOUND", // Error code
                 HttpStatus.NOT_FOUND // HTTP status
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);

@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,6 +55,9 @@ public class GroupMapper {
     }
 
     public Collection<GroupCompactResponse> toCompactResponse(Collection<UserGroup> collection) {
+        return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
+    }
+    public List<GroupCompactResponse> toCompactResponse(List<UserGroup> collection) {
         return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
     }
 }

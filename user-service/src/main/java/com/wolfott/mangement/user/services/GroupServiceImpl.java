@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -32,6 +33,13 @@ public class GroupServiceImpl implements GroupService {
     public GroupDetailResponse getOne(Long id) {
         UserGroup group = groupRepository.findById(id).orElseThrow(() -> new RuntimeException("Group Not Found"));
         return groupMapper.toDetailResponse(group);
+    }
+
+    @Override
+    public List<GroupCompactResponse> getAll(Map<String, Object> filters) {
+        Specification<UserGroup> spec = groupSpecification.dynamic(filters);
+        List<UserGroup> list = groupRepository.findAll(spec);
+        return groupMapper.toCompactResponse(list);
     }
 
     @Override

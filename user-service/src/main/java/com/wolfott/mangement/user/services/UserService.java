@@ -1,6 +1,7 @@
 package com.wolfott.mangement.user.services;
 
 import com.wolfott.mangement.user.models.User;
+import com.wolfott.mangement.user.models.UserGroup;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
 import com.wolfott.mangement.user.responses.UserCompactResponse;

@@ -3,6 +3,8 @@ package com.wolfott.mangement.administration.controllers;
 import com.wolfott.mangement.administration.models.Application;
 import com.wolfott.mangement.administration.services.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,9 +16,13 @@ public class ApplicationController
     @Autowired
     private ApplicationService applicationService;
 
-    @GetMapping
+    @GetMapping("/list")
     public List<Application> getAll() {
         return applicationService.getAll();
+    }
+    @GetMapping
+    public Page<Application> getAll(Pageable pageable) {
+        return applicationService.getAll(pageable);
     }
 
     @GetMapping("/{id}")

@@ -3,3 +3,5 @@ spring:
     name: administration-service
   config:
     import: optional:configserver:http://localhost:9000
+  jpa:
+    show_sql: true

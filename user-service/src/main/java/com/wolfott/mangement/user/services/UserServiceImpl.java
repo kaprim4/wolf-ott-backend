@@ -4,6 +4,8 @@ import com.wolfott.mangement.user.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.user.exceptions.UserNotFoundException;
 import com.wolfott.mangement.user.mappers.UserMapper;
 import com.wolfott.mangement.user.models.User;
+import com.wolfott.mangement.user.models.UserGroup;
+import com.wolfott.mangement.user.repositories.GroupRepository;
 import com.wolfott.mangement.user.repositories.UserRepository;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
         }
         List<User> list = userRepository.findAll(spec);
         list.stream().parallel().forEach(user -> {
-            User member = userRepository.findById(user.getOwnerId()).orElse(new User());
+            User member = Optional.ofNullable(user.getOwnerId()).map(userRepository::findById).map(opt -> opt.orElse(new User())).orElse(new User());
 //          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
             String username = member.getUsername();
             member.setUsername(username);

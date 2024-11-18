@@ -1,6 +1,7 @@
 package com.wolfott.mangement.user.mappers;
 
 import com.wolfott.mangement.user.models.User;
+import com.wolfott.mangement.user.models.UserGroup;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
 import com.wolfott.mangement.user.responses.UserCompactResponse;
@@ -42,6 +43,7 @@ public class UserMapper {
                 map(source.getId(), destination.getId());
 //                map().setOwnerId(destination.getOwnerId());
                 map(source.getOwnerId(), destination.getOwnerId());
+                using(groupToGroupIdConverter()).map(source.getGroup(), destination.getGroupId());
             }
         });
 
@@ -52,6 +54,13 @@ public class UserMapper {
                 .map(User::getUsername)
                 .orElse(null); // "Anonymous"
     }
+
+    private Converter<UserGroup, Long> groupToGroupIdConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(UserGroup::getGroupId)
+                .orElse(null); // "Anonymous"
+    }
+
     public User toUser(UserCreateRequest request){
         return modelMapper.map(request, User.class);
     }

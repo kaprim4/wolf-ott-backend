@@ -28,7 +28,7 @@ public class ParameterController {
         return parameterService.getOne(id);
     }
 
-    @GetMapping("@{id}")
+    @GetMapping("@{key}")
     public ParameterDetailResponse getOne(@PathVariable("key") String key){
         return parameterService.getOneByKey(key);
     }
