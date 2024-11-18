@@ -24,15 +24,19 @@ public class UserThemeOptionsServiceImpl implements UserThemeOptionsService {
 
     @Override
     public UserThemeOptions create(UserThemeOptionsRequest request) {
-        User user = userRepository.findOneById(request.getUser_id());
-        UserThemeOptions userThemeOptions = UserThemeOptions.builder()
-                .theme(request.getTheme())
-                .activeTheme(request.getActiveTheme())
-                .language(request.getLanguage())
-                .user(user)
-                .build();
-        userThemeOptionsRepository.save(userThemeOptions);
-        return userThemeOptions;
+        Optional<UserThemeOptions> userTheme = userThemeOptionsRepository.findByUser_Id(request.getUser_id());
+        if(userTheme.isEmpty()) {
+            User user = userRepository.findOneById(request.getUser_id());
+            UserThemeOptions userThemeOptions = UserThemeOptions.builder()
+                    .theme(request.getTheme())
+                    .activeTheme(request.getActiveTheme())
+                    .language(request.getLanguage())
+                    .user(user)
+                    .build();
+            userThemeOptionsRepository.save(userThemeOptions);
+            return userThemeOptions;
+        }
+        return userTheme.get();
     }
 
     @Override
