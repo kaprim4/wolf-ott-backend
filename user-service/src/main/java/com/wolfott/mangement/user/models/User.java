@@ -90,6 +90,10 @@ public class User implements UserDetails, Authentication {
     @Transient
     private User owner;
 
+    @Lob
+    @Column(name = "thumbnail_image", columnDefinition = "LONGTEXT")
+    private String thumbnail;
+
 
     public String getLastLogin() {
         if (timestampLastLogin != null) {
