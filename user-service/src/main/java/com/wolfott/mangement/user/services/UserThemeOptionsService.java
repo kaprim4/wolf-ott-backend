@@ -10,5 +10,5 @@ public interface UserThemeOptionsService {
 
     UserThemeOptions create(UserThemeOptionsRequest request);
 
-    UserThemeOptions update(UserThemeOptionsRequest request);
+    UserThemeOptions update(Long id, UserThemeOptionsRequest request);
 }

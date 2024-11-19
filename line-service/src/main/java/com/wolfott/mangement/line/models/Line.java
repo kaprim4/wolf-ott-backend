@@ -144,6 +144,7 @@ public class Line {
 
     @Column(name = "use_vpn", columnDefinition = "tinyint")
     private Boolean useVPN;
+
     @Column(name = "vpn_dns", columnDefinition = "tinytext")
     private String vpnDns;
 

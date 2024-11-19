@@ -9,7 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArticleServiceImpl implements ArticleService {
@@ -18,7 +20,10 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> getAll() {
-        return articleRepository.findAll();
+        return articleRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Article::getId).reversed())
+                .toList();
     }
 
     @Override
@@ -40,9 +45,14 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Article update(Long id, Article article) {
-        article.setId(id);
-        article.setUpdatedAt(LocalDateTime.now());
-        return articleRepository.save(article);
+        Optional<Article> article1 = articleRepository.findById(id);
+        if (article1.isPresent()) {
+            article.setId(id);
+            article.setCreatedAt(article1.get().getCreatedAt());
+            article.setUpdatedAt(LocalDateTime.now());
+            return articleRepository.save(article);
+        }
+        return null;
     }
 
     @Override

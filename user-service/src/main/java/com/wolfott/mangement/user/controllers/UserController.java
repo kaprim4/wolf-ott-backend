@@ -89,9 +89,9 @@ public class UserController {
         return userThemeOptionsService.create(request);
     }
 
-    @PutMapping("/theme-options")
-    public UserThemeOptions updateUserThemeOptions(@RequestBody UserThemeOptionsRequest request) {
-        return userThemeOptionsService.update(request);
+    @PutMapping("/theme-options/{id}")
+    public UserThemeOptions updateUserThemeOptions(@PathVariable("id") Long id, @RequestBody UserThemeOptionsRequest request) {
+        return userThemeOptionsService.update(id, request);
     }
 
 }
