@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserThemeOptionsRequest {
-    private Long user_id;
+    private Long userId;
     private String theme;
     private String activeTheme;
     private String language;

@@ -4,22 +4,22 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+@Entity
 @Data
 @EqualsAndHashCode
-@Entity
-@Builder
 @Table(name = "user_theme_options")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserThemeOptions {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
     @ColumnDefault("dark")
     @Column(name = "theme")

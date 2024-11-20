@@ -2,6 +2,7 @@ package com.wolfott.mangement.administration.services;
 
 import com.wolfott.mangement.administration.exceptions.ArticleNotFoundException;
 import com.wolfott.mangement.administration.models.Application;
+import com.wolfott.mangement.administration.models.Article;
 import com.wolfott.mangement.administration.repositories.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService
@@ -40,10 +42,15 @@ public class ApplicationServiceImpl implements ApplicationService
     }
 
     @Override
-    public Application update(Long id, Application article) {
-        article.setId(id);
-        article.setUpdatedAt(LocalDateTime.now());
-        return applicationRepository.save(article);
+    public Application update(Long id, Application application) {
+        Optional<Application> application1 = applicationRepository.findById(id);
+        if (application1.isPresent()) {
+            application.setId(id);
+            application.setCreatedAt(application1.get().getCreatedAt());
+            application.setUpdatedAt(LocalDateTime.now());
+            return applicationRepository.save(application);
+        }
+        return null;
     }
 
     @Override

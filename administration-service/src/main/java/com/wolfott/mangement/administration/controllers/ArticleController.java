@@ -1,5 +1,6 @@
 package com.wolfott.mangement.administration.controllers;
 
+import com.wolfott.mangement.administration.models.Application;
 import com.wolfott.mangement.administration.models.Article;
 import com.wolfott.mangement.administration.services.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,18 @@ public class ArticleController {
     @Autowired
     private ArticleService articleService;
 
+    @GetMapping("/list")
+    public List<Article> getAll() {
+        return articleService.getAll();
+    }
+
     @GetMapping
     public Page<Article> getAll(Pageable pageable) {
         return articleService.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public Article getAll(@PathVariable("id") Long id) {
+    public Article findOne(@PathVariable("id") Long id) {
         return articleService.getOne(id);
     }
 

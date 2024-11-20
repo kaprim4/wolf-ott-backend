@@ -20,6 +20,7 @@ public class ApplicationController
     public List<Application> getAll() {
         return applicationService.getAll();
     }
+
     @GetMapping
     public Page<Application> getAll(Pageable pageable) {
         return applicationService.getAll(pageable);
