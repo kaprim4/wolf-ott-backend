@@ -127,6 +127,8 @@ public class User implements UserDetails, Authentication {
 
     @Transient
     private boolean admin;
+    @Transient
+    private boolean expired;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -147,7 +149,7 @@ public class User implements UserDetails, Authentication {
     @Override
     public boolean isAccountNonExpired() {
         // Can implement logic to check if the account is expired
-        return true;
+        return !expired;
     }
 
     @Override
@@ -159,13 +161,13 @@ public class User implements UserDetails, Authentication {
     @Override
     public boolean isCredentialsNonExpired() {
         // Can implement logic to check if credentials are expired
-        return true;
+        return !expired;
     }
 
     @Override
     public boolean isEnabled() {
         // Can implement logic to check if the account is enabled
-        return this.status != null && this.status;
+        return !expired;
     }
 
     @Override

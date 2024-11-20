@@ -65,12 +65,17 @@ public class JwtAuthenticationProvider implements TokenAuthenticationProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
+        // Get expiration date from token
+        Date expirationDate = claims.getExpiration();
+        boolean isExpired = expirationDate.before(new Date());
+
         // Assuming the token has the subject (username) as the principal
 //        UserDetails userDetails = new User(claims.getSubject(), token, new ArrayList<>());
         User user = new User();
         user.setUsername(claims.getSubject());
         user.setId(((Integer)claims.get("sid")).longValue());
         user.setAdmin(((Boolean) claims.get("isAdmin")));
+        user.setExpired(isExpired);  // Set the expired flag
         UserDetails userDetails = user;
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
