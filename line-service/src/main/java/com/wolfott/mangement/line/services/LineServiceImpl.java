@@ -241,8 +241,11 @@ public class LineServiceImpl implements LineService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            Map<String, Object> config = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
-            List<String> vpnDnsList = (List<String>) config.get("dns");
+//            Map<String, Object> config = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
+            List<Map<String, Object>> config = objectMapper.readValue(value, new TypeReference<List<Map<String, Object>>>() {});
+            List<String> vpnDnsList = new ArrayList<>();
+            if(!config.isEmpty())
+                vpnDnsList = (List<String>) config.get(0).get("dns");
 
             if (vpnDnsList.isEmpty())
                 return;
