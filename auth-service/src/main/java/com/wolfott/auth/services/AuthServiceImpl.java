@@ -11,6 +11,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.secret}")
     private String secret;
 
-    private long accessTokenValidity = 60*60*1000;
+    private long accessTokenValidity = 60*60;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -56,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    public String createToken(User user) {
+    public String createToken(@NotNull User user) {
         Claims claims = Jwts.claims().setSubject(user.getUsername());
         claims.put("typ", "Bearer");
         claims.put("iss", "https://wolf-ott.com");
