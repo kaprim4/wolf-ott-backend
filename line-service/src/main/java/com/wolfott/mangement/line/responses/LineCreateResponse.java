@@ -48,4 +48,6 @@ public class LineCreateResponse {
     private Long lastActivity;
     private Map<String, Object> lastActivityArray;
     private Timestamp updated;
+
+    private Boolean useVPN;
 }

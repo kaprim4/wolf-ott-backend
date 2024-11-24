@@ -158,6 +158,8 @@ public class LineServiceImpl implements LineService {
         Long createdAt = System.currentTimeMillis() / 1000;
         line.setCreatedAt(createdAt);
         line = lineRepository.save(line);
+        if (line.getUseVPN())
+            this.changeVPN(line.getId());
         return lineMapper.toLineCreateResponse(line);
     }
 
