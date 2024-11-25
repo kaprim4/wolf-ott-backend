@@ -26,7 +26,6 @@
         <module>auth-service</module>
         <module>device-service</module>
         <module>line-service</module>
-        <module>server-service</module>
         <module>stream-service</module>
         <module>ticketing-service</module>
         <module>user-service</module>

@@ -1,5 +1,0 @@
-spring:
-    application:
-        name: server-service
-    config:
-        import: optional:configserver:http://config-server:9000
