@@ -1,5 +1,6 @@
 package com.wolfott.mangement.line.services;
 
+import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.LineList;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
@@ -40,5 +41,6 @@ public interface LineService {
     void delete(Long id);
 
     void changeVPN(Long id);
+    Line changeVPN(Line line);
 
 }

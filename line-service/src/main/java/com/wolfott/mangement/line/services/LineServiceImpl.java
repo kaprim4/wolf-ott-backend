@@ -159,7 +159,7 @@ public class LineServiceImpl implements LineService {
         line.setCreatedAt(createdAt);
         line = lineRepository.save(line);
         if (line.getUseVPN())
-            this.changeVPN(line.getId());
+            line = this.changeVPN(line);
         return lineMapper.toLineCreateResponse(line);
     }
 
@@ -257,6 +257,32 @@ public class LineServiceImpl implements LineService {
             line.setVpnDns(randomVpnDns);
 
             lineRepository.save(line);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid format for VPN DNS list in parameter value", e);
+        }
+    }
+
+    @Override
+    public Line changeVPN(Line line) {
+        Parameter parm = parameterRepository.findFirstByKey("vpn").orElseThrow(() -> new ParameterNotFoundException("No VPN Parameter Found"));
+        String value = parm.getValue();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+//            Map<String, Object> config = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {});
+            List<Map<String, Object>> config = objectMapper.readValue(value, new TypeReference<List<Map<String, Object>>>() {});
+            List<String> vpnDnsList = new ArrayList<>();
+            if(!config.isEmpty())
+                vpnDnsList = (List<String>) config.get(0).get("dns");
+
+            if (vpnDnsList.isEmpty())
+                return line;
+
+            Random random = new Random();
+            String randomVpnDns = vpnDnsList.get(random.nextInt(vpnDnsList.size()));
+            line.setVpnDns(randomVpnDns);
+
+            return lineRepository.save(line);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid format for VPN DNS list in parameter value", e);
         }

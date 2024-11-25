@@ -50,4 +50,5 @@ public class LineCreateResponse {
     private Timestamp updated;
 
     private Boolean useVPN;
+    private String vpnDns;
 }
