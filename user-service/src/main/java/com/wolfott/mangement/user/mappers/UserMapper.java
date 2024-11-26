@@ -47,6 +47,22 @@ public class UserMapper {
             }
         });
 
+        modelMapper.addMappings(new PropertyMap<UserUpdateRequest, User>() {
+            @Override
+            protected void configure() {
+                map(source.getId(), destination.getId());
+                using(ownerIdToOwnerConverter()).map(source.getOwnerId(), destination.getOwner());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<User, UserUpdateResponse>() {
+            @Override
+            protected void configure() {
+                map(source.getId(), destination.getId());
+                using(ownerToOwnerIdConverter()).map(source.getOwner(), destination.getOwnerId());
+            }
+        });
+
     }
 
     private Converter<User, String> userToUsernameConverter() {
@@ -58,6 +74,18 @@ public class UserMapper {
     private Converter<UserGroup, Long> groupToGroupIdConverter() {
         return context -> Optional.ofNullable(context.getSource())
                 .map(UserGroup::getGroupId)
+                .orElse(null); // "Anonymous"
+    }
+
+    private Converter<User, Long> ownerToOwnerIdConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(User::getOwnerId)
+                .orElse(null); // "Anonymous"
+    }
+
+    private Converter<Long, User> ownerIdToOwnerConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(User::new)
                 .orElse(null); // "Anonymous"
     }
 

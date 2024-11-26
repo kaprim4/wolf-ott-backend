@@ -123,6 +123,11 @@ public class User implements UserDetails, Authentication {
         this.timestampDateRegistered = date != null ? date.getTime() / 1000L : null;
     }
 
+    public User(){}
+    public User(Long id){
+        this.id = id;
+    }
+
     // ---------------------------------
     // Implementation of UserDetails methods
     // ---------------------------------
