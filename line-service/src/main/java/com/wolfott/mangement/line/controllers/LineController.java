@@ -76,33 +76,33 @@ public class LineController {
     }
 
     @PostMapping
-    public LineCreateResponse createOne(@RequestBody LineCreateRequest request){
+    public LineCreateResponse createOne(@RequestBody LineCreateRequest request) {
         return lineService.create(request);
     }
 
     @PutMapping("/{id}")
-    public LineUpdateResponse updateOne(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request){
+    public LineUpdateResponse updateOne(@PathVariable("id") Long id, @RequestBody LineUpdateRequest request) {
         return lineService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Long id){
+    public void delete(@PathVariable("id") Long id) {
         lineService.delete(id);
     }
 
     @GetMapping("/activities")
-    public  Page<LineActivityCompactResponse> getAllActivities(Pageable pageable){
+    public Page<LineActivityCompactResponse> getAllActivities(Pageable pageable) {
         return activityService.getAll(pageable);
     }
 
 
     @PatchMapping("/{id}")
-    public LinePatchResponse update(@PathVariable("id") Long id, @RequestBody PatchRequest request){
+    public LinePatchResponse update(@PathVariable("id") Long id, @RequestBody PatchRequest request) {
         return lineService.update(id, request);
     }
 
     @PostMapping("/{id}/vpn/refresh")
-    public void refresh(@PathVariable("id") Long id){
+    public void refresh(@PathVariable("id") Long id) {
         lineService.changeVPN(id);
     }
 

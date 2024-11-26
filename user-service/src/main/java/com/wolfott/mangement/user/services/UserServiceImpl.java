@@ -117,6 +117,11 @@ public class UserServiceImpl implements UserService {
             throw new UnauthorizedAccessException("User not authenticated");
         }
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        if(user != null){
+            user.setOwnerId(ownerId);
+            user = userRepository.save(user);
+        }
+
         request.setId(id);
         user = userMapper.toUser(request, user);
         if (user.getOwnerId() == null)

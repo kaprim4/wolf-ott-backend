@@ -21,4 +21,5 @@ public class UserUpdateRequest{
     private Integer theme;
     private String timezone;
     private String apiKey;
+    private String thumbnail;
 }

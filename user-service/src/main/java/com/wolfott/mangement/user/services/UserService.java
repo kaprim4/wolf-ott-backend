@@ -20,6 +20,7 @@ public interface UserService {
     UserDetailResponse getOne(Long id);
 
     List<UserCompactResponse> getAll(Map<String, Object> filters);
+
     Page<UserCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
 
     Page<UserCompactResponse> getAll(String search, Pageable pageable);

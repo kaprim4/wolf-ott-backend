@@ -29,4 +29,5 @@ public class UserDetailResponse {
     private String apiKey;
     private String lastLogin;
     private String dateRegistered;
+    private String thumbnail;
 }
