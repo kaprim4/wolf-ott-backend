@@ -5,12 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -18,17 +17,13 @@ public class DashboardServiceImpl implements DashboardService {
     public GlobalStateResponse getGlobalStats() {
         GlobalStateResponse stats = new GlobalStateResponse();
 
-        // Running the queries in parallel using CompletableFuture
         CompletableFuture<Long> onlineUsersFuture = CompletableFuture.supplyAsync(this::getOnlineUsers);
         CompletableFuture<Long> onlineLinesFuture = CompletableFuture.supplyAsync(this::getOnlineLines);
         CompletableFuture<Long> activeLinesFuture = CompletableFuture.supplyAsync(this::getActiveLines);
         CompletableFuture<Long> assignedCreditsFuture = CompletableFuture.supplyAsync(this::getAssignedCredits);
 
-        // Wait for all futures to complete and add results to the map
-        CompletableFuture.allOf(onlineUsersFuture, onlineLinesFuture, activeLinesFuture, assignedCreditsFuture)
-                .join();
+        CompletableFuture.allOf(onlineUsersFuture, onlineLinesFuture, activeLinesFuture, assignedCreditsFuture).join();
 
-        // Put results in the map
         stats.setOnlineUsers(onlineUsersFuture.join());
         stats.setOnlineLines(onlineLinesFuture.join());
         stats.setActiveLines(activeLinesFuture.join());
