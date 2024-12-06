@@ -290,17 +290,19 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
-    public void suspendLine(Long id) {
+    public LineUpdateResponse suspendLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        line.setEnabled(0);
+        line.setAdminEnabled(line.getAdminEnabled() == 0 ? 1 : 0);
         lineRepository.save(line);
+        return lineMapper.toLineUpdateResponse(line);
     }
 
     @Override
-    public void disableLine(Long id) {
+    public LineUpdateResponse disableLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
-        line.setEnabled(0);
+        line.setEnabled(line.getEnabled() == 0 ? 1 : 0);
         lineRepository.save(line);
+        return lineMapper.toLineUpdateResponse(line);
     }
 
     @Override

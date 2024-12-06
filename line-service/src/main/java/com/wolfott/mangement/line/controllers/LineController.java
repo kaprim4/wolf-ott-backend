@@ -108,15 +108,13 @@ public class LineController {
     }
 
     @PostMapping("/{id}/ban-line")
-    public ResponseEntity<String> banLine(@PathVariable("id") Long id) {
-        lineService.suspendLine(id);
-        return ResponseEntity.ok("The line with id " + id.toString() + " was banned");
+    public LineUpdateResponse banLine(@PathVariable("id") Long id) {
+        return lineService.suspendLine(id);
     }
 
     @PostMapping("/{id}/disable-line")
-    public ResponseEntity<String> disableLine(@PathVariable("id") Long id) {
-        lineService.disableLine(id);
-        return ResponseEntity.ok("The line with id " + id.toString() + " was disabled");
+    public LineUpdateResponse disableLine(@PathVariable("id") Long id) {
+        return lineService.disableLine(id);
     }
 
     @PostMapping("/{id}/kill-line-connection")

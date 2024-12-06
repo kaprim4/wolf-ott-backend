@@ -43,8 +43,8 @@ public interface LineService {
     void changeVPN(Long id);
     Line changeVPN(Line line);
 
-    void suspendLine(Long id);
-    void disableLine(Long id);
+    LineUpdateResponse suspendLine(Long id);
+    LineUpdateResponse disableLine(Long id);
     void killLineLives(Long id);
     void killLineConnections(Long id);
 

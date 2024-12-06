@@ -24,6 +24,8 @@ public class LineCompactResponse {
     private Date expiration;
     private Date lastConnection;
 
+    private Integer adminEnabled;
+    private Integer enabled;
     private Boolean useVPN;
     private String vpnDns;
 }
