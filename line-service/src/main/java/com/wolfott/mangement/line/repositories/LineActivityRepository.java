@@ -14,4 +14,6 @@ public interface LineActivityRepository extends JpaRepository<LineActivity, Long
 
     @Query("select count(a.activityId) from LineActivity a WHERE a.activityId = :activityId AND a.active = true")
     int findCountByLineID(Long activityId);
+
+    void deleteByActivityId(Long activityId);
 }

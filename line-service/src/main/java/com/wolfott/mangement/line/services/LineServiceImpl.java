@@ -10,10 +10,7 @@ import com.wolfott.mangement.line.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
 import com.wolfott.mangement.line.models.*;
-import com.wolfott.mangement.line.repositories.BouquetRepository;
-import com.wolfott.mangement.line.repositories.LineRepository;
-import com.wolfott.mangement.line.repositories.ParameterRepository;
-import com.wolfott.mangement.line.repositories.UserRepository;
+import com.wolfott.mangement.line.repositories.*;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.requests.PatchRequest;
@@ -46,6 +43,10 @@ import static java.util.stream.Collectors.toList;
 public class LineServiceImpl implements LineService {
     @Autowired
     LineRepository lineRepository;
+    @Autowired
+    LineLiveRepository lineLiveRepository;
+    @Autowired
+    LineActivityRepository lineActivityRepository;
     @Autowired
     ParameterRepository parameterRepository;
     @Autowired
@@ -286,6 +287,32 @@ public class LineServiceImpl implements LineService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid format for VPN DNS list in parameter value", e);
         }
+    }
+
+    @Override
+    public void suspendLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        line.setEnabled(0);
+        lineRepository.save(line);
+    }
+
+    @Override
+    public void disableLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        line.setEnabled(0);
+        lineRepository.save(line);
+    }
+
+    @Override
+    public void killLineLives(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        lineLiveRepository.deleteByActivityId(line.getLastActivity());
+    }
+
+    @Override
+    public void killLineConnections(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        lineActivityRepository.deleteByActivityId(line.getLastActivity());
     }
 
     public List<LineCompactResponse> getLastRegisteredLines() {

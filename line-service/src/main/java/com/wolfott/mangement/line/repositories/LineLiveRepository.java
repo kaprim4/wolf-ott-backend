@@ -11,4 +11,6 @@ public interface LineLiveRepository extends JpaRepository<LineLive, Long>, JpaSp
 
     @Query("select a from LineLive a WHERE a.userId = :id")
     LineLive findOneByLineID(Long id);
+
+    long deleteByActivityId(Long activityId);
 }
