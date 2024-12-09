@@ -35,7 +35,7 @@ public class AuthController {
         log.info("getParams: {}", getParams);
 
         String captchaKey = "bfa3323b8dacf60a9e83a787e53f2714";
-        String domain = "http://gcaptcha4.geetest.com";
+        String domain = "https://gcaptcha4.geetest.com";
         String captchaId = getParams.get("captcha_id");
         String lotNumber = getParams.get("lot_number");
         String signToken = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, captchaKey).hmacHex(lotNumber);
