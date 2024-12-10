@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,11 +30,13 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
     @Autowired
-    UserSpecification userSpecification;
+    private UserSpecification userSpecification;
     @Autowired
-    UserMapper userMapper;
+    private UserMapper userMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetailResponse getOne(Long id) {
@@ -48,7 +51,7 @@ public class UserServiceImpl implements UserService {
             throw new UnauthorizedAccessException("User not authenticated");
         }
         Specification<User> spec = userSpecification.dynamic(filters);
-        if (!isAdmin()){
+        if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
         List<User> list = userRepository.findAll(spec);
@@ -69,7 +72,7 @@ public class UserServiceImpl implements UserService {
             throw new UnauthorizedAccessException("User not authenticated");
         }
         Specification<User> spec = userSpecification.dynamic(filters);
-        if (!isAdmin()){
+        if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
         Page<User> page = userRepository.findAll(spec, pageable);
@@ -101,7 +104,9 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
+
         User user = userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         if (user.getOwnerId() == null)
             user.setOwnerId(ownerId);
@@ -117,17 +122,34 @@ public class UserServiceImpl implements UserService {
             throw new UnauthorizedAccessException("User not authenticated");
         }
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
-        if(user != null){
+        if (user != null) {
+            user.setUsername(request.getUsername());
+            if (request.getPassword().isEmpty())
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setEmail(request.getEmail());
+            user.setIp(request.getIp());
+            user.setCredits(request.getCredits());
+            user.setNotes(request.getNotes());
+            user.setStatus(request.getStatus());
+            user.setResellerDns(request.getResellerDns());
             user.setOwnerId(ownerId);
+            user.setOverridePackages(request.getOverridePackages());
+            user.setHue(request.getHue());
+            user.setTheme(request.getTheme());
+            user.setTimezone(request.getTimezone());
+            user.setApiKey(request.getApiKey());
+            user.setThumbnail(request.getThumbnail());
             user = userRepository.save(user);
         }
 
         request.setId(id);
+
         user = userMapper.toUser(request, user);
         if (user.getOwnerId() == null)
             user.setOwnerId(ownerId);
         if (!isAdmin() && user.getOwnerId() != ownerId)
             user.setOwnerId(ownerId);
+
         user = userRepository.save(user);
         return userMapper.toUpdateResponse(user);
     }

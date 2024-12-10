@@ -6,4 +6,5 @@ import com.wolfott.auth.responses.LoginResponse;
 public interface AuthService {
     LoginResponse login(LoginRequest request);
     LoginResponse register(LoginRequest request);
+    boolean validatePassword(String username, String password);
 }

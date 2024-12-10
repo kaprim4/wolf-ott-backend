@@ -29,6 +29,11 @@ public class AuthController {
         return authService.login(request);
     }
 
+    @PostMapping("/validate-password")
+    public boolean validatePassword(@RequestBody LoginRequest request) {
+        return authService.validatePassword(request.username(), request.password());
+    }
+
     @GetMapping(value = "/validate")
     public String userLogin(@RequestParam Map<String, String> getParams) {
 

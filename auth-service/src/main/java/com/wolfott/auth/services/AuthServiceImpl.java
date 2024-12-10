@@ -5,6 +5,7 @@ import com.wolfott.auth.models.User;
 import com.wolfott.auth.repositories.UserRepository;
 import com.wolfott.auth.requests.LoginRequest;
 import com.wolfott.auth.responses.LoginResponse;
+import com.wolfott.auth.utils.PasswordUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,7 +23,9 @@ import java.util.concurrent.TimeUnit;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    private final PasswordUtils.PasswordValidator passwordValidator;
 
     @Value("${jwt.secret}")
     private String secret;
@@ -30,16 +33,16 @@ public class AuthServiceImpl implements AuthService {
     @Value("${jwt.accessTokenValidity}")
     private long accessTokenValidity;
 
+    public AuthServiceImpl(PasswordUtils.PasswordValidator passwordValidator) {
+        this.passwordValidator = passwordValidator;
+    }
+
     @Override
     public LoginResponse login(LoginRequest request) {
         String username = request.username();
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         String plainPassword = request.password();
-        String hashedPassword = user.getPassword();
 
-        // Si vous validez le mot de passe, décommentez cette ligne
-        // boolean validPassword = PasswordUtils.validatePassword(plainPassword, hashedPassword);
-        // if (!validPassword) throw new InvalidCredentialsException();
 
         String accessToken = createToken(user);
         String refreshToken = UUID.randomUUID().toString();
@@ -58,10 +61,17 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
+    @Override
+    public boolean validatePassword(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return passwordValidator.validate(password, user.getPassword());
+    }
+
     public String createToken(@NotNull User user) {
         Claims claims = Jwts.claims().setSubject(user.getUsername());
         claims.put("typ", "Bearer");
-        claims.put("iss", "https://wolf-ott.com");
+        claims.put("iss", "https://wolfguard.sbs");
         claims.put("jti", UUID.randomUUID().toString());
         Map<String, Object> roleAccess = new HashMap<>();
         String role = null;
