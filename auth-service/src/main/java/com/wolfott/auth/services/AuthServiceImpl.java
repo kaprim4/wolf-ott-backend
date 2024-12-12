@@ -43,7 +43,6 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         String plainPassword = request.password();
 
-
         String accessToken = createToken(user);
         String refreshToken = UUID.randomUUID().toString();
         return new LoginResponse(

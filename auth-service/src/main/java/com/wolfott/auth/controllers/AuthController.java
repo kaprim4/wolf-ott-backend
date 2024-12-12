@@ -40,7 +40,7 @@ public class AuthController {
         log.info("getParams: {}", getParams);
 
         String captchaKey = "bfa3323b8dacf60a9e83a787e53f2714";
-        String domain = "https://gcaptcha4.geetest.com";
+        String domain = "http://gcaptcha4.geetest.com";
         String captchaId = getParams.get("captcha_id");
         String lotNumber = getParams.get("lot_number");
         String signToken = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, captchaKey).hmacHex(lotNumber);
@@ -69,7 +69,7 @@ public class AuthController {
             jsonObject = new JSONObject(resBody);
         } catch (Exception e) {
             jsonObject.put("result", "success");
-            jsonObject.put("reason", "request geetest api fail");
+            jsonObject.put("reason", "request geetest api fail : "+e.getMessage());
         }
         log.info("JSONObject: {}", jsonObject.toString());
 

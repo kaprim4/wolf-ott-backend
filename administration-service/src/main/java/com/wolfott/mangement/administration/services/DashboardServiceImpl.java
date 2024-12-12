@@ -34,7 +34,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 
     private Long getOnlineUsers() {
-        String sql = "SELECT COUNT(DISTINCT user_id) as online_users FROM xui.login_logs WHERE status = 'SUCCESS'";
+        String sql = "SELECT COUNT(user_id) as online_users FROM xui.login_logs WHERE status = 'SUCCESS' and type = 'RESELLER'";
         return jdbcTemplate.queryForObject(sql, Long.class);
     }
 

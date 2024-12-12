@@ -33,8 +33,10 @@ public class Preset implements Serializable {
 
     @Column(name = "preset_status")
     private Boolean status;
+
     @Column(name = "preset_created_at")
     private LocalDateTime createdAt;
+
     @Column(name = "preset_updated_at")
     private LocalDateTime updatedAt;
 
