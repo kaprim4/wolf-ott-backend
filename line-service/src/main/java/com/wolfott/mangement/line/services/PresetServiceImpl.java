@@ -76,26 +76,14 @@ public class PresetServiceImpl implements PresetService {
         preset.setUpdatedAt(LocalDateTime.now());
         preset = presetRepository.save(preset);
 
-        Preset finalPreset = preset;
-        preset.getPresetBouquets().forEach(presetBouquet -> {
-            presetBouquet.setPreset(finalPreset);
-        });
         try {
+            Long id = preset.getId();
+            preset.getPresetBouquets().forEach(presetBouquet -> {
+                presetBouquet.setPreset(new Preset(id));
+            });
             preset = presetRepository.save(preset);
-        }catch (JpaObjectRetrievalFailureException | EntityNotFoundException ex){
-            String msg = ex.getMessage();
-            msg = msg.replaceAll("com.wolfott.mangement.line.models.Bouquet", "Bouquet");
-            throw new BouquetNotFoundException(msg);
-        } catch (DataIntegrityViolationException ex) {
-            // Check if the exception is due to foreign key constraint violation
-            if (ex.getCause() instanceof SQLIntegrityConstraintViolationException) {
-                String msg = ex.getCause().getMessage();
-                throw new BouquetNotFoundException("Foreign key constraint violation: " + msg);
-            }else {
-                log.warn("It's not an SQLIntegrityConstraintViolationException instance");
-            }
-            // Rethrow other DataIntegrityViolationExceptions if not related to foreign keys
-            throw ex;
+        }catch (Exception e){
+            log.error(e.getMessage());
         }
         return presetMapper.toCreateResponse(preset);
     }
