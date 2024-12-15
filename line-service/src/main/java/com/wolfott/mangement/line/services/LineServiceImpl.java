@@ -115,16 +115,12 @@ public class LineServiceImpl implements LineService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-        Specification<Line> spec = lineSpecifications.dynamic(filters);
-        if (!isAdmin()){
-            spec = spec.and(LineSpecifications.hasMemberId(ownerId));
-        }
         Pageable sortedPageable = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "id")
         );
-        Page<Line> page = lineRepository.findAll(spec, sortedPageable);
+        Page<Line> page = findAllLinesRecursivelyPaginated(ownerId, sortedPageable);
         page.stream().parallel().forEach(line -> {
             if (line.getMemberId() != null) {
                 User member = userRepository.findById(line.getMemberId()).orElse(new User());
@@ -134,6 +130,18 @@ public class LineServiceImpl implements LineService {
             }
         });
         return lineMapper.toLineCompactResponsePage(page);
+    }
+
+    public Page<Line> findAllLinesRecursivelyPaginated(Long ownerId, Pageable pageable) {
+        List<Line> lines = lineRepository.findAllLinesRecursively(ownerId);
+        int total = lines.size();
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), total);
+        if (start > total) {
+            return new PageImpl<>(Collections.emptyList(), pageable, total);
+        }
+        List<Line> paginatedLines = lines.subList(start, end);
+        return new PageImpl<>(paginatedLines, pageable, total);
     }
 
 
