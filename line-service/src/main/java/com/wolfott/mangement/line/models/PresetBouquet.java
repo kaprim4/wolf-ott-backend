@@ -1,37 +1,32 @@
 package com.wolfott.mangement.line.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.io.Serializable;
-
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "preset_bouquets")
-@IdClass(PresetBouquetId.class) // Use a composite key
-public class PresetBouquet implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+public class PresetBouquet {
 
-    @Id
+    @EmbeddedId
+    private PresetBouquetId id;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("presetId")
     @JoinColumn(name = "preset_id", nullable = false)
     private Preset preset;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("bouquetId")
     @JoinColumn(name = "bouquet_id", nullable = false)
     private Bouquet bouquet;
 
     @Column(name = "position_order")
-    private Integer positionOrder; // This field stores the order/index
-
-    @Override
-    public String toString() {
-        return "PresetBouquet{" +
-                "presetId=" + (preset != null ? preset.getId() : "null") +
-                ", bouquetId=" + (bouquet != null ? bouquet.getId() : "null") +
-                ", positionOrder=" + positionOrder +
-                '}';
-    }
+    private Integer positionOrder;
 }

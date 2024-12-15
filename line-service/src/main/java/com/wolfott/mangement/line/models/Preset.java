@@ -1,37 +1,40 @@
 package com.wolfott.mangement.line.models;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.Setter;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "presets")
+@AllArgsConstructor
 @NoArgsConstructor
-public class Preset implements Serializable {
+public class Preset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
-    @Column(name = "preset_name")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "preset_name", length = 255)
     private String presetName;
 
-    @Column(name = "preset_description")
+    @Column(name = "preset_description", columnDefinition = "text")
     private String presetDescription;
 
-    @Column(name = "preset_status")
+    @Column(name = "preset_status", columnDefinition = "TINYINT(1)")
     private Boolean status;
 
     @Column(name = "preset_created_at")
@@ -40,23 +43,28 @@ public class Preset implements Serializable {
     @Column(name = "preset_updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "preset", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "preset", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PresetBouquet> presetBouquets = new ArrayList<>();
 
-    public Preset(Long id) {
-        this.id = id;
-    }
-    @Override
-    public String toString() {
-        return "Preset{" +
-                "id=" + id +
-                ", presetName='" + presetName + '\'' +
-                ", presetDescription='" + presetDescription + '\'' +
-                ", status=" + status +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-//                ", presetBouquets=" + presetBouquets.stream().map(PresetBouquet::toString) +
-                '}';
+    @PrePersist
+    protected void onCreate() {
+        this.setCreatedAt(LocalDateTime.now());
     }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void addBouquet(Bouquet bouquet, Integer positionOrder) {
+        PresetBouquet pb = new PresetBouquet();
+        PresetBouquetId id = new PresetBouquetId();
+        id.setPresetId(this.id);
+        id.setBouquetId(bouquet.getId());
+        pb.setId(id);
+        pb.setPreset(this);
+        pb.setBouquet(bouquet);
+        pb.setPositionOrder(positionOrder);
+        this.presetBouquets.add(pb);
+    }
 }

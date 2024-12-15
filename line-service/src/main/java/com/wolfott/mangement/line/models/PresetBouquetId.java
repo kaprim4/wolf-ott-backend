@@ -1,13 +1,24 @@
 package com.wolfott.mangement.line.models;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 
-@Data
-@RequiredArgsConstructor
+@Embeddable
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class PresetBouquetId implements Serializable {
-    private Long preset;
-    private Long bouquet;
+
+    @Column(name = "preset_id")
+    private Long presetId;
+
+    @Column(name = "bouquet_id")
+    private Long bouquetId;
+
 }

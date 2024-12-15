@@ -21,9 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -103,23 +101,11 @@ public class LineServiceImpl implements LineService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-
         Specification<Line> spec = lineSpecifications.dynamic(filters);
-        if (!isAdmin()){
+        if (!isAdmin()) {
             spec = spec.and(LineSpecifications.hasMemberId(ownerId));
         }
-        List<Line> list = lineRepository.findAll(spec);
-//        List<Line> lines = list.stream().parallel()
-//                .map(line -> {
-//                    if (line.getMemberId() != null){
-//                        User member = userRepository.findById(line.getMemberId()).orElse(new User());
-////                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-//                        String username = member.getUsername();
-//                        member.setUsername(username);
-//                        line.setMember(member);
-//                    }
-//                    return line;
-//                }).toList();
+        List<Line> list = lineRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "id"));
         return lineMapper.toLineCompactResponsePage(list);
     }
 
@@ -129,24 +115,27 @@ public class LineServiceImpl implements LineService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-
         Specification<Line> spec = lineSpecifications.dynamic(filters);
         if (!isAdmin()){
             spec = spec.and(LineSpecifications.hasMemberId(ownerId));
         }
-        Page<Line> page = lineRepository.findAll(spec, pageable);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+        Page<Line> page = lineRepository.findAll(spec, sortedPageable);
         page.stream().parallel().forEach(line -> {
             if (line.getMemberId() != null) {
                 User member = userRepository.findById(line.getMemberId()).orElse(new User());
-//                    String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
                 String username = member.getUsername();
                 member.setUsername(username);
                 line.setMember(member);
             }
         });
         return lineMapper.toLineCompactResponsePage(page);
-
     }
+
 
     @Override
     public Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable) {

@@ -13,6 +13,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
@@ -106,6 +107,11 @@ public class User implements UserDetails, Authentication {
     @Transient // Mark as transient to prevent JPA from mapping this field
     private Date dateRegistered; // Public getter/setter uses Date
 
+
+    @OneToMany(mappedBy = "user")
+    private List<Preset> presets = new ArrayList<>();
+
+
     // Custom getter for DateRegistered
     public Date getDateRegistered() {
         return timestampDateRegistered != null ? new Date(timestampDateRegistered * 1000L) : null;
@@ -120,6 +126,8 @@ public class User implements UserDetails, Authentication {
     public User(Long id) {
         this.id = id;
     }
+
+
 
     // ---------------------------------
     // Implementation of UserDetails methods

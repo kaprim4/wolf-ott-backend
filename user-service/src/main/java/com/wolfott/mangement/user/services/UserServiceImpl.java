@@ -16,7 +16,9 @@ import com.wolfott.mangement.user.responses.UserUpdateResponse;
 import com.wolfott.mangement.user.specifications.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +56,8 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
-        List<User> list = userRepository.findAll(spec);
+
+        List<User> list = userRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "id"));
         list.stream().parallel().forEach(user -> {
             User member = Optional.ofNullable(user.getOwnerId()).map(userRepository::findById).map(opt -> opt.orElse(new User())).orElse(new User());
 //          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
@@ -75,7 +78,12 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
-        Page<User> page = userRepository.findAll(spec, pageable);
+        Pageable sortedPageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(Sort.Direction.DESC, "id")
+        );
+        Page<User> page = userRepository.findAll(spec, sortedPageable);
         page.stream().parallel().forEach(user -> {
             User member = userRepository.findById(user.getOwnerId()).orElse(new User());
 //          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
@@ -95,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
     }
 
     @Override
