@@ -1,19 +1,18 @@
 package com.wolfott.mangement.line.repositories;
 
 import com.wolfott.mangement.line.models.Line;
-import com.wolfott.mangement.line.models.LineList;
+import com.wolfott.mangement.line.models.LineActivity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.Async;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificationExecutor<Line> {
@@ -34,4 +33,29 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
 
     @Query("SELECT COUNT(l) FROM Line l WHERE l.member.id = :id")
     int getCountByMemberId(@Param("id") Long id);
+
+    List<Line> findByMember_Id(Long id);
+
+    @Query(value = """
+            WITH RECURSIVE user_hierarchy AS (
+                SELECT *, 1 AS depth
+                FROM `users`
+                WHERE `id` = :userId
+                UNION ALL
+                SELECT u.*, depth + 1
+                FROM `users` u
+                INNER JOIN user_hierarchy uh ON u.`owner_id` = uh.`id`
+                WHERE depth < 10
+            )
+            SELECT l.*
+            FROM `lines` l
+            WHERE l.`member_id` IN (
+                SELECT uh.`id`
+                FROM user_hierarchy uh
+            );
+            """, nativeQuery = true)
+    List<Line> findAllLinesRecursively(@Param("userId") Long userId);
+
+    Optional<Line> findByLastActivity(Long lastActivity);
+
 }

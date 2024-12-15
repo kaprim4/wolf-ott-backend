@@ -91,9 +91,10 @@ public class LineController {
         lineService.delete(id);
     }
 
-    @GetMapping("/activities")
-    public Page<LineActivityCompactResponse> getAllActivities(Pageable pageable) {
-        return activityService.getAll(pageable);
+
+    @GetMapping("/activities/{id}")
+    public Page<LineActivityCompactResponse> getAllActivitiesByUser(@PathVariable("id") Long id, Pageable pageable) {
+        return activityService.getAllByUserId(id, pageable);
     }
 
 
