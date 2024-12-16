@@ -148,6 +148,13 @@ public class Line {
     @Column(name = "vpn_dns", columnDefinition = "tinytext")
     private String vpnDns;
 
+    @Column(name = "use_preset", columnDefinition = "tinyint")
+    private Boolean usePreset;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "preset_id", nullable = false)
+    private Preset preset;
+
 //    @Column(name = "updated", columnDefinition = "timestamp")
 //    @ColumnDefault("current_timestamp()")
 //    private Timestamp updated;
