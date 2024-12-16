@@ -43,6 +43,10 @@ public class LineCreateResponse {
     private String playToken;
     private Long lastExpirationVideo;
     private Long packageId;
+
+    private Long presetId;
+    private Boolean usePreset;
+
     private String accessToken;
     private String contact;
     private Long lastActivity;
@@ -51,7 +55,4 @@ public class LineCreateResponse {
 
     private Boolean useVPN;
     private String vpnDns;
-
-    private Boolean usePreset;
-    private Long presetId;
 }

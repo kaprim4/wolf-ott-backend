@@ -46,6 +46,10 @@ public class LineDetailResponse {
     private String playToken;
     private Long lastExpirationVideo;
     private Long packageId;
+
+    private Long presetId;
+    private Boolean usePreset;
+
     private String accessToken;
     private String contact;
     private Long lastActivity;

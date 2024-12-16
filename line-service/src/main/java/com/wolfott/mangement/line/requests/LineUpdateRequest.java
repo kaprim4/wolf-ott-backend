@@ -49,4 +49,7 @@ public class LineUpdateRequest {
     private Long lastActivity;
     private Map<String, Object> lastActivityArray;
     private Timestamp updated;
+
+    private Boolean usePreset;
+    private Long presetId;
 }
