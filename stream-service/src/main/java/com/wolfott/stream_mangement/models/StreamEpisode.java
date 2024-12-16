@@ -25,22 +25,24 @@ public class StreamEpisode {
     @Column(name = "episode_num")
     private Integer episodeNum;
 
-//    @Column(name = "series_id")
-//    private Integer seriesId;
+    @Column(name = "series_id")
+    private Long seriesId;
 
-//    @Column(name = "stream_id")
-//    private Integer streamId;
+    @Column(name = "stream_id")
+    private Long streamId;
 
     @ColumnDefault("false")
     @Column(name = "is_active")
     private Boolean active;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "series_id")
+    @Transient
     private StreamSeries serie;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "stream_id")
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "stream_id")
+    @Transient
     private Stream stream;
 
 }

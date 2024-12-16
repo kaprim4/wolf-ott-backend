@@ -209,7 +209,8 @@ public class Stream {
     @ColumnDefault("false")
     private Boolean directProxy;
 
-    @OneToMany(mappedBy = "stream", fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "stream", fetch = FetchType.LAZY)
+    @Transient
     private List<StreamEpisode> episodes = new ArrayList<>();
 
     @ManyToOne

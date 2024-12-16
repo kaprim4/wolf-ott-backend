@@ -88,7 +88,8 @@ public class StreamSeries {
     @Column(name = "similar", columnDefinition = "MEDIUMTEXT")
     private String similar;
 
-    @OneToMany(mappedBy = "serie", fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "serie", fetch = FetchType.LAZY)
+    @Transient
     private List<StreamEpisode> episodes;
 
 }
