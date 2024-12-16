@@ -34,24 +34,25 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
     @Query("SELECT COUNT(l) FROM Line l WHERE l.member.id = :id")
     int getCountByMemberId(@Param("id") Long id);
 
-    List<Line> findByMember_Id(Long id);
-
     @Query(value = """
+            CREATE TEMPORARY TABLE temp_user_hierarchy AS
             WITH RECURSIVE user_hierarchy AS (
-                SELECT *, 1 AS depth
+                SELECT id, owner_id, 1 AS depth
                 FROM `users`
                 WHERE `id` = :userId
                 UNION ALL
-                SELECT u.*, depth + 1
+                SELECT u.id, u.owner_id, uh.depth + 1
                 FROM `users` u
                 INNER JOIN user_hierarchy uh ON u.`owner_id` = uh.`id`
-                WHERE depth < 10
+                WHERE uh.depth < 10
             )
+            SELECT uh.id
+            FROM user_hierarchy uh;
+            
             SELECT l.*
             FROM `lines` l
             WHERE l.`member_id` IN (
-                SELECT uh.`id`
-                FROM user_hierarchy uh
+                SELECT id FROM temp_user_hierarchy
             );
             """, nativeQuery = true)
     List<Line> findAllLinesRecursively(@Param("userId") Long userId);
