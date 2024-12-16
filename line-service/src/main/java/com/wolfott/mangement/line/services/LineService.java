@@ -15,6 +15,7 @@ import java.util.Map;
 public interface LineService {
 
     LineDetailResponse getOne(Long id);
+
     List<BouquetCompactResponse> getLineBouquets(Long id);
 
     int getLinesCount();
@@ -36,17 +37,24 @@ public interface LineService {
     LineCreateResponse create(LineCreateRequest request);
 
     LineUpdateResponse update(Long id, LineUpdateRequest request);
+
     LinePatchResponse update(Long id, PatchRequest request);
 
     void delete(Long id);
 
     void changeVPN(Long id);
+
     Line changeVPN(Line line);
 
     LineUpdateResponse suspendLine(Long id);
+
     LineUpdateResponse disableLine(Long id);
+
     void killLineLives(Long id);
+
     void killLineConnections(Long id);
 
+    List<Line> getLinesByPresetId(Long id);
 
+    void saveAll(List<Line> lineList);
 }

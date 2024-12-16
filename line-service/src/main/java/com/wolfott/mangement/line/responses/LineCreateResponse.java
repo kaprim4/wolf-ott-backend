@@ -51,4 +51,7 @@ public class LineCreateResponse {
 
     private Boolean useVPN;
     private String vpnDns;
+
+    private Boolean usePreset;
+    private Long presetId;
 }

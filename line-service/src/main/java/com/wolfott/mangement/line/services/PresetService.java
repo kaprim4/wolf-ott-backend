@@ -21,7 +21,7 @@ public class PresetService {
     @Autowired
     private PresetRepository presetRepository;
 
-    public Optional<Preset> findById(Long id){
+    public Optional<Preset> findById(Long id) {
         return presetRepository.findById(id);
     }
 
@@ -29,7 +29,7 @@ public class PresetService {
         return presetRepository.save(p);
     }
 
-    public void deleteById(Long id){
+    public void deleteById(Long id) {
         presetRepository.deleteById(id);
     }
 

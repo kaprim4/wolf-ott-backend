@@ -314,6 +314,16 @@ public class LineServiceImpl implements LineService {
         lineActivityRepository.deleteByActivityId(line.getLastActivity());
     }
 
+    @Override
+    public List<Line> getLinesByPresetId(Long id) {
+        return lineRepository.getLinesByPresetId(id);
+    }
+
+    @Override
+    public void saveAll(List<Line> lineList) {
+        lineRepository.saveAll(lineList);
+    }
+
     public List<LineCompactResponse> getLastRegisteredLines() {
         return lineRepository.findTop10ByEnabledOrderByCreatedAtDesc()
                 .stream()

@@ -3,15 +3,13 @@ package com.wolfott.mangement.line.controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.dto.UserDTO;
-import com.wolfott.mangement.line.models.Bouquet;
-import com.wolfott.mangement.line.models.Preset;
-import com.wolfott.mangement.line.models.PresetBouquet;
-import com.wolfott.mangement.line.models.User;
+import com.wolfott.mangement.line.models.*;
 import com.wolfott.mangement.line.repositories.BouquetRepository;
 import com.wolfott.mangement.line.requests.PresetCreateRequest;
 import com.wolfott.mangement.line.requests.PresetUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.BouquetService;
+import com.wolfott.mangement.line.services.LineService;
 import com.wolfott.mangement.line.services.PresetService;
 import com.wolfott.mangement.line.services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +38,9 @@ public class PresetController {
 
     @Autowired
     BouquetService bouquetService;
+
+    @Autowired
+    LineService lineService;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -143,6 +144,16 @@ public class PresetController {
 
         Preset updated = presetService.save(preset);
 
+        if (request.getBouquets() != null && !request.getBouquets().isEmpty()) {
+            List<Line> lineList = lineService.getLinesByPresetId(preset.getId());
+            if(lineList != null && !lineList.isEmpty()) {
+                for (Line line : lineList) {
+                    line.setBouquet(convertListToJson(request.getBouquets()));
+                }
+                lineService.saveAll(lineList);
+            }
+        }
+
         return PresetUpdateResponse.builder()
                 .user(user != null ? new UserDTO(user) : null)
                 .presetName(updated.getPresetName())
@@ -233,6 +244,15 @@ public class PresetController {
             return objectMapper.readValue(jsonString, new TypeReference<List<Long>>() {});
         } catch (Exception e) {
             return List.of();
+        }
+    }
+
+    private static String convertListToJson(List<Long> ids) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.writeValueAsString(ids); // Convertit en JSON : "[67,66,65]"
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la conversion de la liste en JSON", e);
         }
     }
 }
