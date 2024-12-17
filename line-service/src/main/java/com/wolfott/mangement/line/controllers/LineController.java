@@ -1,5 +1,7 @@
 package com.wolfott.mangement.line.controllers;
 
+import com.wolfott.mangement.line.models.Line;
+import com.wolfott.mangement.line.requests.LineChartResponse;
 import com.wolfott.mangement.line.requests.LineCreateRequest;
 import com.wolfott.mangement.line.requests.LineUpdateRequest;
 import com.wolfott.mangement.line.requests.PatchRequest;
@@ -95,6 +97,17 @@ public class LineController {
     @GetMapping("/activities/{id}")
     public Page<LineActivityCompactResponse> getAllActivitiesByUser(@PathVariable("id") Long id, Pageable pageable) {
         return activityService.getAllByUserId(id, pageable);
+    }
+
+    @GetMapping("/activities/chart/{limit}")
+    public List<LineChartResponse> getLineChart(@PathVariable("limit") Long limit) {
+        return activityService.getLineChart(limit);
+    }
+
+
+    @GetMapping("/expired/{limit}")
+    public List<LineCompactResponse> getExpiredLine(@PathVariable("limit") Long limit) {
+        return lineService.getExpiredLine(limit);
     }
 
 

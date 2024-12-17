@@ -8,6 +8,7 @@ import com.wolfott.mangement.line.requests.PatchRequest;
 import com.wolfott.mangement.line.responses.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Map;
@@ -57,4 +58,6 @@ public interface LineService {
     List<Line> getLinesByPresetId(Long id);
 
     void saveAll(List<Line> lineList);
+
+    List<LineCompactResponse> getExpiredLine(Long limit);
 }

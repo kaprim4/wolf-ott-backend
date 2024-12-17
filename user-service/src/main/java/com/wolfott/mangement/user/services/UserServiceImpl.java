@@ -132,7 +132,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         if (user != null) {
             user.setUsername(request.getUsername());
-            if (request.getPassword().isEmpty())
+            if (request.getPassword() != null && !request.getPassword().isEmpty())
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setEmail(request.getEmail());
             user.setIp(request.getIp());

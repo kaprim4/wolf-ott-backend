@@ -58,4 +58,26 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
 
     @Query("SELECT l FROM Line l WHERE l.preset.id = :id")
     List<Line> getLinesByPresetId(@Param("id") Long id);
+
+    @Query(value = """
+            WITH RECURSIVE user_hierarchy AS (
+                SELECT id, owner_id, 1 AS depth
+                FROM `users`
+                WHERE `id` = :userId
+                UNION ALL
+                SELECT u.id, u.owner_id, uh.depth + 1
+                FROM `users` u
+                INNER JOIN user_hierarchy uh ON u.`owner_id` = uh.`id`
+                WHERE uh.depth < 10
+            )
+            SELECT l.*
+            FROM `lines` l
+            WHERE l.`member_id` IN (
+                SELECT uh.id FROM user_hierarchy uh
+            )
+            AND `exp_date` < NOW() 
+            ORDER BY id DESC 
+            LIMIT :limit 
+            """, nativeQuery = true)
+    List<Line> findAllExpiredLinesRecursively(@Param("userId") Long userId, @Param("limit") Long limit);
 }

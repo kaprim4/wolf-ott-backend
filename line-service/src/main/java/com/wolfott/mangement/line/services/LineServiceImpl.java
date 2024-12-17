@@ -115,11 +115,6 @@ public class LineServiceImpl implements LineService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by(Sort.Direction.DESC, "id")
-        );
         Page<Line> page = findAllLinesRecursivelyPaginated(ownerId, pageable);
         page.stream().parallel().forEach(line -> {
             if (line.getMemberId() != null) {
@@ -130,6 +125,16 @@ public class LineServiceImpl implements LineService {
             }
         });
         return lineMapper.toLineCompactResponsePage(page);
+    }
+
+    @Override
+    public List<LineCompactResponse> getExpiredLine(Long limit) {
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
+        List<Line> lineList = lineRepository.findAllExpiredLinesRecursively(ownerId, limit);
+        return lineMapper.toLineCompactResponsePage(lineList);
     }
 
     public Page<Line> findAllLinesRecursivelyPaginated(Long ownerId, Pageable pageable) {
@@ -143,7 +148,6 @@ public class LineServiceImpl implements LineService {
         List<Line> paginatedLines = lines.subList(start, end);
         return new PageImpl<>(paginatedLines, pageable, total);
     }
-
 
     @Override
     public Page<LineList> getAllforListing(Map<String, Object> filters, Pageable pageable) {

@@ -3,6 +3,7 @@ package com.wolfott.mangement.user.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wolfott.mangement.user.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.user.models.Line;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.models.UserLog;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -38,7 +41,11 @@ public class UserLogServiceImpl implements UserLogService {
 
     @Override
     public Page<UserLogCompactResponse> getAll(Pageable pageable) {
-        Page<UserLog> logs = userLogRepository.findAll(pageable);
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
+        Page<UserLog> logs = userLogRepository.findAllByOwner(ownerId, pageable);
         List<Long> owners = logs.map(UserLog::getOwner).toList();
         List<String> packageIds = logs.map(UserLog::getPackageId).filter(Objects::nonNull).map(Object::toString).toList();
         List<UserLog> lineLogs = filterLogsByType(logs.getContent(), "line");
@@ -47,23 +54,13 @@ public class UserLogServiceImpl implements UserLogService {
         CompletableFuture<List<Long>> linesFuture = CompletableFuture.supplyAsync(() -> extractDistinctIds(lineLogs));
         CompletableFuture<List<Long>> usersFuture = CompletableFuture.supplyAsync(() -> extractDistinctIds(userLogs));
 
-        // Fetch all data concurrently
         CompletableFuture<List<User>> ownersFuture = userRepository.findByIdIn(owners);
         CompletableFuture<List<UserPackageInfo>> packagesFuture = packageRepository.findByIdIn(packageIds);
-//        CompletableFuture<List<Line>> linesFutureData = linesFuture.thenCompose(lines -> lineRepository.findByIdIn(lines));
-//        CompletableFuture<List<User>> usersFutureData = usersFuture.thenCompose(users -> userRepository.findByIdIn(users));
 
-        // Combine futures to fetch lines and users
-        CompletableFuture<List<Line>> linesFutureData = linesFuture.thenCompose(lines ->
-                lineRepository.findByIdIn(lines)
-        );
-        CompletableFuture<List<User>> usersFutureData = usersFuture.thenCompose(users ->
-                userRepository.findByIdIn(users)
-        );
+        CompletableFuture<List<Line>> linesFutureData = linesFuture.thenCompose(lines -> lineRepository.findByIdIn(lines));
+        CompletableFuture<List<User>> usersFutureData = usersFuture.thenCompose(users -> userRepository.findByIdIn(users));
 
-        // Combine all futures
         CompletableFuture.allOf(ownersFuture, packagesFuture, linesFutureData, usersFutureData).join();
-
         List<UserLogCompactResponse> response = createResponses(logs, ownersFuture.join(), packagesFuture.join(), linesFutureData.join(), usersFutureData.join());
 
         return new PageImpl<>(response, pageable, logs.getTotalElements());
@@ -153,7 +150,8 @@ public class UserLogServiceImpl implements UserLogService {
     private Map<String, Object> parseDeletedInfo(UserLog log) {
         String json = log.getDeletedInfo();
         try {
-            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+            });
         } catch (JsonProcessingException e) {
             return null;
         }
@@ -162,5 +160,23 @@ public class UserLogServiceImpl implements UserLogService {
     private Long extractId(Map<String, Object> obj) {
         Object id = obj.get("id");
         return id != null ? Long.parseLong(String.valueOf(id)) : null;
+    }
+
+    // Helper method to get current authenticated user's role
+    private Authentication getPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    // Helper method to get user ID (or any other user details you need)
+    private Long getCurrentUserId() {
+        Authentication auth = getPrincipal();
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            System.out.println("Principal: " + principal);
+            if (principal instanceof User) {
+                return ((User) principal).getId();
+            }
+        }
+        return null;
     }
 }

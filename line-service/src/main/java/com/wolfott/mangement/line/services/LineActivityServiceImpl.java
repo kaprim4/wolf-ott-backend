@@ -2,22 +2,18 @@ package com.wolfott.mangement.line.services;
 
 import com.wolfott.mangement.line.models.Line;
 import com.wolfott.mangement.line.models.LineActivity;
-import com.wolfott.mangement.line.models.LineLog;
-import com.wolfott.mangement.line.models.Stream;
 import com.wolfott.mangement.line.repositories.LineActivityRepository;
 import com.wolfott.mangement.line.repositories.LineRepository;
 import com.wolfott.mangement.line.repositories.StreamRepository;
+import com.wolfott.mangement.line.requests.LineChartResponse;
 import com.wolfott.mangement.line.responses.LineActivityCompactResponse;
-import com.wolfott.mangement.line.responses.LineLogCompactResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,11 +39,24 @@ public class LineActivityServiceImpl implements LineActivityService {
         return activities.map(this::toResponse);
     }
 
+    @Override
+    public List<LineChartResponse> getLineChart(Long limit) {
+        List<Object[]> rawResults = activityRepository.getLineChartRaw(limit);
+
+        return rawResults.stream()
+                .map(result -> new LineChartResponse(
+                        (String) result[0],         // country
+                        ((Number) result[1]).longValue(), // count
+                        ((Number) result[2]).doubleValue() // percentage
+                ))
+                .collect(Collectors.toList());
+    }
+
     private LineActivityCompactResponse toResponse(LineActivity activity) {
         LineActivityCompactResponse response = new LineActivityCompactResponse();
         response.setId(activity.getActivityId());
         Optional<Line> lineOptional = lineRepository.findByLastActivity(activity.getActivityId());
-        if(lineOptional.isPresent()) {
+        if (lineOptional.isPresent()) {
             Line line = lineOptional.get();
             response.setLine_id(line.getId());
             response.setLine_name(line.getUsername());
