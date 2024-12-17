@@ -13,10 +13,14 @@ import com.wolfott.mangement.user.repositories.PackageRepository;
 import com.wolfott.mangement.user.repositories.UserLogRepository;
 import com.wolfott.mangement.user.repositories.UserRepository;
 import com.wolfott.mangement.user.responses.UserLogCompactResponse;
+import com.wolfott.mangement.user.specifications.LogSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -33,12 +37,17 @@ public class UserLogServiceImpl implements UserLogService {
     private UserRepository userRepository;
     @Autowired
     private LineRepository lineRepository;
+    @Autowired
+    private LogSpecification logSpecification;
 
     private final ObjectMapper objectMapper = new ObjectMapper(); // Reuse ObjectMapper instance
 
     @Override
     public Page<UserLogCompactResponse> getAll(Pageable pageable) {
-        Page<UserLog> logs = userLogRepository.findAll(pageable);
+        Long ownerId = this.getCurrentUserId();
+        List<Long> subsellers = userRepository.findAllSubsellers(ownerId);
+        Specification<UserLog> spec = logSpecification.hasOwnersIn(subsellers);
+        Page<UserLog> logs = userLogRepository.findAll(spec, pageable);
         List<Long> owners = logs.map(UserLog::getOwner).toList();
         List<String> packageIds = logs.map(UserLog::getPackageId).filter(Objects::nonNull).map(Object::toString).toList();
         List<UserLog> lineLogs = filterLogsByType(logs.getContent(), "line");
@@ -162,5 +171,21 @@ public class UserLogServiceImpl implements UserLogService {
     private Long extractId(Map<String, Object> obj) {
         Object id = obj.get("id");
         return id != null ? Long.parseLong(String.valueOf(id)) : null;
+    }
+
+    private Long getCurrentUserId() {
+        Authentication auth = getPrincipal();
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            System.out.println("Principal: " + principal);
+            if (principal instanceof User) {
+                return ((User) principal).getId();
+            }
+        }
+        return null;
+    }
+
+    private Authentication getPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 }
