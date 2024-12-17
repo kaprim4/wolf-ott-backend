@@ -120,7 +120,7 @@ public class LineServiceImpl implements LineService {
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "id")
         );
-        Page<Line> page = findAllLinesRecursivelyPaginated(ownerId, sortedPageable);
+        Page<Line> page = findAllLinesRecursivelyPaginated(ownerId, pageable);
         page.stream().parallel().forEach(line -> {
             if (line.getMemberId() != null) {
                 User member = userRepository.findById(line.getMemberId()).orElse(new User());

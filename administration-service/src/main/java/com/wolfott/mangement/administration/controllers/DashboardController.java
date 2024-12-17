@@ -18,6 +18,9 @@ public class DashboardController {
 
     @GetMapping("/global-state")
     public GlobalStateResponse getGlobalState(){
-        return dashboardService.getGlobalStats();
+
+        long userId = 50;
+
+        return dashboardService.getGlobalStats(userId);
     }
 }

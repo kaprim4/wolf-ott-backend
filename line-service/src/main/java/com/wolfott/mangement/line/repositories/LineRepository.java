@@ -50,6 +50,7 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
     WHERE l.`member_id` IN (
         SELECT uh.id FROM user_hierarchy uh
     )
+    ORDER BY id DESC
     """, nativeQuery = true)
     List<Line> findAllLinesRecursively(@Param("userId") Long userId);
 
