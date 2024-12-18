@@ -1,5 +1,6 @@
 package com.wolfott.mangement.user.controllers;
 
+import com.wolfott.mangement.user.models.UserPackage;
 import com.wolfott.mangement.user.requests.PackageCreateRequest;
 import com.wolfott.mangement.user.requests.PackageUpdateRequest;
 import com.wolfott.mangement.user.responses.PackageCompactResponse;
@@ -31,9 +32,20 @@ public class PackageController {
     public List<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters){
         return packageService.getAll(filters);
     }
+
     @GetMapping
     public Page<PackageCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable){
         return packageService.getAll(filters, pageable);
+    }
+
+    @GetMapping("/list/user/{id}")
+    public List<PackageCompactResponse> getAllByUser(@PathVariable("id") Long id){
+        return packageService.getAllByUser(id);
+    }
+
+    @GetMapping("/user/{id}")
+    public Page<PackageCompactResponse> getAllByUser(@PathVariable("id") Long id, @RequestParam Map<String, Object> filters, Pageable pageable){
+        return packageService.getAllByUser(id, filters, pageable);
     }
 
     @PostMapping

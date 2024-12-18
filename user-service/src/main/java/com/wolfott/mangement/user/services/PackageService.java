@@ -1,5 +1,6 @@
 package com.wolfott.mangement.user.services;
 
+import com.wolfott.mangement.user.models.UserPackage;
 import com.wolfott.mangement.user.requests.PackageCreateRequest;
 import com.wolfott.mangement.user.requests.PackageUpdateRequest;
 import com.wolfott.mangement.user.responses.PackageCompactResponse;
@@ -13,10 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 public interface PackageService {
+
     PackageDetailResponse getOne(String id);
+
     List<PackageCompactResponse> getAll(Map<String, Object> filters);
     Page<PackageCompactResponse> getAll(Map<String, Object> filters, Pageable pageable);
+
+    List<PackageCompactResponse> getAllByUser(Long id);
+    Page<PackageCompactResponse> getAllByUser(Long id, Map<String, Object> filters, Pageable pageable);
+
     PackageCreateResponse create(PackageCreateRequest request);
     PackageUpdateResponse update(String id, PackageUpdateRequest request);
+
     void delete(String id);
 }

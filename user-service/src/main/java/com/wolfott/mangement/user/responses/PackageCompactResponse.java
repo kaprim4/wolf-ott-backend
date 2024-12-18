@@ -33,5 +33,6 @@ public class PackageCompactResponse {
     private Boolean isIsplock;
 //    private String outputFormats;
     private List<Integer> outputFormats;
+    private Integer maxConnections;
     private String forcedCountry;
 }

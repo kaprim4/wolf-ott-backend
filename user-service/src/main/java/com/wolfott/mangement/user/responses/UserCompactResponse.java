@@ -18,11 +18,11 @@ public class UserCompactResponse {
     private String ip;
     //    private Date dateRegistered;
 //    private Date lastLogin;
-//    private Long memberGroupId;
+    private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;
-//    private String apiKey;
+    //    private String apiKey;
     private Date lastLogin;
     private Date dateRegistered;
 }
