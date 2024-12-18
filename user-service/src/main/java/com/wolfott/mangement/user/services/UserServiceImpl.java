@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "id")
         );
-        Page<User> page = userRepository.findAll(spec, pageable);
+        Page<User> page = userRepository.findAll(spec, sortedPageable);
         page.stream().parallel().forEach(user -> {
             User member = userRepository.findById(user.getOwnerId()).orElse(new User());
 //          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
