@@ -40,7 +40,4 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             nativeQuery = true
     )
     List<Long> findAllSubsellers(@Param("currentUserId") Long currentUserId);
-
-    @Query("SELECT u.id FROM User u WHERE u.ownerId = :currentUserId")
-    Page<User> findAllOrderByIdDesc(Specification<User> spec, Pageable pageable);
 }
