@@ -23,7 +23,7 @@ public class LineCreateRequest {
     private String lastIp;
     private Long expDate;
     private Boolean adminEnabled;
-    private Boolean enabled;
+    private Boolean enabled = true;
     private String adminNotes;
     private String resellerNotes;
     private List<Integer> bouquets;
