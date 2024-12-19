@@ -5,6 +5,7 @@ import com.wolfott.mangement.user.exceptions.UserNotFoundException;
 import com.wolfott.mangement.user.mappers.UserMapper;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.models.UserGroup;
+import com.wolfott.mangement.user.models.UserPackage;
 import com.wolfott.mangement.user.repositories.GroupRepository;
 import com.wolfott.mangement.user.repositories.UserRepository;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
@@ -15,16 +16,14 @@ import com.wolfott.mangement.user.responses.UserDetailResponse;
 import com.wolfott.mangement.user.responses.UserUpdateResponse;
 import com.wolfott.mangement.user.specifications.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -78,20 +77,28 @@ public class UserServiceImpl implements UserService {
         if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
-        Pageable sortedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by(Sort.Direction.DESC, "id")
-        );
-        Page<User> page = userRepository.findAll(spec, sortedPageable);
-        page.stream().parallel().forEach(user -> {
-            User member = userRepository.findById(user.getOwnerId()).orElse(new User());
-//          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
-            String username = member.getUsername();
-            member.setUsername(username);
-            user.setOwner(member);
-        });
-        return userMapper.toCompactResponse(page);
+        List<User> rootUsers = userRepository.findAll(spec);
+        List<UserCompactResponse> response = new ArrayList<>();
+        for (User user : rootUsers) {
+            UserCompactResponse userWithHierarchy = buildUserHierarchy(user, 10); // Profondeur max 10
+            response.add(userWithHierarchy);
+        }
+        Page<UserCompactResponse> page = new PageImpl<>(response, pageable, response.size());
+        return page;
+    }
+
+    private UserCompactResponse buildUserHierarchy(User user, int depth) {
+        if (depth == 0) {
+            return userMapper.toCompactResponse(user);
+        }
+        UserCompactResponse response = userMapper.toCompactResponse(user);
+        List<User> subUsers = userRepository.findByOwnerId(user.getId());
+        List<UserCompactResponse> subUserResponses = new ArrayList<>();
+        for (User subUser : subUsers) {
+            subUserResponses.add(buildUserHierarchy(subUser, depth - 1));
+        }
+        response.setSubUsers(subUserResponses);
+        return response;
     }
 
     @Override
@@ -178,6 +185,11 @@ public class UserServiceImpl implements UserService {
     public String findById(Long memberId) {
         User user = userRepository.findById(memberId).orElse(null);
         return user != null ? user.getUsername() : null;
+    }
+
+    @Override
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 
     // Helper method to get current authenticated user's role

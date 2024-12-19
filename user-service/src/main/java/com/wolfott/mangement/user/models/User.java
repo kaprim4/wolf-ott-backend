@@ -90,6 +90,9 @@ public class User implements UserDetails, Authentication {
     @Transient
     private User owner;
 
+    @Column(name = "user_theme_options_id")
+    private Long userThemeOptionsId;
+
     @Lob
     @Column(name = "thumbnail_image", columnDefinition = "LONGTEXT")
     private String thumbnail;

@@ -34,4 +34,6 @@ public interface UserService {
     void delete(Long id);
 
     String findById(Long memberId);
+
+    User findUserById(Long userId);
 }

@@ -1,5 +1,6 @@
 package com.wolfott.mangement.user.responses;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,5 @@ public class UserDetailResponse {
     private String lastLogin;
     private String dateRegistered;
     private String thumbnail;
+    private Long userThemeOptionsId;
 }

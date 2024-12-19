@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -25,4 +27,5 @@ public class UserCompactResponse {
     //    private String apiKey;
     private Date lastLogin;
     private Date dateRegistered;
+    private List<UserCompactResponse> subUsers = new ArrayList<>();
 }
