@@ -7,7 +7,6 @@ import com.wolfott.mangement.user.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.user.models.Line;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.models.UserLog;
-import com.wolfott.mangement.user.models.UserPackage;
 import com.wolfott.mangement.user.projections.UserPackageInfo;
 import com.wolfott.mangement.user.repositories.LineRepository;
 import com.wolfott.mangement.user.repositories.PackageRepository;

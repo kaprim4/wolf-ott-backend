@@ -86,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
     public boolean validatePassword(String username, String password) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        log.info("password: {} getPassword: {}", password, user.getPassword());
         return passwordValidator.validate(password, user.getPassword());
     }
 

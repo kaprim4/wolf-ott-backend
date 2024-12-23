@@ -115,10 +115,10 @@ public class UserServiceImpl implements UserService {
         CompletableFuture<List<User>> ownersFuture = ownersIdsFuture.thenApply(ownersIds -> userRepository.getByIdIn(ownersIds));
         CompletableFuture<Map<Long, Long>> countsFuture = ownersIdsFuture.thenApply(ownersIds -> {
             List<Map<String, Object>> results = userRepository.findLineCountsByMemberIdIn(ownersIds);
-            return results.stream()
-                    .collect(Collectors.toMap(
-                            result -> ((Number) result.get("userId")).longValue(),
-                            result -> ((Number) result.get("lineCount")).longValue()));
+            return results.stream().collect(Collectors.toMap(
+                    result -> ((Number) result.get("userId")).longValue(),
+                    result -> ((Number) result.get("lineCount")).longValue()
+            ));
         });
 
         // Wait for all futures to complete
@@ -130,7 +130,10 @@ public class UserServiceImpl implements UserService {
 
         // Process the users and set owners and line counts
         allUsers.forEach(user -> {
-            user.setLineCount(counts.get(user.getId()));
+            if(counts.get(user.getId()) != null)
+                user.setLineCount(counts.get(user.getId()));
+            else
+                user.setLineCount(0L);
             User owner = owners.stream().filter(o -> Objects.equals(o.getId(), user.getOwnerId())).findFirst().orElse(null);
             user.setOwner(owner);
         });
@@ -140,7 +143,6 @@ public class UserServiceImpl implements UserService {
         log.info("Total users fetched: {}", userCompactResponsePage.getTotalElements());
         return userCompactResponsePage;
     }
-
 
 
     @Override
