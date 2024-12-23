@@ -14,6 +14,7 @@ public class UserCreateRequest {
     private String password;
     private String email;
     private String ip;
+    private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;

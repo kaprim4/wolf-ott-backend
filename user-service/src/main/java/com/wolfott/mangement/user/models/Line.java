@@ -17,4 +17,6 @@ public class Line {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "member_id")
+    private Long memberId;
 }

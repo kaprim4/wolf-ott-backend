@@ -1,7 +1,10 @@
 package com.wolfott.mangement.user.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +19,9 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name = "users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User implements UserDetails, Authentication {
 
     @Id
@@ -90,6 +96,9 @@ public class User implements UserDetails, Authentication {
     @Transient
     private User owner;
 
+    @Transient
+    private Long lineCount;
+
     @Column(name = "user_theme_options_id")
     private Long userThemeOptionsId;
 
@@ -126,7 +135,6 @@ public class User implements UserDetails, Authentication {
         this.timestampDateRegistered = date != null ? date.getTime() / 1000L : null;
     }
 
-    public User(){}
     public User(Long id){
         this.id = id;
     }

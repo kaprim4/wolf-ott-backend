@@ -15,17 +15,18 @@ public class UserCompactResponse {
     private Long id;
     private String username;
     private String owner;
-    //    private String password;
+    private String ownerName;
+    // private String password;
     private String email;
     private String ip;
-    //    private Date dateRegistered;
-//    private Date lastLogin;
+    // private Date dateRegistered;
+    // private Date lastLogin;
     private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;
-    //    private String apiKey;
+    // private String apiKey;
     private Date lastLogin;
     private Date dateRegistered;
-    private List<UserCompactResponse> subUsers = new ArrayList<>();
+    private Long lineCount;
 }

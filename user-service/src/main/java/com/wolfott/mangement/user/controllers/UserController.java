@@ -3,6 +3,7 @@ package com.wolfott.mangement.user.controllers;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.models.UserThemeOptions;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
+import com.wolfott.mangement.user.requests.UserCreditAdjustmentRequest;
 import com.wolfott.mangement.user.requests.UserThemeOptionsRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
 import com.wolfott.mangement.user.responses.*;
@@ -92,6 +93,11 @@ public class UserController {
     @PutMapping("/theme-options/{id}")
     public UserThemeOptions updateUserThemeOptions(@PathVariable("id") Long id, @RequestBody UserThemeOptionsRequest request) {
         return userThemeOptionsService.update(id, request);
+    }
+
+    @PostMapping("/credits")
+    public UserCreditAdjustmentResponse adjustUserCredits(@RequestBody UserCreditAdjustmentRequest request) {
+        return userService.adjustUserCredits(request);
     }
 
 }

@@ -4,17 +4,19 @@ import com.wolfott.mangement.user.exceptions.UnauthorizedAccessException;
 import com.wolfott.mangement.user.exceptions.UserNotFoundException;
 import com.wolfott.mangement.user.mappers.UserMapper;
 import com.wolfott.mangement.user.models.User;
+import com.wolfott.mangement.user.models.UserCreditLog;
 import com.wolfott.mangement.user.models.UserGroup;
 import com.wolfott.mangement.user.models.UserPackage;
 import com.wolfott.mangement.user.repositories.GroupRepository;
+import com.wolfott.mangement.user.repositories.UserCreditLogRepository;
 import com.wolfott.mangement.user.repositories.UserRepository;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
+import com.wolfott.mangement.user.requests.UserCreditAdjustmentRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
-import com.wolfott.mangement.user.responses.UserCompactResponse;
-import com.wolfott.mangement.user.responses.UserCreateResponse;
-import com.wolfott.mangement.user.responses.UserDetailResponse;
-import com.wolfott.mangement.user.responses.UserUpdateResponse;
+import com.wolfott.mangement.user.responses.*;
 import com.wolfott.mangement.user.specifications.UserSpecification;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,19 +25,29 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
+    private UserCreditLogRepository userCreditLogRepository;
+
     @Autowired
     private UserSpecification userSpecification;
+
     @Autowired
     private UserMapper userMapper;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -51,21 +63,37 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
+
         Specification<User> spec = userSpecification.dynamic(filters);
         if (!isAdmin()) {
             spec = spec.and(UserSpecification.hasMemberId(ownerId));
         }
 
-        List<User> list = userRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "id"));
+        List<User> list = userRepository.findAll(spec, Sort.by(Sort.Direction.ASC, "id"));
+
+        User currentUser = userRepository.findById(ownerId).orElseThrow(() ->
+                new EntityNotFoundException("Current user not found"));
+
+        if (!list.contains(currentUser)) {
+            list.add(currentUser);
+        }
+
+        list.sort(Comparator.comparing(User::getId));
+
         list.stream().parallel().forEach(user -> {
-            User member = Optional.ofNullable(user.getOwnerId()).map(userRepository::findById).map(opt -> opt.orElse(new User())).orElse(new User());
-//          String username = userServiceClient.getUsernameByMemberId(line.getMemberId());
+            User member = Optional.ofNullable(user.getOwnerId())
+                    .map(userRepository::findById)
+                    .map(opt -> opt.orElse(new User()))
+                    .orElse(new User());
+
             String username = member.getUsername();
             member.setUsername(username);
             user.setOwner(member);
         });
+
         return userMapper.toCompactResponse(list);
     }
+
 
     @Override
     public Page<UserCompactResponse> getAll(Map<String, Object> filters, Pageable pageable) {
@@ -73,32 +101,16 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-        Specification<User> spec = userSpecification.dynamic(filters);
-        if (!isAdmin()) {
-            spec = spec.and(UserSpecification.hasMemberId(ownerId));
-        }
-        List<User> rootUsers = userRepository.findAll(spec);
-        List<UserCompactResponse> response = new ArrayList<>();
-        for (User user : rootUsers) {
-            UserCompactResponse userWithHierarchy = buildUserHierarchy(user, 10); // Profondeur max 10
-            response.add(userWithHierarchy);
-        }
-        Page<UserCompactResponse> page = new PageImpl<>(response, pageable, response.size());
-        return page;
-    }
-
-    private UserCompactResponse buildUserHierarchy(User user, int depth) {
-        if (depth == 0) {
-            return userMapper.toCompactResponse(user);
-        }
-        UserCompactResponse response = userMapper.toCompactResponse(user);
-        List<User> subUsers = userRepository.findByOwnerId(user.getId());
-        List<UserCompactResponse> subUserResponses = new ArrayList<>();
-        for (User subUser : subUsers) {
-            subUserResponses.add(buildUserHierarchy(subUser, depth - 1));
-        }
-        response.setSubUsers(subUserResponses);
-        return response;
+        List<Long> allUsersIds = userRepository.findAllHierarchyByOwnerId(ownerId);
+        Page<User> allUsers = userRepository.findAllByIds(allUsersIds, pageable);
+        allUsers.stream().parallel().forEach(user -> {
+            user.setLineCount(userRepository.findLineCountsByMemberId(user.getId()));
+            User owner = userRepository.findById(user.getOwnerId()).orElse(null);
+            user.setOwner(owner);
+        });
+        Page<UserCompactResponse> userCompactResponsePage = allUsers.map(userMapper::toCompactResponse);
+        log.info("Total users fetched: {}", userCompactResponsePage.getTotalElements());
+        return userCompactResponsePage;
     }
 
     @Override
@@ -120,8 +132,27 @@ public class UserServiceImpl implements UserService {
             throw new UnauthorizedAccessException("User not authenticated");
         }
 
-        User user = userMapper.toUser(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        UserGroup userGroup = groupRepository.findById(request.getMemberGroupId()).orElseThrow(null);
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .ip(null)
+                .credits(request.getCredits())
+                .notes(request.getNotes())
+                .status(request.getStatus())
+                .group(userGroup)
+                .resellerDns(request.getResellerDns())
+                .ownerId(request.getOwnerId())
+                .overridePackages(request.getOverridePackages())
+                .hue(request.getHue())
+                .theme(request.getTheme())
+                .timezone(request.getTimezone())
+                .apiKey(request.getApiKey())
+                .lastLogin(null)
+                .timestampDateRegistered(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+                .build();
 
         if (user.getOwnerId() == null)
             user.setOwnerId(ownerId);
@@ -139,13 +170,18 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         if (user != null) {
             user.setUsername(request.getUsername());
-            if (request.getPassword() != null && !request.getPassword().isEmpty())
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
+            } else {
+                user.setPassword(user.getPassword());
+            }
+            UserGroup userGroup = groupRepository.findById(request.getMemberGroupId()).orElseThrow(null);
             user.setEmail(request.getEmail());
             user.setIp(request.getIp());
             user.setCredits(request.getCredits());
             user.setNotes(request.getNotes());
             user.setStatus(request.getStatus());
+            user.setGroup(userGroup);
             user.setResellerDns(request.getResellerDns());
             user.setOwnerId(ownerId);
             user.setOverridePackages(request.getOverridePackages());
@@ -154,18 +190,14 @@ public class UserServiceImpl implements UserService {
             user.setTimezone(request.getTimezone());
             user.setApiKey(request.getApiKey());
             user.setThumbnail(request.getThumbnail());
-            user = userRepository.save(user);
+
+            if (user.getOwnerId() == null)
+                user.setOwnerId(ownerId);
+            if (!isAdmin() && !Objects.equals(user.getOwnerId(), ownerId))
+                user.setOwnerId(ownerId);
+
+            userRepository.saveAndFlush(user);
         }
-
-        request.setId(id);
-
-        user = userMapper.toUser(request, user);
-        if (user.getOwnerId() == null)
-            user.setOwnerId(ownerId);
-        if (!isAdmin() && user.getOwnerId() != ownerId)
-            user.setOwnerId(ownerId);
-
-        user = userRepository.save(user);
         return userMapper.toUpdateResponse(user);
     }
 
@@ -190,6 +222,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(Long userId) {
         return userRepository.findById(userId).orElse(null);
+    }
+
+    @Override
+    public UserCreditAdjustmentResponse adjustUserCredits(UserCreditAdjustmentRequest request) {
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
+        User user = userRepository.findById(request.userId()).orElse(null);
+        if (user == null)
+            return null;
+        else {
+            user.setCredits(Float.valueOf(request.remaining_credits()));
+            user = userRepository.save(user);
+
+            UserCreditLog userCreditLog = UserCreditLog.builder()
+                    .adminId(ownerId)
+                    .targetId(user.getId())
+                    .amount(Float.valueOf(request.cost_credits()))
+                    .reason(request.reason())
+                    .timestamp(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC))
+                    .build();
+            userCreditLogRepository.save(userCreditLog);
+
+            return UserCreditAdjustmentResponse.builder()
+                    .userId(user.getId())
+                    .credits(request.cost_credits())
+                    .userCreditLog(userCreditLog)
+                    .build();
+        }
     }
 
     // Helper method to get current authenticated user's role

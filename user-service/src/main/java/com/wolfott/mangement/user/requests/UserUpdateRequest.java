@@ -10,7 +10,7 @@ public class UserUpdateRequest{
     private String password;
     private String email;
     private String ip;
-    //        Long memberGroupId,
+    private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;

@@ -47,6 +47,21 @@ public class UserMapper {
             }
         });
 
+        modelMapper.addMappings(new PropertyMap<UserCreateRequest, User>() {
+            @Override
+            protected void configure() {
+                using(ownerIdToOwnerConverter()).map(source.getOwnerId(), destination.getOwner());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<User, UserCreateResponse>() {
+            @Override
+            protected void configure() {
+                map(source.getId(), destination.getId());
+                using(ownerToOwnerIdConverter()).map(source.getOwner(), destination.getOwnerId());
+            }
+        });
+
         modelMapper.addMappings(new PropertyMap<UserUpdateRequest, User>() {
             @Override
             protected void configure() {

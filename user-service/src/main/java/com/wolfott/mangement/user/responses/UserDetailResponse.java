@@ -14,7 +14,7 @@ import java.util.Date;
 public class UserDetailResponse {
     private Long id;
     private String username;
-//    private String password;
+    private String password;
     private String email;
     private String ip;
     private Float credits;

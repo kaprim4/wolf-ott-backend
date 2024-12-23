@@ -41,22 +41,25 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     List<Long> findAllSubsellers(@Param("currentUserId") Long currentUserId);
 
     @Query(value = """
-            WITH RECURSIVE user_hierarchy AS (
-                SELECT id, owner_id, 1 AS depth
-                FROM `users`
-                WHERE `id` = :userId
-                UNION ALL
-                SELECT u.id, u.owner_id, uh.depth + 1
-                FROM `users` u
-                INNER JOIN user_hierarchy uh ON u.`owner_id` = uh.`id`
-                WHERE uh.depth < 10
-            )
-            SELECT u.*
-            FROM `users` u
-            WHERE u.`id` IN (
-                SELECT uh.id FROM user_hierarchy uh
-            )
-            ORDER BY id DESC
-            """, nativeQuery = true)
-    Page<User> findAllUsersRecursive(@Param("userId") Long userId, Pageable pageable);
+    WITH RECURSIVE user_hierarchy AS (
+        SELECT *, 1 AS depth FROM `users` WHERE `owner_id` = :ownerId
+        UNION ALL
+        SELECT u.*, uh.`depth` + 1 FROM `users` u
+        INNER JOIN `user_hierarchy` uh ON u.`owner_id` = uh.`id`
+        WHERE uh.`depth` < 10
+    )
+    SELECT DISTINCT (`id`) FROM `user_hierarchy`;
+""", nativeQuery = true)
+    List<Long> findAllHierarchyByOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query(value = """
+    SELECT COUNT(l.id) AS lineCount\s
+    FROM `users` u\s
+    LEFT JOIN `lines` l ON u.id = l.member_id\s
+    WHERE u.id = :memberId
+""", nativeQuery = true)
+    Long findLineCountsByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT u FROM User u WHERE u.id IN (:ids) ORDER BY u.id DESC")
+    Page<User> findAllByIds(List<Long> ids, Pageable pageable);
 }

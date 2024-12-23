@@ -7,10 +7,10 @@ import lombok.Data;
 public class UserUpdateResponse {
     private Long id;
     private String username;
-    //    private String password;
+    private String password;
     private String email;
     private String ip;
-//    private Long memberGroupId;
+    private Long memberGroupId;
     private Float credits;
     private String notes;
     private Boolean status;

@@ -3,11 +3,9 @@ package com.wolfott.mangement.user.services;
 import com.wolfott.mangement.user.models.User;
 import com.wolfott.mangement.user.models.UserGroup;
 import com.wolfott.mangement.user.requests.UserCreateRequest;
+import com.wolfott.mangement.user.requests.UserCreditAdjustmentRequest;
 import com.wolfott.mangement.user.requests.UserUpdateRequest;
-import com.wolfott.mangement.user.responses.UserCompactResponse;
-import com.wolfott.mangement.user.responses.UserCreateResponse;
-import com.wolfott.mangement.user.responses.UserDetailResponse;
-import com.wolfott.mangement.user.responses.UserUpdateResponse;
+import com.wolfott.mangement.user.responses.*;
 import io.micrometer.core.instrument.config.validate.Validated;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +34,6 @@ public interface UserService {
     String findById(Long memberId);
 
     User findUserById(Long userId);
+
+    UserCreditAdjustmentResponse adjustUserCredits(UserCreditAdjustmentRequest request);
 }
