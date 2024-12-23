@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -60,6 +61,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
 """, nativeQuery = true)
     Long findLineCountsByMemberId(@Param("memberId") Long memberId);
 
+    @Query(value = """
+        SELECT u.id AS userId, COUNT(l.id) AS lineCount
+        FROM `users` u
+        LEFT JOIN `lines` l ON u.id = l.member_id
+        WHERE u.id IN (:memberIdx)
+        GROUP BY u.id
+    """, nativeQuery = true)
+    List<Map<String, Object>> findLineCountsByMemberIdIn(@Param("memberIdx") Collection<Long> memberId);
+
     @Query("SELECT u FROM User u WHERE u.id IN (:ids) ORDER BY u.id DESC")
     Page<User> findAllByIds(List<Long> ids, Pageable pageable);
+
+    List<User> getByIdIn(Collection<Long> ids);
 }

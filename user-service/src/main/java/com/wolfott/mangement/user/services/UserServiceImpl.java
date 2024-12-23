@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -101,17 +102,46 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
-        List<Long> allUsersIds = userRepository.findAllHierarchyByOwnerId(ownerId);
-        Page<User> allUsers = userRepository.findAllByIds(allUsersIds, pageable);
-        allUsers.stream().parallel().forEach(user -> {
-            user.setLineCount(userRepository.findLineCountsByMemberId(user.getId()));
-            User owner = userRepository.findById(user.getOwnerId()).orElse(null);
+
+        // Fetching user IDs and all users concurrently
+        CompletableFuture<List<Long>> allUsersIdsFuture = CompletableFuture.supplyAsync(() -> userRepository.findAllHierarchyByOwnerId(ownerId));
+        CompletableFuture<Page<User>> allUsersFuture = allUsersIdsFuture.thenApply(ids -> userRepository.findAllByIds(ids, pageable));
+
+        // Fetch the owners and line counts concurrently based on user IDs
+        CompletableFuture<Set<Long>> ownersIdsFuture = allUsersFuture.thenApply(allUsers -> allUsers.stream()
+                .map(User::getOwnerId)
+                .collect(Collectors.toSet()));
+
+        CompletableFuture<List<User>> ownersFuture = ownersIdsFuture.thenApply(ownersIds -> userRepository.getByIdIn(ownersIds));
+        CompletableFuture<Map<Long, Long>> countsFuture = ownersIdsFuture.thenApply(ownersIds -> {
+            List<Map<String, Object>> results = userRepository.findLineCountsByMemberIdIn(ownersIds);
+            return results.stream()
+                    .collect(Collectors.toMap(
+                            result -> ((Number) result.get("userId")).longValue(),
+                            result -> ((Number) result.get("lineCount")).longValue()));
+        });
+
+        // Wait for all futures to complete
+//        List<Long> allUsersIds = allUsersIdsFuture.join();
+        Page<User> allUsers = allUsersFuture.join();
+//        Set<Long> ownersIds = ownersIdsFuture.join();
+        List<User> owners = ownersFuture.join();
+        Map<Long, Long> counts = countsFuture.join();
+
+        // Process the users and set owners and line counts
+        allUsers.forEach(user -> {
+            user.setLineCount(counts.get(user.getId()));
+            User owner = owners.stream().filter(o -> Objects.equals(o.getId(), user.getOwnerId())).findFirst().orElse(null);
             user.setOwner(owner);
         });
+
+        // Convert to response and return the page
         Page<UserCompactResponse> userCompactResponsePage = allUsers.map(userMapper::toCompactResponse);
         log.info("Total users fetched: {}", userCompactResponsePage.getTotalElements());
         return userCompactResponsePage;
     }
+
+
 
     @Override
     public Page<UserCompactResponse> getAll(String search, Pageable pageable) {
