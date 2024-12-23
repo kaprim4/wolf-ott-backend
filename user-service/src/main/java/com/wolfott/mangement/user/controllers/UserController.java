@@ -100,4 +100,9 @@ public class UserController {
         return userService.adjustUserCredits(request);
     }
 
+    @PostMapping("/{id}/toggle-status")
+    public UserDetailResponse toggleStatus(@PathVariable("id") Long id) {
+        return userService.toggleStatus(id);
+    }
+
 }

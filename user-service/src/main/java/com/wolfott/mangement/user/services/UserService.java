@@ -36,4 +36,6 @@ public interface UserService {
     User findUserById(Long userId);
 
     UserCreditAdjustmentResponse adjustUserCredits(UserCreditAdjustmentRequest request);
+
+    UserDetailResponse toggleStatus(Long id);
 }

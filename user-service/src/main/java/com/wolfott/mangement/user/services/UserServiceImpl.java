@@ -254,6 +254,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDetailResponse toggleStatus(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
+        user.setStatus(!user.getStatus());
+        user = userRepository.save(user);
+        return userMapper.toDetailResponse(user);
+    }
+
     // Helper method to get current authenticated user's role
     private Authentication getPrincipal() {
         return SecurityContextHolder.getContext().getAuthentication();
