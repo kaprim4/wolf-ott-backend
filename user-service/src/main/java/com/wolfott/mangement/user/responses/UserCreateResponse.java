@@ -24,4 +24,5 @@ public class UserCreateResponse {
     private String apiKey;
     private Date lastLogin;
     private Date dateRegistered;
+    private String thumbnail;
 }

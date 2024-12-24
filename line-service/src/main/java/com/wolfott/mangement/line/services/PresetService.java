@@ -50,34 +50,18 @@ public class PresetService {
         return presetRepository.findAllByUserId(ownerId, pageable);
     }
 
-    public List<Preset> findAllWithFilters(Map<String, Object> filters) {
-        Specification<Preset> spec = buildSpecification(filters);
-        return presetRepository.findAll(spec);
+    public List<Preset> findAllByUserIdAsList() {
+        Long ownerId = getCurrentUserId();
+        if (ownerId == null) {
+            throw new UnauthorizedAccessException("User not authenticated");
+        }
+        return presetRepository.findAllByUserIdAsList(ownerId);
     }
 
-    private Specification<Preset> buildSpecification(Map<String, Object> filters) {
-        return (root, query, cb) -> {
-            Predicate predicate = cb.conjunction();
-            if (filters.containsKey("presetName")) {
-                String presetName = filters.get("presetName").toString();
-                predicate = cb.and(predicate, cb.like(root.get("presetName"), "%" + presetName + "%"));
-            }
-            if (filters.containsKey("status")) {
-                Object statusObj = filters.get("status");
-                boolean status = Boolean.parseBoolean(statusObj.toString());
-                predicate = cb.and(predicate, cb.equal(root.get("status"), status));
-            }
-            return predicate;
-        };
-    }
-
-
-    // Helper method to get current authenticated user's role
     private Authentication getPrincipal() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    // Helper method to get user ID (or any other user details you need)
     private Long getCurrentUserId() {
         Authentication auth = getPrincipal();
         if (auth != null) {
@@ -90,12 +74,9 @@ public class PresetService {
         return null;
     }
 
-
-    // Helper method to check if the current user is an admin
     private boolean isAdmin() {
         Authentication auth = getPrincipal();
         Object principal = auth.getPrincipal();
-//        return auth != null && auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         if (principal instanceof User) {
             return ((User) principal).isAdmin();
         }

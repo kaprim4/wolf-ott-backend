@@ -55,12 +55,10 @@ public class PresetController {
     public List<BouquetCompactResponse> getPresetBouquets(@PathVariable Long id) {
         Preset preset = presetService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Preset not found"));
-
         List<Bouquet> sortedBouquets = preset.getPresetBouquets().stream()
                 .sorted(Comparator.comparing(PresetBouquet::getPositionOrder))
                 .map(PresetBouquet::getBouquet)
                 .toList();
-
         return sortedBouquets.stream()
                 .map(this::toBouquetCompactResponse)
                 .toList();
@@ -73,8 +71,8 @@ public class PresetController {
     }
 
     @GetMapping("/list")
-    public List<PresetCompactResponse> getAll(@RequestParam Map<String, Object> filters) {
-        List<Preset> presets = presetService.findAllWithFilters(filters);
+    public List<PresetCompactResponse> getAll() {
+        List<Preset> presets = presetService.findAllByUserIdAsList();
         return presets.stream().map(this::toPresetCompactResponse).toList();
     }
 

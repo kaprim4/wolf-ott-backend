@@ -215,19 +215,13 @@ public class UserServiceImpl implements UserService {
             user.setStatus(request.getStatus());
             user.setGroup(userGroup);
             user.setResellerDns(request.getResellerDns());
-            user.setOwnerId(ownerId);
+            user.setOwnerId(request.getOwnerId());
             user.setOverridePackages(request.getOverridePackages());
             user.setHue(request.getHue());
             user.setTheme(request.getTheme());
             user.setTimezone(request.getTimezone());
             user.setApiKey(request.getApiKey());
             user.setThumbnail(request.getThumbnail());
-
-            if (user.getOwnerId() == null)
-                user.setOwnerId(ownerId);
-            if (!isAdmin() && !Objects.equals(user.getOwnerId(), ownerId))
-                user.setOwnerId(ownerId);
-
             userRepository.saveAndFlush(user);
         }
         return userMapper.toUpdateResponse(user);

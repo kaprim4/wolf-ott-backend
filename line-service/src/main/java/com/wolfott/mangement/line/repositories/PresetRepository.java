@@ -9,9 +9,14 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PresetRepository extends JpaRepository<Preset, Long>, JpaSpecificationExecutor<Preset> {
 
     @Query("SELECT p FROM Preset p WHERE p.user.id = :userId")
     Page<Preset> findAllByUserId(Long userId, Pageable pageable);
+
+    @Query("SELECT p FROM Preset p WHERE p.user.id = :userId")
+    List<Preset> findAllByUserIdAsList(Long userId);
 }
