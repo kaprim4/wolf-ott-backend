@@ -3,10 +3,7 @@ package com.wolfott.mangement.line.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.configs.UserServiceClient;
-import com.wolfott.mangement.line.exceptions.LineNotFoundException;
-import com.wolfott.mangement.line.exceptions.ParameterNotFoundException;
-import com.wolfott.mangement.line.exceptions.PatchOperationException;
-import com.wolfott.mangement.line.exceptions.UnauthorizedAccessException;
+import com.wolfott.mangement.line.exceptions.*;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.LineMapper;
 import com.wolfott.mangement.line.models.*;
@@ -27,11 +24,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -55,6 +54,10 @@ public class LineServiceImpl implements LineService {
     UserRepository userRepository;
     @Autowired
     BouquetRepository bouquetRepository;
+    @Autowired
+    private PackageRepository packageRepository;
+    @Autowired
+    private CreditsLogRepository creditsLogRepository;
     @Autowired
     BouquetMapper bouquetMapper;
     @Autowired
@@ -155,14 +158,69 @@ public class LineServiceImpl implements LineService {
     }
 
     @Override
+    @Transactional
     public LineCreateResponse create(LineCreateRequest request) {
         Line line = lineMapper.toLine(request);
+
+        // Perform the credit deduction asynchronously
+        CompletableFuture<Void> creditCheckFuture = handleCreditDeductionAsync(line);
+
+        // Proceed with saving the line as usual
         Long createdAt = System.currentTimeMillis() / 1000;
         line.setCreatedAt(createdAt);
         line = lineRepository.save(line);
-        if (line.getUseVPN())
+
+        if (line.getUseVPN()) {
             line = this.changeVPN(line);
+        }
+
+        // Wait for the credit deduction to finish
+        creditCheckFuture.join(); // This will block until the credit check and deduction are done
+
         return lineMapper.toLineCreateResponse(line);
+    }
+
+    private CompletableFuture<Void> handleCreditDeductionAsync(Line line) {
+        return CompletableFuture.runAsync(() -> {
+            Long packageId = line.getPackageId();
+            Optional<UserPackage> optPackage = packageRepository.findById(packageId.toString());
+
+            if (optPackage.isPresent()) {
+                Long ownerId = line.getMemberId() > 0 ? line.getMemberId() : getCurrentUserId();
+                User owner = userRepository.findById(ownerId).orElseThrow(OwnerNotFoundException::new);
+                UserPackage pkg = optPackage.get();
+
+                Float cost = 0f;
+                if (pkg.getIsOfficial()) {
+                    // Official credits deduction logic
+                    cost = pkg.getOfficialCredits();
+                    if (cost > owner.getCredits()) {
+                        throw new InsufficientCreditsException("Not enough credits to create line. Required: " + cost + ", Available: " + owner.getCredits());
+                    }
+                    Float remain = owner.getCredits() - cost;
+                    owner.setCredits(remain);
+                    owner = userRepository.save(owner);
+                } else {
+                    // Trial credits deduction logic
+                    cost = pkg.getTrialCredits();
+                    if (cost > owner.getCredits()) {
+                        throw new InsufficientCreditsException("Not enough credits to create line. Required: " + cost + ", Available: " + owner.getCredits());
+                    }
+                    Float remain = owner.getCredits() - cost;
+                    owner.setCredits(remain);
+                    owner = userRepository.save(owner);
+                }
+
+                UserCreditLog creditLog = UserCreditLog.builder()
+                        .amount(cost)
+                        .adminId(getCurrentUserId())
+                        .targetId(owner.getId())
+                        .timestamp(System.currentTimeMillis()/1000)
+//                        .reason("Credit deduction for package")  // Optionally set a reason for the credit deduction, if needed
+                        .build();
+                creditsLogRepository.save(creditLog);
+            }
+        });
     }
 
     @Override
