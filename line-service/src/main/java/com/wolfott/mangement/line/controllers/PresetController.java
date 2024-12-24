@@ -67,8 +67,8 @@ public class PresetController {
     }
 
     @GetMapping
-    public Page<PresetCompactResponse> getAll(@RequestParam Map<String, Object> filters, Pageable pageable) {
-        Page<Preset> page = presetService.findAllWithFilters(filters, pageable);
+    public Page<PresetCompactResponse> getAll(Pageable pageable) {
+        Page<Preset> page = presetService.findAll(pageable);
         return page.map(this::toPresetCompactResponse);
     }
 
