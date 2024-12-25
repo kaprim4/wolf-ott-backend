@@ -10,7 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PackageCompactResponse {
-    private String id;
+    private Long id;
     private String packageName;
     private Boolean isAddon;
     private Boolean isTrial;

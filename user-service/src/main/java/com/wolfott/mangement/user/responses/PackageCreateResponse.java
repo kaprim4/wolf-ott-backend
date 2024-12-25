@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PackageCreateResponse {
+    private Long id;
     private String packageName;
     private Boolean isAddon;
     private Boolean isTrial;

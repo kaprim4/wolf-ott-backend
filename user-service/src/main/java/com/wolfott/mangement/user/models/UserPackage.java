@@ -11,8 +11,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class UserPackage {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+//    @GeneratedValue(generator = "uuid")
+//    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 

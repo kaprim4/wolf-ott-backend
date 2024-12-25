@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PackageDetailResponse {
-    private String id;
+    private Long id;
     private String packageName;
     private Boolean isAddon;
     private Boolean isTrial;
