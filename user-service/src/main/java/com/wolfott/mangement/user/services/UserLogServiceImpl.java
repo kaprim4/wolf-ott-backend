@@ -89,7 +89,7 @@ public class UserLogServiceImpl implements UserLogService {
             obj.setCost(log.getCost());
             obj.setCredit(log.getCreditsAfter());
             obj.setType(log.getType());
-            obj.setDate(new Date(log.getDate()));
+            obj.setDate(log.getDate());
 
             Long ownerId = log.getOwner();
             obj.setOwner_id(ownerId);

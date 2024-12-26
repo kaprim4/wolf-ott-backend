@@ -19,5 +19,5 @@ public class UserLogCompactResponse {
     private String action;
     private Long cost;
     private Long credit;
-    private Date date;
+    private Long date;
 }
