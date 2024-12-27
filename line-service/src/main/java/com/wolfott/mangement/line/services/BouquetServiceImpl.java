@@ -53,25 +53,22 @@ public class BouquetServiceImpl implements BouquetService {
         // ObjectMapper for JSON parsing
         ObjectMapper mapper = new ObjectMapper();
 
-        // Parse all indices in one go to avoid repeated mapper calls
-        List<Long> channelsIdx = parseJson(jsonChannels, mapper);
-        List<Long> moviesIdx = parseJson(jsonMovies, mapper);
-        List<Long> seriesIdx = parseJson(jsonSeries, mapper);
-        List<Long> stationsIdx = parseJson(jsonStations, mapper);
+        // Create a list of all JSON strings
+        List<String> jsonStrings = List.of(jsonChannels, jsonMovies, jsonSeries, jsonStations);
 
-        // Combine all indices into a single list in a more efficient way
-        List<Long> streamsIdx = java.util.stream.Stream.of(channelsIdx, moviesIdx, seriesIdx, stationsIdx)
-                .flatMap(Collection::stream)
+        List<Long> streamsIdx = jsonStrings.parallelStream()
+                .flatMap(json -> parseJson(json, mapper).stream())
                 .collect(Collectors.toList());
 
         // Fetch all the streams by their IDs
         List<Stream> streams = streamRepository.getByIdIn(streamsIdx);
 
-        // Collect all distinct category IDs directly
-        Set<Long> categoryIdx = streams.stream()
+// Collect all distinct category IDs directly
+        Set<Long> categoryIdx = streams.stream().parallel()
                 .map(Stream::getCategoryId)
-                .map(Long::valueOf)
+                .flatMap(idx -> parseJson(idx, mapper).stream())
                 .collect(Collectors.toSet());
+
 
         // Fetch all categories at once using the category IDs
         List<StreamCategory> categories = categoryRepository.findByIdIn(categoryIdx);
