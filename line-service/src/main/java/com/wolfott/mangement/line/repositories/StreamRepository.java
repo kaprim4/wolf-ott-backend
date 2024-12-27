@@ -11,4 +11,6 @@ import java.util.concurrent.CompletableFuture;
 public interface StreamRepository extends JpaRepository<Stream, Long> {
     @Async
     CompletableFuture<List<Stream>> findByIdIn(Collection<Long> ids);
+
+    List<Stream> getByIdIn(Collection<Long> ids);
 }

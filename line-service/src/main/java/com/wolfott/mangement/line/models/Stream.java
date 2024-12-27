@@ -19,6 +19,9 @@ public class Stream {
     @Column(name = "id", columnDefinition = "int")
     private Long id;
 
+    @Column(name = "category_id", columnDefinition = "mediumtext")
+    private String categoryId;
+
     @Column(name = "stream_display_name", columnDefinition = "mediumtext")
     private String streamDisplayName;
 

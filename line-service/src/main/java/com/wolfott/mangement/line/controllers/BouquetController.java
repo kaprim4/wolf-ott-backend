@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.requests.BouquetCreateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
-import com.wolfott.mangement.line.responses.BouquetCompactResponse;
-import com.wolfott.mangement.line.responses.BouquetCreateResponse;
-import com.wolfott.mangement.line.responses.BouquetDetailResponse;
-import com.wolfott.mangement.line.responses.BouquetUpdateResponse;
+import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.BouquetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,7 +22,7 @@ import java.util.Map;
 public class BouquetController {
 
     @Autowired
-    BouquetService bouquetService;
+    private BouquetService bouquetService;
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -38,11 +35,13 @@ public class BouquetController {
     }
 
     @GetMapping("/{id}/categories")
-    public BouquetDetailResponse getCategories(@PathVariable("id") Long id){
-        Bouquet bouquet = bouquetService.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bouquet not found"));
+    public List<CategoryCompactResponse> getCategories(@PathVariable("id") Long id){
+        return bouquetService.getBouquetCategories(id);
+    }
 
-        return toBouquetDetailResponse(bouquet);
+    @GetMapping("/{id}/categories/{type}")
+    public List<CategoryCompactResponse> getCategories(@PathVariable("id") Long id, @PathVariable("type") String type){
+        return bouquetService.getBouquetCategories(id);
     }
 
     @GetMapping("/list")
