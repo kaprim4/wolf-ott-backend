@@ -37,6 +37,14 @@ public class BouquetController {
         return toBouquetDetailResponse(bouquet);
     }
 
+    @GetMapping("/{id}/categories")
+    public BouquetDetailResponse getCategories(@PathVariable("id") Long id){
+        Bouquet bouquet = bouquetService.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Bouquet not found"));
+
+        return toBouquetDetailResponse(bouquet);
+    }
+
     @GetMapping("/list")
     public List<BouquetCompactResponse> getAll(@RequestParam Map<String, Object> filters){
         List<Bouquet> bouquets = bouquetService.findAllWithFilters(filters);
