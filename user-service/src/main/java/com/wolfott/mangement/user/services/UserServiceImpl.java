@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         // Process the users and set owners and line counts
         allUsers.forEach(user -> {
-            if(counts.get(user.getId()) != null)
+            if (counts.get(user.getId()) != null)
                 user.setLineCount(counts.get(user.getId()));
             else
                 user.setLineCount(0L);
@@ -163,6 +163,13 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
+        User owner = userRepository.findById(ownerId).orElse(null);
+        if (owner == null) {
+            throw new UserNotFoundException("Owner not Found");
+        }
+
+        owner.setCredits(owner.getCredits() - request.getCredits());
+        userRepository.save(owner);
 
         UserGroup userGroup = groupRepository.findById(request.getMemberGroupId()).orElseThrow(null);
 
@@ -199,8 +206,22 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
+        User owner = userRepository.findById(ownerId).orElse(null);
+        if (owner == null) {
+            throw new UserNotFoundException("Owner not Found");
+        }
+
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         if (user != null) {
+
+            float diff_credits = user.getCredits() - request.getCredits();
+            if (diff_credits > 0) {
+                owner.setCredits(owner.getCredits() + diff_credits);
+            } else {
+                owner.setCredits(owner.getCredits() - diff_credits);
+            }
+            userRepository.save(owner);
+
             user.setUsername(request.getUsername());
             if (request.getPassword() != null && !request.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -256,6 +277,14 @@ public class UserServiceImpl implements UserService {
         if (ownerId == null) {
             throw new UnauthorizedAccessException("User not authenticated");
         }
+
+        User owner = userRepository.findById(ownerId).orElse(null);
+        if (owner == null) {
+            throw new UserNotFoundException("Owner not Found");
+        }
+        owner.setCredits(owner.getCredits() - request.cost_credits());
+        userRepository.save(owner);
+
         User user = userRepository.findById(request.userId()).orElse(null);
         if (user == null)
             return null;
