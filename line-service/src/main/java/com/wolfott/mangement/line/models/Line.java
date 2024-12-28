@@ -143,7 +143,7 @@ public class Line {
     private String lastActivityArray;
 
     @Column(name = "use_vpn", columnDefinition = "tinyint")
-    private Boolean useVPN;
+    private Boolean useVPN = false;
 
     @Column(name = "vpn_dns", columnDefinition = "tinytext")
     private String vpnDns;
@@ -152,7 +152,7 @@ public class Line {
     private Boolean usePreset;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "preset_id", nullable = false)
+    @JoinColumn(name = "preset_id", nullable = true)
     private Preset preset;
 
 //    @Column(name = "updated", columnDefinition = "timestamp")
@@ -163,4 +163,10 @@ public class Line {
     @JoinColumn(name = "member_id") // , insertable = false, updatable = false
 //    @Transient
     private User member;
+
+    public Boolean getUseVPN() {
+        if (useVPN == null)
+            return false;
+        return useVPN;
+    }
 }
