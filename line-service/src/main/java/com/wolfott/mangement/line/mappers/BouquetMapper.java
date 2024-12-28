@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.models.Bouquet;
+import com.wolfott.mangement.line.models.PresetBouquetCategory;
+import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.requests.BouquetCreateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
-import com.wolfott.mangement.line.responses.BouquetCompactResponse;
-import com.wolfott.mangement.line.responses.BouquetCreateResponse;
-import com.wolfott.mangement.line.responses.BouquetDetailResponse;
-import com.wolfott.mangement.line.responses.BouquetUpdateResponse;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
+import com.wolfott.mangement.line.responses.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.Converter;
@@ -66,6 +66,49 @@ public class BouquetMapper {
 
             }
         });
+
+        mapper.addMappings(new PropertyMap<PresetBouquetCategory, PresetBouquetCategoryCreateResponse>() {
+
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setOwnerId(source.getOwnerId());
+
+                using(bouquetToBouquetIdConverter()).map(source.getBouquet(), destination.getBouquetId());
+                using(jsonToList()).map(source.getCategories(), destination.getCategories());
+
+            }
+        });
+        mapper.addMappings(new PropertyMap<PresetBouquetCategory, PresetBouquetCategoryDetailResponse>() {
+
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setOwnerId(source.getOwnerId());
+
+                using(bouquetToBouquetIdConverter()).map(source.getBouquet(), destination.getBouquetId());
+                using(jsonToList()).map(source.getCategories(), destination.getCategories());
+
+            }
+        });
+
+        mapper.addMappings(new PropertyMap<PresetBouquetCategoryCreateRequest, PresetBouquetCategory>() {
+
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+
+                using(bouquetIdToBouquetConverter()).map(source.getBouquetId(), destination.getBouquet());
+                using(listToJson()).map(source.getCategories(), destination.getCategories());
+
+            }
+        });
     }
 
     private Converter<String, List> jsonToList(){
@@ -79,6 +122,37 @@ public class BouquetMapper {
                 return Collections.emptyList();
             }
         };
+    }
+    private Converter<List, String> listToJson() {
+        return context -> {
+            List<?> list = context.getSource();
+            if (list == null) return null; // Return null for a null input
+            try {
+                return new ObjectMapper().writeValueAsString(list);
+            } catch (JsonProcessingException e) {
+                log.error("Error converting list to JSON: {}", list, e);
+                return null; // Or handle it as needed, e.g., return an empty string or a specific error message
+            }
+        };
+    }
+
+    private Converter<Long, Bouquet> bouquetIdToBouquetConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(Bouquet::new)
+                .map(bouquet -> {
+                    log.info("Bouquet initiated: {}", bouquet);
+                    return bouquet;
+                })
+                .orElseGet(() -> {
+                    log.info("Bouquet initiation failed: source is null");
+                    return null;
+                });
+    }
+
+    private Converter<Bouquet, Long> bouquetToBouquetIdConverter() {
+        return context -> Optional.ofNullable(context.getSource())
+                .map(Bouquet::getId)
+                .orElse(null); // "Anonymous"
     }
     private Converter<String, Integer> countJsonArray(){
         return context -> Optional.ofNullable(context.getSource()).stream().map(this::countItems).findAny().orElse(0);
@@ -137,5 +211,15 @@ public class BouquetMapper {
 
     public List<BouquetCompactResponse> toCompactResponse(List<Bouquet> collection) {
         return collection.stream().map(this::toCompactResponse).collect(Collectors.toList());
+    }
+
+    public PresetBouquetCategory requestToModel(PresetBouquetCategoryCreateRequest request){
+        return this.mapper.map(request, PresetBouquetCategory.class);
+    }
+    public PresetBouquetCategoryCreateResponse modelToCreateResponse(PresetBouquetCategory model){
+        return this.mapper.map(model, PresetBouquetCategoryCreateResponse.class);
+    }
+    public PresetBouquetCategoryDetailResponse modelToDetailResponse(PresetBouquetCategory model){
+        return this.mapper.map(model, PresetBouquetCategoryDetailResponse.class);
     }
 }

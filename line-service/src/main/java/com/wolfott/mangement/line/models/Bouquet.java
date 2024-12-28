@@ -47,6 +47,9 @@ public class Bouquet {
     @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PresetBouquet> presetBouquets = new HashSet<>();
 
+    @OneToMany(mappedBy = "bouquet", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PresetBouquetCategory> presetBouquetCategories = new HashSet<>();
+
     public Bouquet(Long id) {
         this.id = id;
     }

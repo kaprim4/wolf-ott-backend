@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.requests.BouquetCreateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.BouquetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,18 @@ public class BouquetController {
         return toBouquetDetailResponse(bouquet);
     }
 
+    @GetMapping("/presets")
+    public Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable){
+        return bouquetService.getAllBouquetsPresets(pageable);
+    }
+
     @GetMapping("/{id}/categories")
     public List<CategoryCompactResponse> getCategories(@PathVariable("id") Long id){
         return bouquetService.getBouquetCategories(id);
+    }
+    @GetMapping("/{bouquet_id}/categories")
+    public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(@PathVariable("bouquet_id") Long bouquetId, @RequestBody PresetBouquetCategoryCreateRequest request){
+        return bouquetService.savePresetBouquetCategory(bouquetId, request);
     }
 
     @GetMapping("/{id}/categories/{type}")

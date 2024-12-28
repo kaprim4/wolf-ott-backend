@@ -1,7 +1,10 @@
 package com.wolfott.mangement.line.services;
 
 import com.wolfott.mangement.line.models.Bouquet;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
 import com.wolfott.mangement.line.responses.CategoryCompactResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryCreateResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryDetailResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +22,7 @@ public interface BouquetService {
     List<Bouquet> findAllWithFilters(Map<String, Object> filters);
     List<Bouquet> findAllByIds(List<Long> ids);
     List<Bouquet> findAll();
+
+    Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable);
+    PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request);
 }

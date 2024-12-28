@@ -4,14 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wolfott.mangement.line.exceptions.BouquetNotFoundException;
 import com.wolfott.mangement.line.exceptions.PresetNotFoundException;
+import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.CategoryMapper;
 import com.wolfott.mangement.line.models.Bouquet;
+import com.wolfott.mangement.line.models.PresetBouquetCategory;
 import com.wolfott.mangement.line.models.Stream;
 import com.wolfott.mangement.line.models.StreamCategory;
 import com.wolfott.mangement.line.repositories.BouquetRepository;
 import com.wolfott.mangement.line.repositories.CategoryRepository;
+import com.wolfott.mangement.line.repositories.PresetBouquetCategoryRepository;
 import com.wolfott.mangement.line.repositories.StreamRepository;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
 import com.wolfott.mangement.line.responses.CategoryCompactResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryCreateResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryDetailResponse;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,7 +38,11 @@ public class BouquetServiceImpl implements BouquetService {
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
+    private BouquetMapper bouquetMapper;
+    @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private PresetBouquetCategoryRepository presetBouquetCategoryRepository;
 
     @Override
     public Optional<Bouquet> findById(Long id){
@@ -153,6 +163,19 @@ public class BouquetServiceImpl implements BouquetService {
     @Override
     public List<Bouquet> findAll() {
         return bouquetRepository.findAll();
+    }
+
+    @Override
+    public Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable) {
+        return presetBouquetCategoryRepository.findAll(pageable).map(model -> bouquetMapper.modelToDetailResponse(model));
+    }
+
+    @Override
+    public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request) {
+        PresetBouquetCategory preset = bouquetMapper.requestToModel(request);
+        preset.setBouquet(new Bouquet(bouquetId));
+        preset = presetBouquetCategoryRepository.save(preset);
+        return bouquetMapper.modelToCreateResponse(preset);
     }
 
     private Specification<Bouquet> buildSpecification(Map<String, Object> filters) {
