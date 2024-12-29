@@ -75,8 +75,8 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
             WHERE l.`member_id` IN (
                 SELECT uh.id FROM user_hierarchy uh
             )
-            AND `exp_date` < NOW() 
-            ORDER BY id DESC 
+            AND l.`exp_date` < UNIX_TIMESTAMP(NOW() + INTERVAL 3 DAY) 
+            ORDER BY l.exp_date DESC 
             LIMIT :limit 
             """, nativeQuery = true)
     List<Line> findAllExpiredLinesRecursively(@Param("userId") Long userId, @Param("limit") Long limit);
