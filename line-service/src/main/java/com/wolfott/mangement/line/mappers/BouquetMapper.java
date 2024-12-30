@@ -10,6 +10,7 @@ import com.wolfott.mangement.line.models.User;
 import com.wolfott.mangement.line.requests.BouquetCreateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +101,7 @@ public class BouquetMapper {
 
             @Override
             protected void configure() {
-                map().setId(source.getId());
+                skip(destination.getId());
                 map().setPresetName(source.getPresetName());
                 map().setPresetDescription(source.getPresetDescription());
 
@@ -116,12 +117,23 @@ public class BouquetMapper {
             String json = context.getSource();
             if (json == null) return Collections.emptyList();
             try {
-                return new ObjectMapper().readValue(json, new TypeReference<List>() {});
-            } catch (JsonProcessingException e) {
+                return this.jsonToList(json, Long.class, new ObjectMapper());
+            } catch (Exception e) {
                 log.error("Error parsing JSON to list: {}", json, e);
                 return Collections.emptyList();
             }
         };
+    }
+
+    public <T> List<T> jsonToList(String json, Class<T> elementType, ObjectMapper objectMapper) {
+        if (json == null || json.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(List.class, elementType));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to parse JSON to list", e);
+        }
     }
     private Converter<List, String> listToJson() {
         return context -> {
@@ -216,8 +228,28 @@ public class BouquetMapper {
     public PresetBouquetCategory requestToModel(PresetBouquetCategoryCreateRequest request){
         return this.mapper.map(request, PresetBouquetCategory.class);
     }
+    public PresetBouquetCategory requestToModel(PresetBouquetCategoryUpdateRequest request){
+        return this.mapper.map(request, PresetBouquetCategory.class);
+    }
     public PresetBouquetCategoryCreateResponse modelToCreateResponse(PresetBouquetCategory model){
         return this.mapper.map(model, PresetBouquetCategoryCreateResponse.class);
+    }
+
+    public PresetBouquetCategoryUpdateResponse modelToUpdateResponse(PresetBouquetCategory model){
+        return this.mapper.map(model, PresetBouquetCategoryUpdateResponse.class);
+    }
+
+    public PresetBouquetCategory merge(PresetBouquetCategory model, PresetBouquetCategoryUpdateRequest request){
+        Long id = model.getId();
+        Long ownerId = model.getOwnerId();
+        String categoryType = model.getCategoryType();
+        Bouquet bouquet = model.getBouquet();
+        model = this.mapper.map(request, PresetBouquetCategory.class);
+        model.setId(id);
+        model.setOwnerId(ownerId);
+        model.setCategoryType(categoryType);
+        model.setBouquet(bouquet);
+        return model;
     }
     public PresetBouquetCategoryDetailResponse modelToDetailResponse(PresetBouquetCategory model){
         return this.mapper.map(model, PresetBouquetCategoryDetailResponse.class);

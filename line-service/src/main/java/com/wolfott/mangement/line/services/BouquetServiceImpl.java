@@ -15,9 +15,11 @@ import com.wolfott.mangement.line.repositories.CategoryRepository;
 import com.wolfott.mangement.line.repositories.PresetBouquetCategoryRepository;
 import com.wolfott.mangement.line.repositories.StreamRepository;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryUpdateRequest;
 import com.wolfott.mangement.line.responses.CategoryCompactResponse;
 import com.wolfott.mangement.line.responses.PresetBouquetCategoryCreateResponse;
 import com.wolfott.mangement.line.responses.PresetBouquetCategoryDetailResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryUpdateResponse;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -171,11 +173,25 @@ public class BouquetServiceImpl implements BouquetService {
     }
 
     @Override
+    public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(PresetBouquetCategoryCreateRequest request) {
+        PresetBouquetCategory preset = bouquetMapper.requestToModel(request);
+        preset = presetBouquetCategoryRepository.save(preset);
+        return bouquetMapper.modelToCreateResponse(preset);
+    }
+
+    @Override
     public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request) {
         PresetBouquetCategory preset = bouquetMapper.requestToModel(request);
         preset.setBouquet(new Bouquet(bouquetId));
         preset = presetBouquetCategoryRepository.save(preset);
         return bouquetMapper.modelToCreateResponse(preset);
+    }
+
+    @Override
+    public PresetBouquetCategoryUpdateResponse updatePresetBouquetCategory(Long id, PresetBouquetCategoryUpdateRequest request) {
+        PresetBouquetCategory preset = presetBouquetCategoryRepository.findById(id).map(pbc -> bouquetMapper.merge(pbc, request)).orElseThrow(PresetNotFoundException::new);
+        preset = presetBouquetCategoryRepository.save(preset);
+        return bouquetMapper.modelToUpdateResponse(preset);
     }
 
     private Specification<Bouquet> buildSpecification(Map<String, Object> filters) {

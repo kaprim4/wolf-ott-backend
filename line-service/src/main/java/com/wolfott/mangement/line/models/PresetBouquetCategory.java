@@ -14,6 +14,7 @@ import lombok.Setter;
 @Setter
 public class PresetBouquetCategory {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "preset_name")
@@ -28,7 +29,7 @@ public class PresetBouquetCategory {
     private String categoryType;
 
     @Lob
-    @Column(name = "categories_array")
+    @Column(name = "categories_array", columnDefinition = "mediumtext")
     private String categories;
 
     @ManyToOne(fetch = FetchType.LAZY)

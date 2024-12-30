@@ -6,6 +6,7 @@ import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.requests.BouquetCreateRequest;
 import com.wolfott.mangement.line.requests.BouquetUpdateRequest;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryUpdateRequest;
 import com.wolfott.mangement.line.responses.*;
 import com.wolfott.mangement.line.services.BouquetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +36,23 @@ public class BouquetController {
         return toBouquetDetailResponse(bouquet);
     }
 
+    @GetMapping("/{bouquet_id}/categories")
+    public List<CategoryCompactResponse> getCategories(@PathVariable("bouquet_id") Long id){
+        return bouquetService.getBouquetCategories(id);
+    }
+
     @GetMapping("/presets")
     public Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable){
         return bouquetService.getAllBouquetsPresets(pageable);
     }
-
-    @GetMapping("/{id}/categories")
-    public List<CategoryCompactResponse> getCategories(@PathVariable("id") Long id){
-        return bouquetService.getBouquetCategories(id);
+    @PostMapping("/presets")
+    public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(@RequestBody PresetBouquetCategoryCreateRequest request){
+        return bouquetService.savePresetBouquetCategory(request);
     }
-    @GetMapping("/{bouquet_id}/categories")
-    public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(@PathVariable("bouquet_id") Long bouquetId, @RequestBody PresetBouquetCategoryCreateRequest request){
-        return bouquetService.savePresetBouquetCategory(bouquetId, request);
+
+    @PostMapping("/presets/{id}")
+    public PresetBouquetCategoryUpdateResponse savePresetBouquetCategory(@PathVariable("id") Long id, @RequestBody PresetBouquetCategoryUpdateRequest request){
+        return bouquetService.updatePresetBouquetCategory(id, request);
     }
 
     @GetMapping("/{id}/categories/{type}")

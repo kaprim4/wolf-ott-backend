@@ -2,9 +2,11 @@ package com.wolfott.mangement.line.services;
 
 import com.wolfott.mangement.line.models.Bouquet;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
+import com.wolfott.mangement.line.requests.PresetBouquetCategoryUpdateRequest;
 import com.wolfott.mangement.line.responses.CategoryCompactResponse;
 import com.wolfott.mangement.line.responses.PresetBouquetCategoryCreateResponse;
 import com.wolfott.mangement.line.responses.PresetBouquetCategoryDetailResponse;
+import com.wolfott.mangement.line.responses.PresetBouquetCategoryUpdateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,5 +26,8 @@ public interface BouquetService {
     List<Bouquet> findAll();
 
     Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable);
+    PresetBouquetCategoryCreateResponse savePresetBouquetCategory(PresetBouquetCategoryCreateRequest request);
     PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request);
+
+    PresetBouquetCategoryUpdateResponse updatePresetBouquetCategory(Long id, PresetBouquetCategoryUpdateRequest request);
 }
