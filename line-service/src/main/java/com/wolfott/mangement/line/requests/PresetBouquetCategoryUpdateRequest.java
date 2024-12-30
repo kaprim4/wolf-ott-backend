@@ -13,7 +13,7 @@ public class PresetBouquetCategoryUpdateRequest {
 //    private Long id;
     private String presetName;
     private String presetDescription;
-    private String categoryType;
-    private Long bouquetId;
+//    private String categoryType;
+//    private Long bouquetId;
     private List<Integer> categories;
 }

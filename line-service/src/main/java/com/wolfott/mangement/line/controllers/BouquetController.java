@@ -45,12 +45,16 @@ public class BouquetController {
     public Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable){
         return bouquetService.getAllBouquetsPresets(pageable);
     }
+    @GetMapping("/presets/{id}")
+    public PresetBouquetCategoryDetailResponse getBouquetPreset(@PathVariable("id") Long id){
+        return bouquetService.getBouquetPreset(id);
+    }
     @PostMapping("/presets")
     public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(@RequestBody PresetBouquetCategoryCreateRequest request){
         return bouquetService.savePresetBouquetCategory(request);
     }
 
-    @PostMapping("/presets/{id}")
+    @PutMapping("/presets/{id}")
     public PresetBouquetCategoryUpdateResponse savePresetBouquetCategory(@PathVariable("id") Long id, @RequestBody PresetBouquetCategoryUpdateRequest request){
         return bouquetService.updatePresetBouquetCategory(id, request);
     }

@@ -15,8 +15,8 @@ public class PresetBouquetCategoryUpdateResponse {
     private Long id;
     private String presetName;
     private String presetDescription;
-//    private Long ownerId;
-//    private Long bouquetId;
-//    private String categoryType;
+    private Long ownerId;
+    private Long bouquetId;
+    private String categoryType;
     private List<Long> categories;
 }

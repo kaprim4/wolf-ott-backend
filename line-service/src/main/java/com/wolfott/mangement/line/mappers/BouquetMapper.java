@@ -82,6 +82,21 @@ public class BouquetMapper {
 
             }
         });
+
+        mapper.addMappings(new PropertyMap<PresetBouquetCategory, PresetBouquetCategoryUpdateResponse>() {
+
+            @Override
+            protected void configure() {
+                map().setId(source.getId());
+                map().setPresetName(source.getPresetName());
+                map().setPresetDescription(source.getPresetDescription());
+                map().setOwnerId(source.getOwnerId());
+
+                using(bouquetToBouquetIdConverter()).map(source.getBouquet(), destination.getBouquetId());
+                using(jsonToList()).map(source.getCategories(), destination.getCategories());
+
+            }
+        });
         mapper.addMappings(new PropertyMap<PresetBouquetCategory, PresetBouquetCategoryDetailResponse>() {
 
             @Override

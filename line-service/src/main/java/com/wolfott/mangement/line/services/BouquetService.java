@@ -30,4 +30,6 @@ public interface BouquetService {
     PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request);
 
     PresetBouquetCategoryUpdateResponse updatePresetBouquetCategory(Long id, PresetBouquetCategoryUpdateRequest request);
+
+    PresetBouquetCategoryDetailResponse getBouquetPreset(Long id);
 }

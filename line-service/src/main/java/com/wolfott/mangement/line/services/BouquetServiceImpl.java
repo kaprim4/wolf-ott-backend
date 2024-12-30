@@ -194,6 +194,11 @@ public class BouquetServiceImpl implements BouquetService {
         return bouquetMapper.modelToUpdateResponse(preset);
     }
 
+    @Override
+    public PresetBouquetCategoryDetailResponse getBouquetPreset(Long id) {
+        return presetBouquetCategoryRepository.findById(id).map(model -> bouquetMapper.modelToDetailResponse(model)).orElseThrow(PresetNotFoundException::new);
+    }
+
     private Specification<Bouquet> buildSpecification(Map<String, Object> filters) {
         return (root, query, cb) -> {
             Predicate predicate = cb.conjunction();
