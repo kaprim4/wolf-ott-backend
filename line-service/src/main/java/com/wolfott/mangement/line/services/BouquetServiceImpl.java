@@ -6,14 +6,8 @@ import com.wolfott.mangement.line.exceptions.BouquetNotFoundException;
 import com.wolfott.mangement.line.exceptions.PresetNotFoundException;
 import com.wolfott.mangement.line.mappers.BouquetMapper;
 import com.wolfott.mangement.line.mappers.CategoryMapper;
-import com.wolfott.mangement.line.models.Bouquet;
-import com.wolfott.mangement.line.models.PresetBouquetCategory;
-import com.wolfott.mangement.line.models.Stream;
-import com.wolfott.mangement.line.models.StreamCategory;
-import com.wolfott.mangement.line.repositories.BouquetRepository;
-import com.wolfott.mangement.line.repositories.CategoryRepository;
-import com.wolfott.mangement.line.repositories.PresetBouquetCategoryRepository;
-import com.wolfott.mangement.line.repositories.StreamRepository;
+import com.wolfott.mangement.line.models.*;
+import com.wolfott.mangement.line.repositories.*;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryCreateRequest;
 import com.wolfott.mangement.line.requests.PresetBouquetCategoryUpdateRequest;
 import com.wolfott.mangement.line.responses.CategoryCompactResponse;
@@ -28,6 +22,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +40,8 @@ public class BouquetServiceImpl implements BouquetService {
     private CategoryMapper categoryMapper;
     @Autowired
     private PresetBouquetCategoryRepository presetBouquetCategoryRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public Optional<Bouquet> findById(Long id){
@@ -169,8 +166,48 @@ public class BouquetServiceImpl implements BouquetService {
 
     @Override
     public Page<PresetBouquetCategoryDetailResponse> getAllBouquetsPresets(Pageable pageable) {
-        return presetBouquetCategoryRepository.findAll(pageable).map(model -> bouquetMapper.modelToDetailResponse(model));
+        // First, fetch the page of PresetBouquetCategory
+        Page<PresetBouquetCategory> page = presetBouquetCategoryRepository.findAll(pageable);
+
+        // Extract owners' and bouquets' IDs from the page data
+        List<Long> ownersIdx = page.map(PresetBouquetCategory::getOwnerId).stream().toList();
+        List<Long> bouquetsIdx = page.map(PresetBouquetCategory::getBouquet).map(Bouquet::getId).stream().toList();
+
+        // Create CompletableFutures for fetching owners and bouquets concurrently
+        CompletableFuture<List<User>> ownersFuture = CompletableFuture.supplyAsync(() -> userRepository.findAllById(ownersIdx));
+        CompletableFuture<List<Bouquet>> bouquetsFuture = CompletableFuture.supplyAsync(() -> bouquetRepository.findAllById(bouquetsIdx));
+
+        // Combine the futures and process them when both are complete
+        return CompletableFuture.allOf(ownersFuture, bouquetsFuture)
+                .thenApplyAsync(v -> {
+                    // Wait for both futures to complete and get the results
+                    List<User> owners = ownersFuture.join();
+                    List<Bouquet> bouquets = bouquetsFuture.join();
+
+                    // Map the page of PresetBouquetCategory to a list of responses
+                    return page.map(model -> bouquetMapper.modelToDetailResponse(model))
+                            .map(response -> {
+                                // Find owner name based on owner ID
+                                String ownerName = owners.stream()
+                                        .filter(o -> o.getId() == response.getOwnerId())
+                                        .map(User::getName)
+                                        .findFirst()
+                                        .orElse(null);
+                                response.setOwnerName(ownerName);
+
+                                // Find bouquet name based on bouquet ID
+                                String bouquetName = bouquets.stream()
+                                        .filter(b -> b.getId() == response.getBouquetId())
+                                        .map(Bouquet::getBouquetName)
+                                        .findFirst()
+                                        .orElse(null);
+                                response.setBouquetName(bouquetName);
+
+                                return response;
+                            });
+                }).join();  // This will block until the CompletableFuture completes
     }
+
 
     @Override
     public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(PresetBouquetCategoryCreateRequest request) {
