@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -220,6 +222,8 @@ public class BouquetServiceImpl implements BouquetService {
     public PresetBouquetCategoryCreateResponse savePresetBouquetCategory(Long bouquetId, PresetBouquetCategoryCreateRequest request) {
         PresetBouquetCategory preset = bouquetMapper.requestToModel(request);
         preset.setBouquet(new Bouquet(bouquetId));
+        Long ownerId = getCurrentUserId();
+        preset.setOwnerId(ownerId);
         preset = presetBouquetCategoryRepository.save(preset);
         return bouquetMapper.modelToCreateResponse(preset);
     }
@@ -250,5 +254,23 @@ public class BouquetServiceImpl implements BouquetService {
             }
             return predicate;
         };
+    }
+
+    // Helper method to get current authenticated user's role
+    private Authentication getPrincipal() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    // Helper method to get user ID (or any other user details you need)
+    private Long getCurrentUserId() {
+        Authentication auth = getPrincipal();
+        if (auth != null) {
+            Object principal = auth.getPrincipal();
+            System.out.println("Principal: " + principal);
+            if (principal instanceof User) {
+                return ((User) principal).getId();
+            }
+        }
+        return null;
     }
 }
