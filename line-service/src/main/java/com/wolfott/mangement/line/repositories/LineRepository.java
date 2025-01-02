@@ -31,7 +31,25 @@ public interface LineRepository extends JpaRepository<Line, Long>, JpaSpecificat
     @Query("SELECT COUNT(l) FROM Line l WHERE l.createdAt >= :startTimestamp AND l.createdAt < :endTimestamp")
     Long countByCreatedAtBetween(@Param("startTimestamp") Long startTimestamp, @Param("endTimestamp") Long endTimestamp);
 
-    @Query("SELECT COUNT(l) FROM Line l WHERE l.member.id = :id")
+    @Query(value = """
+    WITH RECURSIVE user_hierarchy AS (
+        SELECT id, owner_id, 1 AS depth
+        FROM `users`
+        WHERE `id` = :id
+        UNION ALL
+        SELECT u.id, u.owner_id, uh.depth + 1
+        FROM `users` u
+        INNER JOIN user_hierarchy uh ON u.`owner_id` = uh.`id`
+        WHERE uh.depth < 10
+    )
+    SELECT COUNT(l.id)
+    FROM `lines` l
+    WHERE l.`member_id` IN (
+        SELECT uh.id FROM user_hierarchy uh
+    )
+    AND l.`is_trial` = 0
+    ORDER BY id DESC
+    """, nativeQuery = true)
     int getCountByMemberId(@Param("id") Long id);
 
     @Query(value = """

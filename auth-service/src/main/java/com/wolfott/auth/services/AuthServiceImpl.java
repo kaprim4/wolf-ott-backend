@@ -136,7 +136,6 @@ public class AuthServiceImpl implements AuthService {
             groupClaims.put("minimumUsernameLength", group.getMinimumUsernameLength());
             groupClaims.put("minimumPasswordLength", group.getMinimumPasswordLength());
             groupClaims.put("allowChangeBouquets", group.getAllowChangeBouquets());
-
             try {
                 ObjectMapper objectMapper = new ObjectMapper();
                 List<Long> subResellersList = objectMapper.readValue(group.getSubResellers(), List.class);
@@ -147,6 +146,12 @@ public class AuthServiceImpl implements AuthService {
             }
             claims.put("group", groupClaims);
         });
+
+        claims.put("credits", user.getCredits());
+        claims.put("registrationDate", user.getDateRegistered());
+
+        int line_sold = userRepository.getCountLineByMemberId(user.getId());
+        claims.put("line_sold", line_sold);
 
         Date tokenCreateTime = new Date();
         Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
