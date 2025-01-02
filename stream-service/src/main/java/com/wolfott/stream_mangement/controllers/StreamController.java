@@ -3,10 +3,12 @@ package com.wolfott.stream_mangement.controllers;
 import com.wolfott.stream_mangement.models.StreamType;
 import com.wolfott.stream_mangement.responses.StreamCompactResponse;
 import com.wolfott.stream_mangement.responses.StreamDetailResponse;
+import com.wolfott.stream_mangement.services.PlaylistService;
 import com.wolfott.stream_mangement.services.StreamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,14 @@ import java.util.Map;
 public class StreamController {
     @Autowired
     StreamService streamService;
+
+    @Autowired
+    private PlaylistService playlistService;
+
+    @GetMapping(value = "/export/{format}", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String getM3UPlaylist(@PathVariable("format") String format) {
+        return playlistService.generateM3UPlaylist(format);
+    }
 
     @GetMapping("/{id}")
     public StreamDetailResponse getOne(@PathVariable("id") Long id) {
@@ -34,12 +44,14 @@ public class StreamController {
     }
 
     @GetMapping("/types")
-    public List<StreamType> getTypes(){
+    public List<StreamType> getTypes() {
         return streamService.getTypes();
     }
 
     @GetMapping("/types/{type}")
-    public Page<StreamCompactResponse> getTypes(@PathVariable("type") String type, Pageable pageable){
+    public Page<StreamCompactResponse> getTypes(@PathVariable("type") String type, Pageable pageable) {
         return streamService.getAllByType(type, pageable);
     }
+
+
 }
