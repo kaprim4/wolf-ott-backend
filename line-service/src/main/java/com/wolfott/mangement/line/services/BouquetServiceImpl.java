@@ -74,12 +74,11 @@ public class BouquetServiceImpl implements BouquetService {
         // Fetch all the streams by their IDs
         List<Stream> streams = streamRepository.getByIdIn(streamsIdx);
 
-// Collect all distinct category IDs directly
+        // Collect all distinct category IDs directly
         Set<Long> categoryIdx = streams.stream().parallel()
                 .map(Stream::getCategoryId)
                 .flatMap(idx -> parseJson(idx, mapper).stream())
                 .collect(Collectors.toSet());
-
 
         // Fetch all categories at once using the category IDs
         List<StreamCategory> categories = categoryRepository.findByIdIn(categoryIdx);
